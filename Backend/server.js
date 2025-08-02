@@ -13,7 +13,7 @@ app.use(express.json());
 const genAI=new GoogleGenerativeAI(process.env.GOOGLE_API_KEY)
 const model=genAI.getGenerativeModel({model:"gemini-2.0-flash"})
 
-const knowledge=fs.readFileSync("female_support_dataset.csv","utf-8")
+const knowledge=fs.readFileSync("womens_issues_qa.csv","utf-8")
 const rows=knowledge.split('\n')
 
 function getRelevantContext(question) {
