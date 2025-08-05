@@ -5,7 +5,7 @@ function Chatbot_AI() {
   const [inputMess, setInputMess] = useState("");
   const [messages, setMessages] = useState([]);
 
-  const username = "Arham";
+  const username = "User";
 
   // const time=Date.now();
   const element = (sender, message, isBot = false) => (

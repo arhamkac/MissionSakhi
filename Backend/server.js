@@ -13,16 +13,21 @@ app.use(express.json());
 const genAI=new GoogleGenerativeAI(process.env.GOOGLE_API_KEY)
 const model=genAI.getGenerativeModel({model:"gemini-2.0-flash"})
 
-const knowledge=fs.readFileSync("womens_issues_qa.csv","utf-8")
+const knowledge=fs.readFileSync("womens_chatbot_dataset.csv","utf-8")
 const rows=knowledge.split('\n')
 
+import stringSimilarity from 'string-similarity';
+
 function getRelevantContext(question) {
-  const keywords = question.toLowerCase().split(" ");
-  const matched = rows.filter(row =>
-    keywords.some(kw => row.toLowerCase().includes(kw))
-  );
-  return matched.slice(0, 10).join("\n");
+  const matches = rows.map(row => ({
+    row,
+    score: stringSimilarity.compareTwoStrings(question.toLowerCase(), row.toLowerCase())
+  }));
+  matches.sort((a, b) => b.score - a.score);
+  return matches.slice(0, 10).map(m => m.row).join("\n");
 }
+
+
 
 function cleanAnswer(raw) {
   return raw
@@ -47,8 +52,9 @@ app.post('/ask', async (req, res) => {
 
   And you shall say or suggest answers with respect to Indian audiences if someone is specific then only tell about their country.
 
-  Use the following context if it's relevant:
-   ${context}
+ === START CONTEXT ===
+${context}
+=== END CONTEXT ===
 
   Previous conversation:
   ${history}

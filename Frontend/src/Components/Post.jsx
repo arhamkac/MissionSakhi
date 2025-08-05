@@ -107,6 +107,7 @@ function Post() {
     }
   ];
 
+
   return (
     <div className="grid gap-12 max-w-5xl mx-auto mt-10">
       {posts.map((post) => (
@@ -124,8 +125,8 @@ function Post() {
 
           {/* Reactions */}
           <div className="flex gap-6 items-center text-sm text-[#E8DFF5] mt-2">
-            <span>👍 {post.upvotes}</span>
-            <span>👎 {post.downvotes}</span>
+            <button>👍 {post.upvotes}</button>
+            <button>👎 {post.downvotes}</button>
           </div>
 
           {/* Comments */}

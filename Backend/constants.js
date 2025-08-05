@@ -1,1 +1,1 @@
-const DB_NAME=sakhiverse
+export const DB_NAME="sakhiverse"
