@@ -20,4 +20,4 @@ const voteSchema=new Schema(
     },{timestamps:true}
 )
 
-export const Vote=mongoose.model(voteSchema,"Vote")
+export const Vote=mongoose.model("Vote",voteSchema)

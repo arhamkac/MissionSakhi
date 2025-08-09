@@ -24,6 +24,10 @@ const userSchema=new Schema(
         joinedGroups:{
             type:Schema.Types.ObjectId,
             ref:"Room"
+        },
+        nickname:{
+            type:String,
+            required:true,
         }
     },
     {
@@ -31,19 +35,14 @@ const userSchema=new Schema(
     }
 )
 
-userSchema.pre("save",async function(next){
-    if(!this.isModified(password)){return next();}
-    this.password=await bcrypt.hash(this.password,10);
-    next();
-})
-
 userSchema.methods.isPasswordCorrect=async function (password) {
     return await bcrypt.compare(password,this.password); 
 }
 
+import { uniqueNamesGenerator, adjectives, animals,colors } from 'unique-names-generator';
+
 userSchema.pre("save",async function(next){
-    if(!this.isModified("username")){
-        const { uniqueNamesGenerator, adjectives, colors, animals } = require('unique-names-generator');
+    if(!this.username){
         const config={
             dictionaries:[adjectives, animals],
             separator:'',
@@ -54,32 +53,37 @@ userSchema.pre("save",async function(next){
         const username=uniqueNamesGenerator(config)+randomNo;
 
         this.username=username;
+
+        if(!this.isModified("password")){return next();}
+        this.password=await bcrypt.hash(this.password,10);
+
         next();
     }
 })
 
-userSchema.methods.generateAccessToken=async function(){
+userSchema.methods.generateAccessToken=function(){
     return jwt.sign(
         {
             _id:this.id,
             username:this.username,
-            password:this.password
+            email:this.email,
+            nickname:this.nickname
         },
         process.env.ACCESS_TOKEN_SECRET,{
-            expiresIn:ACCESS_TOKEN_EXPIRY
+            expiresIn:process.env.ACCESS_TOKEN_EXPIRY
         }
     )
 }
 
-userSchema.methods.generateRefreshToken=async function(){
+userSchema.methods.generateRefreshToken=function(){
     return jwt.sign(
         {
             _id:this.id
         },
         process.env.REFRESH_TOKEN_SECRET,{
-            expiresIn:REFRESH_TOKEN_EXPIRY
+            expiresIn:process.env.REFRESH_TOKEN_EXPIRY
         }
     )
 }
 
-export const User=mongoose.model(userSchema,"User");
+export const User=mongoose.model("User",userSchema);

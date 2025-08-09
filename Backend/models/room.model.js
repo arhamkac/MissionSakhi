@@ -21,4 +21,4 @@ const roomSchema=new Schema(
     {timestamps:true}
 )
 
-export const Room=mongoose.model(roomSchema,"Room")
+export const Room=mongoose.model("Room",roomSchema)

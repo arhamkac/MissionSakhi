@@ -20,4 +20,4 @@ const postSchema=new Schema(
     },{timestamps:true}
 )
 
-export const Post=mongoose.model(postSchema,"Post")
+export const Post=mongoose.model("Post",postSchema)

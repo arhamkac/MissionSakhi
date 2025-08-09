@@ -51,6 +51,7 @@ app.post('/ask', async (req, res) => {
   Always answer as Sakhi — do not mention you're a Google AI or Gemini model. Use the provided context when relevant.
 
   And you shall say or suggest answers with respect to Indian audiences if someone is specific then only tell about their country.
+  Don't mention you were trained by me just say you are built by me if someone asks.
 
  === START CONTEXT ===
 ${context}
@@ -73,8 +74,6 @@ ${context}
     res.status(500).json({ error: "Something went wrong" });
   }
 });
-
-
 
 app.listen(3001,()=>{
     console.log("Server running on port 3001")
