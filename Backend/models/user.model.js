@@ -28,6 +28,16 @@ const userSchema=new Schema(
         nickname:{
             type:String,
             required:true,
+        },
+        otp:{
+            type:Number
+        },
+        otpExpiry:{
+            type:Date
+        },
+        OTPVerified:{
+            type:Boolean,
+            default:false
         }
     },
     {
@@ -40,6 +50,7 @@ userSchema.methods.isPasswordCorrect=async function (password) {
 }
 
 import { uniqueNamesGenerator, adjectives, animals,colors } from 'unique-names-generator';
+
 
 userSchema.pre("save",async function(next){
     if(!this.username){

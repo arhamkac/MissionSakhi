@@ -4,6 +4,10 @@ import {ApiResponse} from "../utils/ApiResponse.js"
 import { User } from "../models/user.model.js";
 import jwt from "jsonwebtoken"
 import mongoose from "mongoose";
+import { otpSender,generateOTP } from "../middleware/otp.middleware.js";
+
+const otp=generateOTP()
+let currOTP=111111;
 
 const generateAccessAndRefreshToken=async(userId)=>{
   try {
@@ -83,7 +87,7 @@ const loginUser=asyncHandler(async(req,res)=>{
 
   const passwordCorrect=await user.isPasswordCorrect(password)
   if(!passwordCorrect){
-      throw new ApiError(400,"User password is correct")
+      throw new ApiError(400,"User password is incorrect")
   }
 
   const {accessToken,refreshToken}=await generateAccessAndRefreshToken(user._id)
@@ -219,4 +223,90 @@ const changePassword=asyncHandler(async(req,res)=>{
 
 })
 
-export {registerUser,loginUser,logOutUser,refreshAccessToken,changePassword}
+const sendOTP=asyncHandler(async(req,res)=>{
+  const {emailId}=req.body;
+  if(!emailId){
+    throw new ApiError(400,"Unauthorized user")
+  }
+  
+  await otpSender(otp,emailId);
+  const user=await User.findOne({email:emailId})
+  if(!user){
+    throw new ApiError(404,"No such user exists")
+  }
+  const currOTP=otp
+  user.otp=currOTP
+  user.otpExpiry=Date.now()+5*60*1000
+  await user.save({validateBeforeSave:false})
+
+  return res
+  .status(200)
+  .json(
+    new ApiResponse(200,{},"Sent OTP")
+  )
+})
+
+const verifyOTP=asyncHandler(async(req,res)=>{
+  const {emailId,receivedOTP}=req.body
+  if(!emailId||!receivedOTP){
+    throw new ApiError(404,"Can't proceed without otp and email entering")
+  }
+
+  const user=await User.findOne({email:emailId})
+
+  if(receivedOTP!=user.otp){
+    throw new ApiError(400,"OTP passed is invalid")
+  }
+  if(receivedOTP==user.otp && Date.now()>user.otpExpiry){
+    throw new ApiError(400,"OTP has expired")
+  }
+
+  await user.updateOne(
+    {
+      $set:{OTPVerified:1}
+    }
+  )
+
+  return res
+  .status(200)
+  .json(
+    new ApiResponse(200,{},"OTP verified successfully")
+  )
+})
+
+const resetPassword=asyncHandler(async(req,res)=>{
+  const {emailId,newPassword}=req.body
+  if([emailId,newPassword].some((field)=>field.trim()==="")){
+    throw new ApiError(400,"Email id and password are required to continue")
+  }
+
+  const user=await User.findOne({email:emailId})
+  if(!user){
+    throw new ApiError(404,"Email Id is invalid")
+  }
+
+  const verified=user.OTPVerified
+  if(!verified){
+    throw new ApiError(400,"Your otp is not verified")
+  }
+
+  const passwordUpdate=await user.updateOne({
+    password:newPassword
+  })
+  if(!passwordUpdate){
+    throw new ApiError(400,"Password not changed")
+  }
+
+  return res
+  .status(200)
+  .json(
+    new ApiResponse(200,{},"Password updated succesfully")
+  )
+
+})
+
+const getCurrentUser=asyncHandler(async(req,res)=>{
+    // const userId=req
+})
+
+export {registerUser,loginUser,logOutUser,refreshAccessToken,changePassword,sendOTP,verifyOTP,resetPassword,getCurrentUser}
