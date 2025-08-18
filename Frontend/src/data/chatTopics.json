@@ -1,0 +1,162 @@
+[
+  {
+    "id": 1,
+    "name": "Women's Safety",
+    "icon": "🛡️",
+    "color": "from-red-400 to-pink-400",
+    "members": 1247,
+    "description": "Discussions and resources focused on personal safety, security, and situational awareness."
+  },
+  {
+    "id": 2,
+    "name": "Self-Defense & Training",
+    "icon": "🥋",
+    "color": "from-orange-400 to-red-400",
+    "members": 892,
+    "description": "Learn and share techniques, training tips, and classes for physical self-defense."
+  },
+  {
+    "id": 3,
+    "name": "Legal Help & Rights",
+    "icon": "⚖️",
+    "color": "from-blue-400 to-indigo-400",
+    "members": 1156,
+    "description": "A space to discuss legal rights, seek advice, and understand laws related to women's issues."
+  },
+  {
+    "id": 4,
+    "name": "Harassment & Abuse Support",
+    "icon": "🤝",
+    "color": "from-purple-400 to-pink-400",
+    "members": 2341,
+    "description": "A safe and supportive community for survivors and those affected by harassment or abuse."
+  },
+  {
+    "id": 5,
+    "name": "Mental Health & Wellness",
+    "icon": "🧠",
+    "color": "from-green-400 to-teal-400",
+    "members": 3247,
+    "description": "Focus on mental well-being, sharing tips, resources, and support for emotional health."
+  },
+  {
+    "id": 6,
+    "name": "Health & Hygiene",
+    "icon": "💊",
+    "color": "from-teal-400 to-cyan-400",
+    "members": 1876,
+    "description": "Discussions on physical health, hygiene, and wellness, from daily routines to specific conditions."
+  },
+  {
+    "id": 7,
+    "name": "Career & Education",
+    "icon": "📚",
+    "color": "from-indigo-400 to-purple-400",
+    "members": 2156,
+    "description": "Guidance, mentorship, and support for professional development and academic pursuits."
+  },
+  {
+    "id": 8,
+    "name": "Entrepreneurship & Business",
+    "icon": "💼",
+    "color": "from-yellow-400 to-orange-400",
+    "members": 1543,
+    "description": "A community for women entrepreneurs to share ideas, challenges, and success stories."
+  },
+  {
+    "id": 9,
+    "name": "Relationships & Marriage",
+    "icon": "💕",
+    "color": "from-pink-400 to-rose-400",
+    "members": 2987,
+    "description": "A forum for discussing relationships, marriage, and family dynamics in a supportive environment."
+  },
+  {
+    "id": 10,
+    "name": "Friendship & Community",
+    "icon": "👭",
+    "color": "from-rose-400 to-pink-400",
+    "members": 4123,
+    "description": "Connecting with new people, building friendships, and fostering a strong sense of community."
+  },
+  {
+    "id": 11,
+    "name": "Travel & Safety Tips",
+    "icon": "✈️",
+    "color": "from-cyan-400 to-blue-400",
+    "members": 1654,
+    "description": "Share travel experiences, find travel buddies, and get tips for safe solo or group travel."
+  },
+  {
+    "id": 12,
+    "name": "Fitness & Sports",
+    "icon": "🏃‍♀️",
+    "color": "from-lime-400 to-green-400",
+    "members": 2234,
+    "description": "A place for fitness enthusiasts to share workout routines, motivation, and healthy living tips."
+  },
+  {
+    "id": 13,
+    "name": "Parenting & Family",
+    "icon": "👶",
+    "color": "from-amber-400 to-yellow-400",
+    "members": 3456,
+    "description": "Discussions and support for all aspects of parenting, from raising kids to managing family life."
+  },
+  {
+    "id": 14,
+    "name": "Self-Love & Confidence",
+    "icon": "💖",
+    "color": "from-pink-400 to-purple-400",
+    "members": 2876,
+    "description": "A supportive space for building self-esteem, practicing self-care, and celebrating personal growth."
+  },
+  {
+    "id": 15,
+    "name": "Fashion & Lifestyle",
+    "icon": "👗",
+    "color": "from-fuchsia-400 to-pink-400",
+    "members": 1987,
+    "description": "Share fashion tips, discuss trends, and talk about all aspects of a modern lifestyle."
+  },
+  {
+    "id": 16,
+    "name": "Art, Culture & Creativity",
+    "icon": "🎨",
+    "color": "from-violet-400 to-purple-400",
+    "members": 1432,
+    "description": "A hub for artists and creatives to share their work, find inspiration, and discuss cultural topics."
+  },
+  {
+    "id": 17,
+    "name": "Technology & Learning",
+    "icon": "💻",
+    "color": "from-blue-400 to-cyan-400",
+    "members": 1765,
+    "description": "Discuss the latest tech, share learning resources, and get help with software or gadgets."
+  },
+  {
+    "id": 18,
+    "name": "Finance & Money Management",
+    "icon": "💰",
+    "color": "from-emerald-400 to-teal-400",
+    "members": 2109,
+    "description": "Tips, advice, and discussions on personal finance, investments, and money management."
+  },
+  {
+    "id": 19,
+    "name": "News & Awareness",
+    "icon": "📰",
+    "color": "from-gray-400 to-slate-400",
+    "members": 1876,
+    "description": "Stay informed about current events, important news, and social awareness campaigns."
+  },
+  {
+    "id": 20,
+    "name": "Open Mic (Anything Goes)",
+    "icon": "🎤",
+    "color": "from-rainbow-400 to-pink-400",
+    "members": 5432,
+    "description": "An open and uncensored space to discuss anything and everything on your mind."
+  }
+]

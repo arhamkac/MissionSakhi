@@ -1,0 +1,522 @@
+{
+  "1": [
+    {
+      "id": 1,
+      "user": "SafetyFirst",
+      "avatar": "👩‍💼",
+      "message": "Ugh, had the creepiest experience at the grocery store today... guy kept following me around. I pretended to call my boyfriend and he backed off. Trust your gut ladies!! 😰",
+      "time": "2 min ago",
+      "likes": 12
+    },
+    {
+      "id": 2,
+      "user": "StreetSmart",
+      "avatar": "👩‍🦱",
+      "message": "omg yes!! I've been using bSafe app for months now - it literally saved me when my car broke down in a sketchy area. The fake call feature is GENIUS 🙌",
+      "time": "8 min ago",
+      "likes": 18
+    },
+    {
+      "id": 3,
+      "user": "NightWalker",
+      "avatar": "👩‍🔬",
+      "message": "Walking home from work at 11pm is terrifying but I can't afford uber every night 😭 Anyone else carry those personal alarms? Do they actually work??",
+      "time": "15 min ago",
+      "likes": 25
+    }
+  ],
+  "2": [
+    {
+      "id": 1,
+      "user": "KarateKate",
+      "avatar": "🥋",
+      "message": "Just got out of krav maga and I'm SORE but feeling like a badass! 💪 Learned this move where you use your keys as a weapon... instructor says aim for the soft spots ladies!",
+      "time": "5 min ago",
+      "likes": 15
+    },
+    {
+      "id": 2,
+      "user": "DefenseGuru",
+      "avatar": "👩‍🏫",
+      "message": "Real talk - I used to think I was too weak for self defense but turns out it's more about technique than strength! Even us petite girls can pack a punch 😤",
+      "time": "12 min ago",
+      "likes": 22
+    },
+    {
+      "id": 3,
+      "user": "FightBack",
+      "avatar": "💪",
+      "message": "Anyone in NYC wanna start a self defense group?? I'm tired of feeling scared walking alone... we could meet in Central Park on weekends? I know some basic moves from youtube lol",
+      "time": "20 min ago",
+      "likes": 8
+    }
+  ],
+  "3": [
+    {
+      "id": 1,
+      "user": "LegalEagle",
+      "avatar": "⚖️",
+      "message": "PSA: If cops ever question you, just say 'I want a lawyer' and SHUT UP. I cannot stress this enough!! Don't try to explain or be helpful - it WILL be used against you 😤",
+      "time": "3 min ago",
+      "likes": 28
+    },
+    {
+      "id": 2,
+      "user": "RightsAdvocate",
+      "avatar": "👩‍⚖️",
+      "message": "Broke and need legal help? Been there girl 😭 Legal Aid Society literally saved my life during my divorce. Don't suffer in silence when free help exists!!",
+      "time": "10 min ago",
+      "likes": 35
+    },
+    {
+      "id": 3,
+      "user": "JusticeSeeker",
+      "avatar": "📚",
+      "message": "DOCUMENT EVERYTHING!!! Screenshots, photos, dates, times... I learned this the hard way. Even if it seems unimportant now, you might need it later. Trust me on this one 📱",
+      "time": "18 min ago",
+      "likes": 19
+    }
+  ],
+  "4": [
+    {
+      "id": 1,
+      "user": "Survivor",
+      "avatar": "🌸",
+      "message": "Having a really rough day today... sometimes the healing feels impossible. But I'm still here and that's something right? 💜 Sending love to anyone else struggling",
+      "time": "1 min ago",
+      "likes": 42
+    },
+    {
+      "id": 2,
+      "user": "SupportSister",
+      "avatar": "🤗",
+      "message": "@Survivor you are SO much stronger than you know babe 💕 Bad days don't last but strong women do!! Also 1-800-799-7233 is available 24/7 if anyone needs to talk",
+      "time": "7 min ago",
+      "likes": 38
+    },
+    {
+      "id": 3,
+      "user": "HealingHeart",
+      "avatar": "💜",
+      "message": "Therapy changed my whole life but finding the right therapist was HARD. Don't give up if the first one doesn't click - it's like dating but for your mental health lol 😅",
+      "time": "14 min ago",
+      "likes": 31
+    }
+  ],
+  "5": [
+    {
+      "id": 1,
+      "user": "MindfulMama",
+      "avatar": "🧘‍♀️",
+      "message": "Meditation attempt #47 today... made it 3 whole minutes before my brain went 'hey remember that embarrassing thing from 2015?' 🤦‍♀️ Progress not perfection right??",
+      "time": "4 min ago",
+      "likes": 24
+    },
+    {
+      "id": 2,
+      "user": "TherapyAdvocate",
+      "avatar": "🌱",
+      "message": "Friendly reminder that taking antidepressants doesn't make you weak!! Would you judge someone for taking insulin? Mental health meds are MEDICINE period 💊✨",
+      "time": "11 min ago",
+      "likes": 45
+    },
+    {
+      "id": 3,
+      "user": "WellnessWarrior",
+      "avatar": "💚",
+      "message": "Today I cried in my car for 20 minutes then bought myself ice cream and called it self care 🍦 Sometimes that's all we can do and that's OKAY",
+      "time": "16 min ago",
+      "likes": 52
+    }
+  ],
+  "6": [
+    {
+      "id": 1,
+      "user": "HealthyHabits",
+      "avatar": "💊",
+      "message": "Finally went for my pap smear after avoiding it for 2 years 😬 Ladies please don't be like me!! It was literally 5 minutes and could save your life",
+      "time": "3 min ago",
+      "likes": 31
+    },
+    {
+      "id": 2,
+      "user": "WellnessWoman",
+      "avatar": "🌿",
+      "message": "Period cramps are KILLING me today 😭 heating pad + ginger tea + fetal position on the couch. What's your go-to survival method??",
+      "time": "9 min ago",
+      "likes": 28
+    },
+    {
+      "id": 3,
+      "user": "HealthAdvocate",
+      "avatar": "🩺",
+      "message": "Doctor tried to dismiss my pain as 'normal woman problems' 🙄 NOPE. Switched doctors and turns out I had endometriosis. ADVOCATE FOR YOURSELF always!!",
+      "time": "16 min ago",
+      "likes": 41
+    }
+  ],
+  "7": [
+    {
+      "id": 1,
+      "user": "CareerClimber",
+      "avatar": "👩‍💼",
+      "message": "OMG I DID IT!! Asked for that raise and got 15% more!! 🎉 I was literally shaking but I knew my worth. Ladies, the worst they can say is no (and then you know where you stand)",
+      "time": "6 min ago",
+      "likes": 67
+    },
+    {
+      "id": 2,
+      "user": "MentorMarie",
+      "avatar": "👩‍🏫",
+      "message": "Imposter syndrome is hitting HARD today... anyone else feel like they're just winging it and everyone's gonna find out? 😅 Please tell me I'm not alone in this",
+      "time": "13 min ago",
+      "likes": 29
+    },
+    {
+      "id": 3,
+      "user": "STEMSister",
+      "avatar": "👩‍🔬",
+      "message": "Switching to tech at 32 was terrifying but best decision ever!! freeCodeCamp literally changed my life. Now I'm making 3x what I made before 💻✨",
+      "time": "21 min ago",
+      "likes": 33
+    }
+  ],
+  "8": [
+    {
+      "id": 1,
+      "user": "BossLady",
+      "avatar": "💼",
+      "message": "Started my business in my kitchen with $500 and a prayer 🙏 Two years later we hit 6 figures!! Still can't believe it sometimes... dreams DO come true y'all 😭✨",
+      "time": "4 min ago",
+      "likes": 89
+    },
+    {
+      "id": 2,
+      "user": "StartupQueen",
+      "avatar": "🚀",
+      "message": "Networking events used to terrify me (hello social anxiety) but I learned quality > quantity. One genuine connection beats 50 business cards you'll never use!",
+      "time": "11 min ago",
+      "likes": 45
+    },
+    {
+      "id": 3,
+      "user": "EntrepreneurElle",
+      "avatar": "💡",
+      "message": "My first business failed SPECTACULARLY 💥 Lost everything, cried for weeks... but it taught me more than any MBA could. Failure is just expensive education lol",
+      "time": "18 min ago",
+      "likes": 52
+    }
+  ],
+  "9": [
+    {
+      "id": 1,
+      "user": "LoveCoach",
+      "avatar": "💕",
+      "message": "If he wanted to, he would. Period. Stop making excuses for men who don't prioritize you!! You deserve someone who's excited to be with you 💯",
+      "time": "2 min ago",
+      "likes": 41
+    },
+    {
+      "id": 2,
+      "user": "MarriedMama",
+      "avatar": "👰",
+      "message": "Marriage isn't 50/50 it's 100/100... some days I give 80% and he gives 120%, other days it flips. We check in every Sunday over coffee ☕ Game changer!",
+      "time": "9 min ago",
+      "likes": 36
+    },
+    {
+      "id": 3,
+      "user": "SingleAndStrong",
+      "avatar": "💪",
+      "message": "Spent Valentine's Day alone and it was PERFECT 🥰 Cooked my favorite meal, watched rom-coms, face mask... why did I think I needed someone else to be happy??",
+      "time": "17 min ago",
+      "likes": 48
+    }
+  ],
+  "10": [
+    {
+      "id": 1,
+      "user": "FriendshipFirst",
+      "avatar": "👭",
+      "message": "Real friends don't get jealous when you succeed... they pop champagne and celebrate WITH you!! 🍾 If they can't be happy for you, they're not your people",
+      "time": "5 min ago",
+      "likes": 55
+    },
+    {
+      "id": 2,
+      "user": "CommunityBuilder",
+      "avatar": "🤝",
+      "message": "Chicago ladies!! Coffee meetup this Saturday at 2pm - Lincoln Park Starbucks ☕ Just moved here and need my girl gang! Who's brave enough to make new friends? 😅",
+      "time": "12 min ago",
+      "likes": 23
+    },
+    {
+      "id": 3,
+      "user": "SocialButterfly",
+      "avatar": "🦋",
+      "message": "Making friends at 30 is WEIRD right?? Like do I just walk up and say 'wanna be besties?' 😂 Joined a book club and pottery class... fingers crossed!",
+      "time": "19 min ago",
+      "likes": 38
+    }
+  ],
+  "11": [
+    {
+      "id": 1,
+      "user": "WanderlustWoman",
+      "avatar": "✈️",
+      "message": "Solo traveling through Europe and having the TIME OF MY LIFE!! 🌍 Yes it's scary but also SO empowering. Shared my itinerary with mom (she's tracking me like GPS lol)",
+      "time": "7 min ago",
+      "likes": 42
+    },
+    {
+      "id": 2,
+      "user": "SafeTraveler",
+      "avatar": "🗺️",
+      "message": "Almost got scammed in Rome today 😱 Guy tried the 'gold ring' trick... thank god I researched common scams beforehand! Always do your homework ladies",
+      "time": "14 min ago",
+      "likes": 29
+    },
+    {
+      "id": 3,
+      "user": "AdventureSeeker",
+      "avatar": "🎒",
+      "message": "Travel tip: Google Translate camera feature is MAGIC ✨ Pointed it at a menu in Tokyo and boom - instant translation! Technology is amazing",
+      "time": "21 min ago",
+      "likes": 35
+    }
+  ],
+  "12": [
+    {
+      "id": 1,
+      "user": "FitnessFanatic",
+      "avatar": "🏃‍♀️",
+      "message": "RAN MY FIRST 5K WITHOUT STOPPING!! 🏃‍♀️💨 Six months ago I couldn't run to catch the bus lol. If my lazy butt can do it, ANYONE can! So proud rn 😭",
+      "time": "3 min ago",
+      "likes": 34
+    },
+    {
+      "id": 2,
+      "user": "YogaYoda",
+      "avatar": "🧘‍♀️",
+      "message": "Yoga class was humbling today... couldn't touch my toes while the 70yr old next to me was in full pretzel mode 🥨 Comparison is the thief of joy y'all",
+      "time": "12 min ago",
+      "likes": 27
+    },
+    {
+      "id": 3,
+      "user": "StrengthSister",
+      "avatar": "💪",
+      "message": "Finally deadlifted my bodyweight!! 💪 Took 8 months but I DID IT! Ladies, lift heavy things - your future self will thank you (and your bones will too)",
+      "time": "19 min ago",
+      "likes": 39
+    }
+  ],
+  "13": [
+    {
+      "id": 1,
+      "user": "MomLife",
+      "avatar": "👶",
+      "message": "Toddler had a meltdown in Target today... I'm talking EPIC screaming 😱 Lady gave me the stink eye and I almost cried. Parenting is HARD y'all",
+      "time": "6 min ago",
+      "likes": 47
+    },
+    {
+      "id": 2,
+      "user": "WorkingMama",
+      "avatar": "👩‍💻",
+      "message": "Pumping milk in my car between meetings because the 'lactation room' is a broom closet 🙄 Normalize supporting working moms!! We're doing our best out here",
+      "time": "13 min ago",
+      "likes": 62
+    },
+    {
+      "id": 3,
+      "user": "FamilyFirst",
+      "avatar": "👨‍👩‍👧‍👦",
+      "message": "Had 'the talk' with my 8yr old about body safety... it was awkward but SO important. Used age-appropriate books and she asked great questions 💕",
+      "time": "20 min ago",
+      "likes": 71
+    }
+  ],
+  "14": [
+    {
+      "id": 1,
+      "user": "ConfidentQueen",
+      "avatar": "👑",
+      "message": "Mirror pep talk this morning: 'You're a badass who pays her own bills and doesn't need anyone's approval' 💅 Fake it till you make it works sometimes lol",
+      "time": "1 min ago",
+      "likes": 58
+    },
+    {
+      "id": 2,
+      "user": "SelfLoveGuru",
+      "avatar": "💖",
+      "message": "Cancelled plans to stay home with face masks and pizza 🍕 Old me would've felt guilty... new me knows this IS self care! No regrets whatsoever",
+      "time": "8 min ago",
+      "likes": 44
+    },
+    {
+      "id": 3,
+      "user": "EmpoweredSoul",
+      "avatar": "✨",
+      "message": "Someone called me 'too much' today and I said THANK YOU 😂 I'd rather be too much than not enough! Shine bright and blind the haters ✨",
+      "time": "15 min ago",
+      "likes": 61
+    }
+  ],
+  "15": [
+    {
+      "id": 1,
+      "user": "StyleSister",
+      "avatar": "👗",
+      "message": "Wore the same black dress 3 different ways this week... nobody noticed and I saved money! 💸 Capsule wardrobe is life-changing (and my wallet agrees)",
+      "time": "4 min ago",
+      "likes": 33
+    },
+    {
+      "id": 2,
+      "user": "TrendSetter",
+      "avatar": "💄",
+      "message": "Thrift store haul today was INSANE!! 🛍️ Designer jeans for $8, vintage blazer for $12... sustainable fashion AND my budget is happy!",
+      "time": "11 min ago",
+      "likes": 28
+    },
+    {
+      "id": 3,
+      "user": "BeautyBoss",
+      "avatar": "💅",
+      "message": "Skincare routine reality: cleanser, moisturizer, SPF. That's it! 🧴 All those 12-step routines on TikTok are just marketing... keep it simple ladies",
+      "time": "18 min ago",
+      "likes": 41
+    }
+  ],
+  "16": [
+    {
+      "id": 1,
+      "user": "ArtisticSoul",
+      "avatar": "🎨",
+      "message": "Painted my feelings today and it looks like a toddler's finger painting 😅 But somehow I feel better?? Art therapy is real even when you suck at art lol",
+      "time": "5 min ago",
+      "likes": 36
+    },
+    {
+      "id": 2,
+      "user": "CulturalExplorer",
+      "avatar": "🎭",
+      "message": "Dragged myself to the art museum alone today (social anxiety was LOUD) but I'm so glad I did! Sometimes you gotta be your own best friend 💕",
+      "time": "12 min ago",
+      "likes": 24
+    },
+    {
+      "id": 3,
+      "user": "CreativeSpirit",
+      "avatar": "✍️",
+      "message": "Writer's block is kicking my butt... staring at blank page for 2 hours 📝 Anyone else feel like their creativity just... disappeared? Send help (and coffee)",
+      "time": "19 min ago",
+      "likes": 31
+    }
+  ],
+  "17": [
+    {
+      "id": 1,
+      "user": "TechSavvy",
+      "avatar": "💻",
+      "message": "Learning Python at 35 and my brain hurts 🤯 But also I made a calculator work today and felt like a GENIUS! It's never too late to learn new tricks",
+      "time": "8 min ago",
+      "likes": 49
+    },
+    {
+      "id": 2,
+      "user": "DigitalNomad",
+      "avatar": "📱",
+      "message": "Coursera addiction is real... currently taking 4 courses and my brain is FULL 🧠 But knowledge is power right?? (Right?? Please validate my choices lol)",
+      "time": "15 min ago",
+      "likes": 32
+    },
+    {
+      "id": 3,
+      "user": "CodeQueen",
+      "avatar": "⌨️",
+      "message": "Imposter syndrome in tech is BRUTAL... surrounded by 22yr old coding wizards while I'm googling 'how to center a div' for the 100th time 😅 We belong here too!",
+      "time": "22 min ago",
+      "likes": 67
+    }
+  ],
+  "18": [
+    {
+      "id": 1,
+      "user": "MoneyMaven",
+      "avatar": "💰",
+      "message": "Started investing with my coffee money ($50/month) and now I'm addicted to watching my portfolio grow! ☕📈 Compound interest is basically magic y'all",
+      "time": "6 min ago",
+      "likes": 54
+    },
+    {
+      "id": 2,
+      "user": "BudgetBoss",
+      "avatar": "📊",
+      "message": "Budgeting used to stress me OUT but the 50/30/20 rule changed everything! 💡 Finally have money left over at the end of the month (what is this sorcery??)",
+      "time": "13 min ago",
+      "likes": 43
+    },
+    {
+      "id": 3,
+      "user": "FinancialFreedom",
+      "avatar": "🏦",
+      "message": "Emergency fund update: $2,847 saved!! 🎉 Goal is $10k but celebrating small wins. Ramen for dinner was worth it (kinda... maybe... I miss real food 😅)",
+      "time": "20 min ago",
+      "likes": 38
+    }
+  ],
+  "19": [
+    {
+      "id": 1,
+      "user": "NewsWatcher",
+      "avatar": "📰",
+      "message": "Had to take a news break today... doom scrolling was making my anxiety SPIKE 📱😰 Sometimes ignorance is bliss (for like 24 hours max tho)",
+      "time": "2 min ago",
+      "likes": 29
+    },
+    {
+      "id": 2,
+      "user": "AwarenessAdvocate",
+      "avatar": "📢",
+      "message": "VOTED in local elections today!! 🗳️ Turnout was embarrassingly low... people complain but don't show up?? Your voice matters in EVERY election!",
+      "time": "9 min ago",
+      "likes": 41
+    },
+    {
+      "id": 3,
+      "user": "FactChecker",
+      "avatar": "🔍",
+      "message": "Aunt shared another conspiracy theory on Facebook 🤦‍♀️ Sent her Snopes link (again)... family dinners are gonna be awkward but misinformation stops HERE",
+      "time": "16 min ago",
+      "likes": 35
+    }
+  ],
+  "20": [
+    {
+      "id": 1,
+      "user": "RandomThoughts",
+      "avatar": "🎤",
+      "message": "Why do I clean my house before the cleaning lady comes?? 🧹 Make it make sense... also why do I whisper in libraries when everyone has headphones on??",
+      "time": "4 min ago",
+      "likes": 23
+    },
+    {
+      "id": 2,
+      "user": "MidnightMusings",
+      "avatar": "🌙",
+      "message": "Eating cereal for dinner and calling it 'deconstructed breakfast' 🥣✨ Adulting level: expert (at making excuses for my life choices lol)",
+      "time": "11 min ago",
+      "likes": 31
+    },
+    {
+      "id": 3,
+      "user": "QuirkyQueen",
+      "avatar": "🦄",
+      "message": "Update: My plants are thriving because I've been giving them daily pep talks 🪴 'You're doing great sweetie!' Works better than plant food apparently??",
+      "time": "18 min ago",
+      "likes": 42
+    }
+  ]
+}

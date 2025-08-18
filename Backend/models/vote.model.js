@@ -3,7 +3,12 @@ import mongoose,{Schema} from "mongoose";
 const voteSchema=new Schema(
     {
       upvote:{
-        type:Boolean
+        type:Boolean,
+        default:false
+      },
+      downvote:{
+        type:Boolean,
+        default:false
       },
       post:{
         type:Schema.Types.ObjectId,

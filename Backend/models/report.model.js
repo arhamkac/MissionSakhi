@@ -33,6 +33,10 @@ const reportSchema= new mongoose.Schema(
         type:Schema.Types.ObjectId,
         ref:"Message"
        },
+       room:{
+        type:Schema.Types.ObjectId,
+        ref:"Room"
+       },
        user:{
         type:Schema.Types.ObjectId,
         ref:"User"

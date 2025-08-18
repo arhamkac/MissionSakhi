@@ -1,8 +1,39 @@
 import express, { urlencoded } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import { createServer } from "node:http";
+import { Server } from "socket.io";
 
 const app=express();
+const server=createServer(app);
+const io=new Server(server);
+
+io.on("connection",(socket)=>{
+    console.log(`user connected with user ID:${socket.id}`)
+    socket.on('join room',(roomId)=>{
+        socket.join(roomId)
+        console.log(`User ${socket.id} joined room ${roomId}`)
+    })
+
+socket.on('room message',async(messageData)=>{
+    try {
+        const newMessage=new Message({
+            group:messageData.roomId,
+            sender:messageData.senderId,
+            content:messageData.text
+        })
+        await newMessage.save();
+
+    } catch (error) {
+        console.log("Error on saving message ",error)
+    }
+})
+
+socket.on('disconnect',()=>{
+    console.log(`User disconnected with ID: ${socket.id}`);
+})
+
+})
 
 app.use(cors({
     origin:process.env.CORS_ORIGIN,
@@ -17,10 +48,13 @@ import userRouter from "./routes/user.routes.js"
 import postRouter from "./routes/post.routes.js"
 import voteRouter from "./routes/vote.routes.js"
 import commentRouter from "./routes/comment.routes.js"
+import roomRouter from "./routes/room.routes.js"
+import { group } from "node:console";
 
 app.use("/api/users",userRouter)
 app.use("/api/posts",postRouter)
 app.use("/api/vote",voteRouter)
 app.use("/api/comment",commentRouter)
+app.use("/api/rooms",roomRouter)
 
 export {app}

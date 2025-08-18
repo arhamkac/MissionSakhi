@@ -17,8 +17,10 @@ import Community from './Pages/Community'
 function App() {
 
   return (
-    <div className='overflow-y-auto scrollbar-thin scrollbar-thumb-[#7D37A5] scrollbar-track-[#E8DFF5]'>
+    <div className='flex flex-col min-h-screen overflow-y-auto scrollbar-thin scrollbar-thumb-[#7D37A5] scrollbar-track-[#E8DFF5]'>
       <Header />
+
+      <main className='flex-grow'>
       <Routes>
         <Route path="/forum" element={<Anonymous_Forum />} />
         <Route path="/" element={<Home />} />
@@ -31,6 +33,8 @@ function App() {
         <Route path='/chatbot' element={<Chatbot_AI />} />
         <Route path='/community-chat' element={<Community />} />
       </Routes>
+      </main>
+
       <Footer />
     </div>
   )

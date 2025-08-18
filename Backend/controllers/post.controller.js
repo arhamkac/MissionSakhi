@@ -14,9 +14,9 @@ function extractPublicId(url) {
 }
 
 const uploadPost=asyncHandler(async(req,res)=>{
-    const {title,content}=req.body
-    if([title,content].some((field)=>field.trim()==="")){
-        throw new ApiError(400,"Please enter title and content for the post to proceed")
+    const {title,content,category}=req.body
+    if([title,content].some((field)=>field.trim()==="") && category.length===0){
+        throw new ApiError(400,"Please enter title and content and category for the post to proceed")
     }
     
     const imageLocalPath=req.files?.image[0]?.path
@@ -30,6 +30,7 @@ const uploadPost=asyncHandler(async(req,res)=>{
         title:title,
         content:content,
         image:uploadedPhoto?.url,
+        category:category,
         owner:req.user?._id
        })
        if(!post){
@@ -47,6 +48,7 @@ const uploadPost=asyncHandler(async(req,res)=>{
     const post=await Post.create({
         title:title,
         content:content,
+        category:category,
         image:null,
         owner:req.user?._id
     })
@@ -204,7 +206,55 @@ const getUserPosts=asyncHandler(async(req,res)=>{
 
 const getPosts=asyncHandler(async(req,res)=>{
     const {page=1, limit=10, query, search, sortBy, sortType}=req.query
+    const pipeline=[
+        {
+            $match:{
+                ...(search && {title:{$regex:query, $options:"im"}})
+            }
+        },
+        {
+            $lookup:{
+                from:"users",
+                localField:"owner",
+                foreignField:"_id",
+                as:"ownerDetails",
+                pipeline:[
+                    {
+                        $project:{
+                            username:1,
+                            nickname:1
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            $sample:{size:parseInt(limit)}
+        }
+    ]
+    if(!pipeline){
+        throw new ApiError(500,"Some error in creating pipline for posts")
+    }
 
+    const posts=await Post.aggregatePaginate(Post.aggregate(pipeline),
+    {
+        page:parseInt(page),
+        limit:parseInt(limit),
+        sort:{[sortBy]:parseInt(sortType)},
+        customLabels:{
+            docs:"posts"
+        }
+    }
+    )
+    if(!posts){
+        throw new ApiError(500,"Error in fetching posts")
+    }
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200,posts,"Posts fetched successfully")
+    )
 })
 
-export {uploadPost,updatePost,deletePost,getPostById}
+export {uploadPost,updatePost,deletePost,getPostById,getPosts}
