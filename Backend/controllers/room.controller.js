@@ -50,12 +50,19 @@ const createRoom=asyncHandler(async(req,res)=>{
 })
 
 const getRooms=asyncHandler(async(req,res)=>{
-    const {page=1,limit=10}=req.query
-    const aggregate=Room.aggregate([{
+    const {page=1,limit=10,query}=req.query
+    const aggregate=Room.aggregate([
+    {
+        $match:{
+            name:{$regex:query, $options:"im"}
+        }
+    }
+    ,{
         $sort:{
             createdAt:-1
         }
-    }])
+    }
+    ])
     if(!aggregate){
         throw new ApiError(500,"Server issue in rendering rooms(aggregation pipeline)")
     }
@@ -70,6 +77,10 @@ const getRooms=asyncHandler(async(req,res)=>{
     }
 
     const rooms=await Room.aggregatePaginate(aggregate,options)
+
+    if(rooms.rooms.length==0){
+        throw new ApiError(404,"The following search query couldn't be found")
+    }
 
     return res
     .status(200)
@@ -95,4 +106,45 @@ const getRoomById=asyncHandler(async(req,res)=>{
     )
 })
 
-export {getRoomMessages,createRoom,getRooms,getRoomById}
+const deleteRoom=asyncHandler(async(req,res)=>{
+    const {roomId}=req.params
+    if(!roomId){
+        throw new ApiError(400,"Room id needs to be provided")
+    }
+    
+    const room=await Room.findByIdAndDelete(roomId);
+    if(!room){
+        throw new ApiError(400,"Room wasn't deleted")
+    }
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200,room,"Room deleted successfully")
+    )
+})
+
+const joinRoom=asyncHandler(async(req,res)=>{
+    const {roomId}=req.params
+    if(!roomId){
+        throw new ApiError(400,"Room ID needs to be provided to continue")
+    }
+    const room=await Room.findById(roomId)
+    if(!room){
+        throw new ApiError(400,"Room with given id doesn't exist")
+    }
+
+    if(room.members.includes(req.user?._id)){
+        throw new ApiError(404,"User is alredy a member of the given room")
+    }
+    room.members.push(req.user?._id)
+    await room.save();
+    
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200,{},"Room joined successfully")
+    )
+})
+
+export {getRoomMessages,createRoom,getRooms,getRoomById,deleteRoom,joinRoom}

@@ -14,6 +14,12 @@ const postComment=asyncHandler(async(req,res)=>{
     }
 
     const {content}=req.body
+    const scores=await checkPost(content);
+    if(scores.TOXICITY?.summaryScore.value > 0.6 || scores.SEXUALLY_EXPLICIT?.summaryScore.value > 0.5 ||
+    scores.THREAT?.summaryScore.value > 0.5 || scores.INSULT?.summaryScore.value > 0.5||scores.PROFANITY?.summaryScore.value > 0.5){
+       throw new ApiError(400,"Post cannot be uploaded due to potential use of flag keywords and content")
+    }
+
     const comment=await Comment.create({
         content:content,
         post:postId,
@@ -42,6 +48,12 @@ const updateComment=asyncHandler(async(req,res)=>{
     }
 
     const {content}=req.body
+    const scores=await checkPost(content);
+    if(scores.TOXICITY?.summaryScore.value > 0.6 || scores.SEXUALLY_EXPLICIT?.summaryScore.value > 0.5 ||
+    scores.THREAT?.summaryScore.value > 0.5 || scores.INSULT?.summaryScore.value > 0.5||scores.PROFANITY?.summaryScore.value > 0.5){
+       throw new ApiError(400,"Post cannot be uploaded due to potential use of flag keywords and content")
+    }
+
     const comment=await Comment.findByIdAndUpdate(
         commentId,
         {

@@ -1,12 +1,37 @@
-import express, { urlencoded } from "express";
+import express, { response, urlencoded } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import { createServer } from "node:http";
 import { Server } from "socket.io";
+import fetch from "node-fetch";
 
 const app=express();
 const server=createServer(app);
 const io=new Server(server);
+const apiKey=process.env.PERSPECTIVE_API_KEY;
+
+export async function checkPost(text){
+    const response=await fetch(
+    `https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=${apiKey}`,
+    {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+            comment:{text},
+            languages:['en'],
+            requestedAttributes: {
+            TOXICITY: {},
+            SEXUALLY_EXPLICIT: {},
+            THREAT: {},
+            INSULT: {},
+            PROFANITY: {}
+        }
+        })
+    })
+
+        const result=await response.json();
+        return result.attributeScores;
+}
 
 io.on("connection",(socket)=>{
     console.log(`user connected with user ID:${socket.id}`)
@@ -23,6 +48,8 @@ socket.on('room message',async(messageData)=>{
             content:messageData.text
         })
         await newMessage.save();
+        io.to(messageData.roomId).emit('room message', newMessage)
+        console.log(`Message saved and broadcasted to ${messageData.roomId}`)
 
     } catch (error) {
         console.log("Error on saving message ",error)

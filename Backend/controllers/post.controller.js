@@ -5,6 +5,7 @@ import {Post} from "../models/post.model.js"
 import { User } from "../models/user.model.js";
 import {deleteOnCloudinary, uploadOnCloudinary} from "../utils/cloudinary.js"
 import { isValidObjectId, Types } from "mongoose";
+import { checkPost } from "../app.js";
 
 function extractPublicId(url) {
   const parts = url.split('/');
@@ -18,6 +19,18 @@ const uploadPost=asyncHandler(async(req,res)=>{
     if([title,content].some((field)=>field.trim()==="") && category.length===0){
         throw new ApiError(400,"Please enter title and content and category for the post to proceed")
     }
+
+    const scores=await checkPost(content);
+    if(scores.TOXICITY?.summaryScore.value > 0.6 || scores.SEXUALLY_EXPLICIT?.summaryScore.value > 0.5 ||
+    scores.THREAT?.summaryScore.value > 0.5 || scores.INSULT?.summaryScore.value > 0.5||scores.PROFANITY?.summaryScore.value > 0.5){
+       throw new ApiError(400,"Post cannot be uploaded due to potential use of flag keywords and content")
+    }
+    const score=await checkPost(title);
+    if(score.TOXICITY?.summaryScore.value > 0.6 || score.SEXUALLY_EXPLICIT?.summaryScore.value > 0.5 ||
+    score.THREAT?.summaryScore.value > 0.5 || score.INSULT?.summaryScore.value > 0.5||score.PROFANITY?.summaryScore.value > 0.5){
+       throw new ApiError(400,"Post cannot be uploaded due to potential use of flag keywords and content")
+    }
+
     
     const imageLocalPath=req.files?.image[0]?.path
     if(imageLocalPath){
@@ -36,7 +49,7 @@ const uploadPost=asyncHandler(async(req,res)=>{
        if(!post){
         throw new ApiError(500,"There was some error in post upload")
        }
-
+       
        return res
        .status(200)
        .json(
@@ -69,6 +82,22 @@ const updatePost=asyncHandler(async(req,res)=>{
     const {title,content}=req.body
     if(!postId){
         throw new ApiError(400,"How can you expect to update the post without giving me its id?")
+    }
+
+    if(content){
+    const scores=await checkPost(content);
+    if(scores.TOXICITY?.summaryScore.value > 0.6 || scores.SEXUALLY_EXPLICIT?.summaryScore.value > 0.5 ||
+    scores.THREAT?.summaryScore.value > 0.5 || scores.INSULT?.summaryScore.value > 0.5||scores.PROFANITY?.summaryScore.value > 0.5){
+       throw new ApiError(400,"Post cannot be uploaded due to potential use of flag keywords and content")
+    }
+    }
+
+    if(title){
+    const score=await checkPost(title);
+    if(score.TOXICITY?.summaryScore.value > 0.6 || score.SEXUALLY_EXPLICIT?.summaryScore.value > 0.5 ||
+    score.THREAT?.summaryScore.value > 0.5 || score.INSULT?.summaryScore.value > 0.5||score.PROFANITY?.summaryScore.value > 0.5){
+       throw new ApiError(400,"Post cannot be uploaded due to potential use of flag keywords and content")
+    }
     }
 
     const posts=await Post.findById(postId)
@@ -248,6 +277,10 @@ const getPosts=asyncHandler(async(req,res)=>{
     )
     if(!posts){
         throw new ApiError(500,"Error in fetching posts")
+    }
+
+    if(posts.posts.length==0){
+        throw new ApiError(404,"Such post doesn't exist")
     }
 
     return res
