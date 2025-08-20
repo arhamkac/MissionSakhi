@@ -49,4 +49,6 @@ const reportSchema= new mongoose.Schema(
     },{timestamps:true}
 )
 
+export const reportCount = await Report.countDocuments({ user: reportedUserId });
+
 export const Report=mongoose.model("Report",reportSchema)

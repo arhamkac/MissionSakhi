@@ -5,6 +5,7 @@ import { User } from "../models/user.model.js";
 import jwt from "jsonwebtoken"
 import mongoose from "mongoose";
 import { otpSender,generateOTP } from "../middleware/otp.middleware.js";
+import { BlockedEmail } from "../models/blockedEmails.js";
 
 const otp=generateOTP()
 let currOTP=111111;
@@ -28,6 +29,17 @@ const registerUser=asyncHandler(async(req,res)=>{
     const {email,nickname,password,username}=req.body;
     if([email,nickname,password].some((field)=>field?.trim()==="")){
        throw new ApiError(400,"All fields must be present")
+    }
+
+    const blocked=await BlockedEmail.findOne({email:email})
+    if(blocked){
+    const blocktime=blocked.bannedTill
+    if(blocktime<Date.now()){
+      throw new ApiError(400,"Your account is temproraily banned due to various reports")
+    }
+    else{
+      await BlockedEmail.deleteOne({email})
+    }
     }
 
     const existingUser=await User.findOne({email})
@@ -78,6 +90,16 @@ const loginUser=asyncHandler(async(req,res)=>{
   const {email,password}=req.body
   if([email,password].some((field)=>field?.trim()==="")){
     throw new ApiError(400,"Please enter email address and password to proceed")
+  }
+  const blocked=await BlockedEmail.findOne({email:email})
+  if(blocked){
+    const blocktime=blocked.bannedTill
+    if(blocktime<Date.now()){
+      throw new ApiError(400,"Your account is temproraily banned due to various reports")
+    }
+    else{
+      await BlockedEmail.deleteOne({email})
+    }
   }
 
   const user=await User.findOne({email})

@@ -42,6 +42,22 @@ io.on("connection",(socket)=>{
 
 socket.on('room message',async(messageData)=>{
     try {
+        const scores = await checkPost(messageData.text); 
+        const thresholds = {
+            TOXICITY: 0.6,
+            SEXUALLY_EXPLICIT: 0.5,
+            THREAT: 0.5,
+            INSULT: 0.5,
+            PROFANITY: 0.5
+        }
+        for (let attr in thresholds) {
+            if (scores[attr]?.summaryScore?.value > thresholds[attr]) {
+                socket.emit('message rejected', {
+                    reason: `Message contains unsafe content: ${attr}`
+                });
+                return;
+            }
+        }
         const newMessage=new Message({
             group:messageData.roomId,
             sender:messageData.senderId,
@@ -76,6 +92,8 @@ import postRouter from "./routes/post.routes.js"
 import voteRouter from "./routes/vote.routes.js"
 import commentRouter from "./routes/comment.routes.js"
 import roomRouter from "./routes/room.routes.js"
+import messageRouter from "./routes/message.routes.js"
+import reportRouter from "./routes/report.routes.js"
 import { group } from "node:console";
 
 app.use("/api/users",userRouter)
@@ -83,5 +101,7 @@ app.use("/api/posts",postRouter)
 app.use("/api/vote",voteRouter)
 app.use("/api/comment",commentRouter)
 app.use("/api/rooms",roomRouter)
+app.use("/api/messages",messageRouter)
+app.use("/api/report",reportRouter)
 
 export {app}
