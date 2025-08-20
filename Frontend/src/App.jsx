@@ -9,7 +9,6 @@ import Chatbot from './Pages/Chatbot'
 import Login from './Pages/Login'
 import SignUp from './Pages/SignUp'
 import MentalHealthSupport from './Pages/MentalHealthSupport'
-import ReportingGuidelines from './Pages/ReportingGuidelines'
 import OTPVerification from './Pages/OTPVerification'
 import Chatbot_AI from './Pages/Chatbot_AI'
 import Community from './Pages/Community'
@@ -28,7 +27,6 @@ function App() {
         <Route path='/login' element={<Login />} />
         <Route path='/signup' element={<SignUp />} />
         <Route path='/mental-health' element={<MentalHealthSupport />} />
-        <Route path='/report' element={<ReportingGuidelines />} />
         <Route path='/otp-verify' element={<OTPVerification />} />
         <Route path='/chatbot' element={<Chatbot_AI />} />
         <Route path='/community-chat' element={<Community />} />

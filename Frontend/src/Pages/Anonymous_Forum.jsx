@@ -3,9 +3,9 @@ import Post from "../components/Post"
 function Anonymous_Forum() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-rose-50 relative overflow-hidden">
-      {/* 3D Floating Elements */}
+      
       <div className="absolute inset-0 pointer-events-none">
-        {/* Floating Hearts */}
+        
         <div
           className="absolute top-20 left-10 w-8 h-8 bg-pink-300/30 rounded-full animate-bounce"
           style={{ animationDelay: "0s", animationDuration: "3s" }}
@@ -23,7 +23,7 @@ function Anonymous_Forum() {
           style={{ animationDelay: "0.5s", animationDuration: "4.5s" }}
         ></div>
 
-        {/* 3D Geometric Shapes */}
+        
         <div
           className="absolute top-32 right-32 w-12 h-12 bg-gradient-to-br from-purple-300 to-pink-300 rounded-lg rotate-45 animate-pulse opacity-20 transform-gpu"
           style={{ animationDuration: "2s" }}
@@ -34,7 +34,7 @@ function Anonymous_Forum() {
         ></div>
       </div>
 
-      {/* Gradient Overlay for Depth */}
+      
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/5 to-transparent pointer-events-none"></div>
 
       <main className="relative z-10 min-h-screen p-6">
@@ -52,13 +52,13 @@ function Anonymous_Forum() {
         </div>
 
         <div className="max-w-4xl mx-auto relative">
-          {/* Background Glass Panel */}
+          
           <div className="absolute inset-0 bg-white/30 backdrop-blur-sm rounded-3xl shadow-xl transform rotate-1"></div>
           <div className="absolute inset-0 bg-gradient-to-br from-pink-100/40 to-purple-100/40 backdrop-blur-sm rounded-3xl shadow-xl transform -rotate-1"></div>
 
-          {/* Main Content Container */}
+          
           <div className="relative bg-white/50 backdrop-blur-md border border-white/40 rounded-3xl p-8 shadow-2xl transform hover:shadow-3xl transition-all duration-500">
-            {/* Decorative Elements */}
+            
             <div className="absolute top-4 left-4 w-3 h-3 bg-pink-400 rounded-full animate-pulse"></div>
             <div
               className="absolute top-4 right-4 w-3 h-3 bg-purple-400 rounded-full animate-pulse"
@@ -79,7 +79,7 @@ function Anonymous_Forum() {
           </div>
         </div>
 
-        {/* Floating Action Elements */}
+        
         <div className="fixed bottom-8 right-8 flex flex-col gap-4">
           <div className="w-14 h-14 bg-gradient-to-br from-pink-400 to-purple-500 rounded-full shadow-lg flex items-center justify-center text-white text-xl cursor-pointer hover:scale-110 transition-transform duration-300 animate-pulse">
             💬
@@ -90,7 +90,7 @@ function Anonymous_Forum() {
         </div>
       </main>
 
-      {/* Custom CSS for additional 3D effects */}
+      
       <style jsx>{`
         @keyframes float {
           0%, 100% { transform: translateY(0px) rotate(0deg); }
