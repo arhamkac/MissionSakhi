@@ -19,16 +19,24 @@ Mission Sakhi is more than just a social platform—it's a safe and secure space
 
 ## 🖼️ Screenshots
 
-<p align="center">
+<div align="center">
+
   <img src="./Images/Capture.PNG?raw=true" alt="Home Page">
-  <br>
-  <img src="./Images/Capture-2.PNG"alt="Community Chat">
-  <br>
-  <img src="./Images/Capture-3.PNG" alt="Anonymous Forum">
+
+  <br><br>
+
+  <img src="./Images/Capture-2.PNG" alt="Community Chat">
+
+  <br><br>
+
+  <img src="./Images/Capture-3.PNG" alt="Anonymous Forum">&nbsp;&nbsp;
   <img src="./Images/Capture-4.PNG" alt="AI Chatbot">
-  <br>
+
+  <br><br>
+
   <img src="./Images/Capture-5.PNG" alt="Login/Registration Page">
-</p>
+
+</div>
 
 ---
 
