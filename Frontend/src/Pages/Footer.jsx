@@ -1,4 +1,4 @@
-"use client"
+import { Link } from "react-router-dom";
 
 function Footer() {
   return (
@@ -30,6 +30,8 @@ function Footer() {
             <span className="text-white/50">|</span>
             <p className="font-semibold">Call us:</p>
             <p className="text-white">+91-9468804026</p>
+            <span className="text-white/50">|</span>
+            <Link to="/mental-health">Mental Health Support</Link>
         </div>
         
         

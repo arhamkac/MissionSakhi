@@ -1,5 +1,3 @@
-"use client"
-
 import { useState } from "react"
 import { useGoogleLogin } from "@react-oauth/google"
 import { Link } from "react-router-dom"
@@ -25,7 +23,6 @@ function OTPVerification() {
     }
 
     setIsVerifying(true)
-    // Add your OTP verification logic here
     setTimeout(() => {
       setIsVerifying(false)
       console.log("OTP verified:", otp)

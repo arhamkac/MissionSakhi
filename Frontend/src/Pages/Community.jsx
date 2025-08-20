@@ -1,5 +1,3 @@
-"use client"
-
 import { useState } from "react"
 import sampleMessages from "../data/sampleMessages.json"
 import chatTopicsData from "../data/chatTopics.json"

@@ -1,5 +1,3 @@
-"use client"
-
 import { useState } from "react"
 import { useGoogleLogin } from "@react-oauth/google"
 

@@ -1,5 +1,3 @@
-"use client"
-
 import Post from "../components/Post"
 
 function Anonymous_Forum() {

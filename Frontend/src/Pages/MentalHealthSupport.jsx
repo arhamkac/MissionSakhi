@@ -1,11 +1,9 @@
-"use client"
-
 function MentalHealthSupport() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-rose-50 relative overflow-hidden">
-      {/* 3D Floating Elements - Hidden on mobile for better performance */}
+      
       <div className="absolute inset-0 pointer-events-none hidden md:block">
-        {/* Floating Hearts */}
+
         <div
           className="absolute top-20 left-10 w-6 h-6 lg:w-8 lg:h-8 bg-pink-300/30 rounded-full animate-bounce"
           style={{ animationDelay: "0s", animationDuration: "3s" }}
@@ -23,7 +21,7 @@ function MentalHealthSupport() {
           style={{ animationDelay: "0.5s", animationDuration: "4.5s" }}
         ></div>
 
-        {/* 3D Geometric Shapes */}
+
         <div
           className="absolute top-32 right-32 w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-purple-300 to-pink-300 rounded-lg rotate-45 animate-pulse opacity-20 transform-gpu"
           style={{ animationDuration: "2s" }}
@@ -34,11 +32,11 @@ function MentalHealthSupport() {
         ></div>
       </div>
 
-      {/* Gradient Overlay for Depth */}
+
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/5 to-transparent pointer-events-none"></div>
 
       <div className="relative z-10 px-4 sm:px-6 lg:px-8 py-6 sm:py-8 max-w-6xl mx-auto">
-        {/* Header Section */}
+
         <div className="text-center mb-8 sm:mb-10 lg:mb-12 relative">
           <div className="absolute inset-0 bg-gradient-to-r from-pink-200/20 via-purple-200/20 to-rose-200/20 rounded-2xl sm:rounded-3xl blur-xl transform scale-110"></div>
           <div className="relative bg-white/40 backdrop-blur-md border border-white/30 rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-2xl">
@@ -52,7 +50,6 @@ function MentalHealthSupport() {
           </div>
         </div>
 
-        {/* Global Support Platforms */}
         <div className="mb-8 sm:mb-10 lg:mb-12 relative">
           <div className="absolute inset-0 bg-gradient-to-br from-purple-200/30 to-pink-200/30 rounded-2xl sm:rounded-3xl blur-lg"></div>
           <div className="relative bg-white/50 backdrop-blur-md border border-white/40 rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-2xl">
@@ -114,7 +111,7 @@ function MentalHealthSupport() {
           </div>
         </div>
 
-        {/* Women-Specific Platforms */}
+
         <div className="mb-8 sm:mb-10 lg:mb-12 relative">
           <div className="absolute inset-0 bg-gradient-to-br from-rose-200/30 to-purple-200/30 rounded-2xl sm:rounded-3xl blur-lg"></div>
           <div className="relative bg-white/50 backdrop-blur-md border border-white/40 rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-2xl">
@@ -179,7 +176,7 @@ function MentalHealthSupport() {
           </div>
         </div>
 
-        {/* Reddit Communities */}
+
         <div className="mb-8 sm:mb-10 lg:mb-12 relative">
           <div className="absolute inset-0 bg-gradient-to-br from-pink-200/30 to-rose-200/30 rounded-2xl sm:rounded-3xl blur-lg"></div>
           <div className="relative bg-white/50 backdrop-blur-md border border-white/40 rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-2xl">
@@ -225,7 +222,6 @@ function MentalHealthSupport() {
           </div>
         </div>
 
-        {/* Emergency Notice */}
         <div className="relative">
           <div className="absolute inset-0 bg-gradient-to-br from-red-200/30 to-pink-200/30 rounded-2xl sm:rounded-3xl blur-lg"></div>
           <div className="relative bg-white/60 backdrop-blur-md border border-red-300/40 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-2xl">
