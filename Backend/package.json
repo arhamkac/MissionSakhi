@@ -1,7 +1,8 @@
 {
   "type": "module",
   "scripts": {
-    "dev": "nodemon -r dotenv/config --experimental-json-modules index.js"
+    "dev": "nodemon -r dotenv/config --experimental-json-modules index.js",
+    "start": "node -r dotenv/config --experimental-json-modules index.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
