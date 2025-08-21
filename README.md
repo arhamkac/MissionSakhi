@@ -94,16 +94,6 @@ To get a local copy up and running, follow these simple steps.
 
 ---
 
-## 🛤️ Roadmap
-
-* **🤖 AI-powered support chatbot:** An intelligent assistant to provide immediate support and resources.
-* **📱 Mobile App version:** Dedicated iOS and Android applications for a native experience.
-* **🌍 Multi-language support:** Expanding accessibility to users worldwide.
-* **🏢 Verified organizations for complaint redressal:** Partnering with professional organizations to handle serious complaints.
-* **🎥 Voice & video support in chat:** Enhancing communication with richer media options.
-
----
-
 ## 🤝 Contributing
 
 Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
