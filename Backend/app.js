@@ -94,6 +94,7 @@ import commentRouter from "./routes/comment.routes.js"
 import roomRouter from "./routes/room.routes.js"
 import messageRouter from "./routes/message.routes.js"
 import reportRouter from "./routes/report.routes.js"
+import chatbotRouter from "./chatbot/server.js"
 import { group } from "node:console";
 
 app.use("/api/users",userRouter)
@@ -103,5 +104,6 @@ app.use("/api/comment",commentRouter)
 app.use("/api/rooms",roomRouter)
 app.use("/api/messages",messageRouter)
 app.use("/api/report",reportRouter)
+app.use("/api/chatbot",chatbotRouter)
 
 export {app}

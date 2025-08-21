@@ -1,19 +1,21 @@
-import express from "express";
+import express, { Router } from "express";
 import cors from "cors";
 import fs from "fs";
 import dotenv from "dotenv";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-dotenv.config()
+const router=Router();
 
-const app=express();
-app.use(cors());
-app.use(express.json());
+// dotenv.config()
+
+// const app=express();
+// app.use(cors());
+// app.use(express.json());
 
 const genAI=new GoogleGenerativeAI(process.env.GOOGLE_API_KEY)
 const model=genAI.getGenerativeModel({model:"gemini-2.0-flash"})
 
-const knowledge=fs.readFileSync("womens_chatbot_dataset.csv","utf-8")
+const knowledge=fs.readFileSync("./chatbot/womens_chatbot_dataset.csv","utf-8")
 const rows=knowledge.split('\n')
 
 import stringSimilarity from 'string-similarity';
@@ -40,7 +42,7 @@ function cleanAnswer(raw) {
 }
 
 
-app.post('/ask', async (req, res) => {
+router.route('/ask').post(async (req, res) => {
   const { question, history } = req.body;
 
   const context=getRelevantContext(question)
@@ -75,6 +77,4 @@ ${context}
   }
 });
 
-app.listen(3001,()=>{
-    console.log("Server running on port 3001")
-})
+export default router;
