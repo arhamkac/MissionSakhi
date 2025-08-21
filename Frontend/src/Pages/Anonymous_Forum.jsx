@@ -1,4 +1,4 @@
-import Post from "../components/Post"
+import Post from "../Components/Post"
 
 function Anonymous_Forum() {
   return (
