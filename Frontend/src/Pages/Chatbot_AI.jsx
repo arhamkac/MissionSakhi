@@ -32,7 +32,7 @@ function Chatbot_AI() {
 
       chatHistory.push(`${username}: ${userInput}`)
 
-      const res = await axios.post("http://localhost:3001/ask", {
+      const res = await axios.post("https://missionsakhi.onrender.com/api/chatbot/ask", {
         question: userInput,
         history: chatHistory.join("\n"),
       })
