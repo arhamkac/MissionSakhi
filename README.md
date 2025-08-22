@@ -59,7 +59,8 @@ Mission Sakhi is more than just a social platform—it's a safe and secure space
 * **🛡️ Secure API Architecture:** Designed with security best practices in mind.
 
 ---
-
+Currently in devlopment phase
+---
 ## ⚡ Getting Started
 
 To get a local copy up and running, follow these simple steps.
