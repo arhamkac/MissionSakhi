@@ -54,7 +54,7 @@ const getRooms=asyncHandler(async(req,res)=>{
     const aggregate=Room.aggregate([
     {
         $match:{
-            name:{$regex:query, $options:"im"}
+            name:{$regex:query||"", $options:"im"}
         }
     }
     ,{
