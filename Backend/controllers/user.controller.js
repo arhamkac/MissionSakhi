@@ -328,7 +328,17 @@ const resetPassword=asyncHandler(async(req,res)=>{
 })
 
 const getCurrentUser=asyncHandler(async(req,res)=>{
-    // const userId=req
+    const userId=req.user?._id
+    const user=await User.findById(userId).select("-password -refreshToken");
+    if(!user){
+      throw new ApiError(400,"User does not exist")
+    }
+
+    return res
+    .status(200)
+    .json(
+      new ApiResponse(200,user,"User details fetched successfully")
+    )
 })
 
 export {registerUser,loginUser,logOutUser,refreshAccessToken,changePassword,sendOTP,verifyOTP,resetPassword,getCurrentUser}

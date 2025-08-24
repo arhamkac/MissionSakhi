@@ -53,6 +53,8 @@ import { uniqueNamesGenerator, adjectives, animals,colors } from 'unique-names-g
 
 
 userSchema.pre("save",async function(next){
+    this.password=await bcrypt.hash(this.password,10);
+    
     if(!this.username){
         const config={
             dictionaries:[adjectives, animals],
@@ -64,12 +66,9 @@ userSchema.pre("save",async function(next){
         const username=uniqueNamesGenerator(config)+randomNo;
 
         this.username=username;
-
-        if(!this.isModified("password")){return next();}
-        this.password=await bcrypt.hash(this.password,10);
-
-        next();
     }
+
+    next();
 })
 
 userSchema.methods.generateAccessToken=function(){
