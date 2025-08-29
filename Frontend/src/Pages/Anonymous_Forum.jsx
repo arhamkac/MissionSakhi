@@ -173,7 +173,7 @@ export default function Anonymous_Forum() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-rose-50 relative">
       <main className="relative z-10 min-h-screen p-6 flex flex-col items-center">
-        {/* Header */}
+        
         <div className="text-center mb-12 max-w-4xl w-full">
           <div className="bg-white/50 backdrop-blur-lg border border-white/40 rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300">
             <h1 className="text-5xl font-extrabold bg-gradient-to-r from-purple-600 via-pink-600 to-rose-600 bg-clip-text text-transparent mb-4">
@@ -185,7 +185,7 @@ export default function Anonymous_Forum() {
           </div>
         </div>
 
-        {/* New Post */}
+        
         {user && (
           <div className="max-w-4xl w-full mb-8 bg-white/50 backdrop-blur-lg border border-white/30 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300">
             <textarea
@@ -209,7 +209,7 @@ export default function Anonymous_Forum() {
           </div>
         )}
 
-        {/* Posts List */}
+        
         <div className="max-w-4xl w-full space-y-6">
           {posts.length === 0 && (
             <p className="text-center text-gray-500">No posts yet.</p>
@@ -254,7 +254,7 @@ export default function Anonymous_Forum() {
                     />
                   )}
 
-                  {/* Votes */}
+                  
                   <div className="flex gap-3 items-center mb-3">
                     <button
                       onClick={() => handleVotePost(post._id, true)}
@@ -270,7 +270,7 @@ export default function Anonymous_Forum() {
                     </button>
                   </div>
 
-                  {/* Edit/Delete */}
+                  
                   {user && post.sender === user._id && (
                     <div className="flex gap-4 text-sm text-gray-600 mb-3">
                       <button
@@ -291,7 +291,7 @@ export default function Anonymous_Forum() {
                     </div>
                   )}
 
-                  {/* Comments */}
+                  
                   <div className="pl-4 border-l border-gray-300 space-y-2">
                     {(post.comments || []).map((comment) => (
                       <div
@@ -351,7 +351,7 @@ export default function Anonymous_Forum() {
                       </div>
                     ))}
 
-                    {/* Add comment */}
+                    
                     {user && (
                       <div className="flex gap-2 mt-2">
                         <input

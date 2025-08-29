@@ -58,6 +58,7 @@ export function AuthProvider({ children }) {
 
   const signup = async (formData) => {
     try {
+      console.log(formData)
       const res = await axios.post(`${baseUrl}/register`, formData);
       if (res.status === 201 || res.status === 200) {
         await login(formData.email, formData.password);
