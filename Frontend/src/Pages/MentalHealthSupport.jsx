@@ -132,7 +132,7 @@ function MentalHealthSupport() {
                 },
                 {
                   name: "Saheli (India)",
-                  url: "https://sahelihelpline.org",
+                  url: "https://saheliboston.org/",
                   features: [
                     "For South Asian women experiencing abuse or trauma",
                     "Mental health, domestic violence, immigration-related support",

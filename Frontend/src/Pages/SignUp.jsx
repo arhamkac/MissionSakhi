@@ -1,22 +1,54 @@
 import { useState, useRef } from "react"
 import { useGoogleLogin } from "@react-oauth/google"
+import axios from "axios"
+import { useNavigate } from "react-router-dom"
+import { useAuth } from "./AuthContext"
 
 function SignUp() {
   const formRef = useRef(null)
   const [userEmail, setUserEmail] = useState("")
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
+  const [nickname, setNickname]=useState("")
+  const navigate=useNavigate();
+  const {signup}=useAuth();
+  const baseUrl="https://missionsakhi.onrender.com/api"
 
   const googleSignup = useGoogleLogin({
-    onSuccess: (credentialResponse) => {
+    onSuccess: async(credentialResponse) => {
       console.log("Google signup successful:", credentialResponse)
-      alert("Google signup successful! (Backend integration needed)")
+      const { data } = await axios.post(`${baseUrl}/users/register`, {
+        token: credentialResponse.credential,
+      });
+
+      alert("Google signup successful!")
     },
     onError: () => {
       console.log("Google signup failed")
       alert("Google signup failed. Please try again.")
     },
   })
+
+  const handleSignUp=async(e)=>{
+    e.preventDefault();
+    try {
+      const response=await signup(
+      {
+      email: userEmail,
+      nickname: nickname, 
+      username: username,
+      password: password
+      }
+      )
+      alert("SignUp successfull")
+      navigate("/dashboard")
+      formRef.current.reset();
+    } catch (error) {
+      console.log("Error in signing up",error)
+      alert("SignUp failed")
+    }
+
+  }
 
   const generateOTP = () => {
     return Math.floor(100000 + Math.random() * 900000).toString()
@@ -87,7 +119,7 @@ function SignUp() {
         
         <form
           ref={formRef}
-          onSubmit={handleSendOTP}
+          onSubmit={handleSignUp}
           className="relative bg-white/60 backdrop-blur-md border border-white/40 rounded-2xl sm:rounded-3xl shadow-2xl p-6 sm:p-8 lg:p-10 space-y-4 sm:space-y-6 transform hover:shadow-3xl transition-all duration-500"
         >
           <div className="absolute top-3 left-3 sm:top-4 sm:left-4 w-2 h-2 sm:w-3 sm:h-3 bg-pink-400 rounded-full animate-pulse hidden sm:block"></div>
@@ -122,8 +154,7 @@ function SignUp() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="w-full rounded-lg sm:rounded-xl p-2.5 sm:p-3 lg:p-4 bg-white/80 backdrop-blur-sm border border-white/50 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all duration-300 text-gray-700 placeholder-gray-400 text-sm sm:text-base"
-                placeholder="Choose a unique username"
-                required
+                placeholder="Choose a unique username else auto generate"
               />
             </div>
 
@@ -136,6 +167,17 @@ function SignUp() {
                 className="w-full rounded-lg sm:rounded-xl p-2.5 sm:p-3 lg:p-4 bg-white/80 backdrop-blur-sm border border-white/50 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all duration-300 text-gray-700 placeholder-gray-400 text-sm sm:text-base"
                 placeholder="your.email@example.com"
                 required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm sm:text-base font-medium text-gray-700 mb-1 sm:mb-2">Nickname</label>
+              <input
+                type="text"
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value)}
+                className="w-full rounded-lg sm:rounded-xl p-2.5 sm:p-3 lg:p-4 bg-white/80 backdrop-blur-sm border border-white/50 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all duration-300 text-gray-700 placeholder-gray-400 text-sm sm:text-base"
+                placeholder="Any nickname of your choice only if you wish"
               />
             </div>
 
@@ -157,7 +199,7 @@ function SignUp() {
             type="submit"
             className="w-full h-10 sm:h-12 lg:h-14 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold rounded-lg sm:rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-sm sm:text-base"
           >
-            Send Verification Code
+            SignUp
           </button>
 
           
@@ -195,7 +237,6 @@ function SignUp() {
             </button>
           </div>
 
-          {/* Privacy Notice */}
           <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-white/40 backdrop-blur-sm rounded-lg sm:rounded-xl border border-white/30">
             <p className="text-xs sm:text-sm text-gray-600 text-center leading-relaxed">
               By joining, you're entering a supportive community where your privacy matters. We're committed to creating
@@ -205,11 +246,7 @@ function SignUp() {
         </form>
       </div>
 
-      <style jsx>{`
-        .shadow-3xl {
-          box-shadow: 0 35px 60px -12px rgba(0, 0, 0, 0.25);
-        }
-      `}</style>
+      
     </div>
   )
 }

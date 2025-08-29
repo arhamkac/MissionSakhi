@@ -12,6 +12,9 @@ import MentalHealthSupport from './Pages/MentalHealthSupport'
 import OTPVerification from './Pages/OTPVerification'
 import Chatbot_AI from './Pages/Chatbot_AI'
 import Community from './Pages/Community'
+import Dashboard from './Pages/Dashboard'
+import Settings from './Pages/Settings'
+import { AuthProvider } from './Pages/AuthContext'
 
 function App() {
 
@@ -20,6 +23,7 @@ function App() {
       <Header />
 
       <main className='flex-grow'>
+      <AuthProvider>
       <Routes>
         <Route path="/forum" element={<Anonymous_Forum />} />
         <Route path="/" element={<Home />} />
@@ -30,7 +34,10 @@ function App() {
         <Route path='/otp-verify' element={<OTPVerification />} />
         <Route path='/chatbot' element={<Chatbot_AI />} />
         <Route path='/community-chat' element={<Community />} />
+        <Route path='/dashboard' element={<Dashboard />} />
+        <Route path='/settings' element={<Settings />} />
       </Routes>
+      </AuthProvider>
       </main>
 
       <Footer />
