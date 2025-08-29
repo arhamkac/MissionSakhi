@@ -344,7 +344,7 @@ const getCurrentUser=asyncHandler(async(req,res)=>{
 })
 
 const googleLogin=asyncHandler(async(req,res)=>{
-  const {idToken}=req.body
+  const {tokenId}=req.body
   if(!tokenId){
     throw new ApiError(400,"Id token not recieved for google login")
   }
