@@ -9,6 +9,7 @@ import { BlockedEmail } from "../models/blockedEmails.js";
 
 const otp=generateOTP()
 let currOTP=111111;
+const client=new OAuth2Client(process.env.GOOGLE_CLIENT_ID, process.env.GOOGLE_SECRET); 
 
 const generateAccessAndRefreshToken=async(userId)=>{
   try {
