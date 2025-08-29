@@ -341,4 +341,47 @@ const getCurrentUser=asyncHandler(async(req,res)=>{
     )
 })
 
-export {registerUser,loginUser,logOutUser,refreshAccessToken,changePassword,sendOTP,verifyOTP,resetPassword,getCurrentUser}
+const googleLogin=asyncHandler(async(req,res)=>{
+  const {idToken}=req.body
+  if(!tokenId){
+    throw new ApiError(400,"Id token not recieved for google login")
+  }
+
+  const ticket=await client.verifyIdToken({
+    idToken,
+    audience:process.env.GOOGLE_CLIENT_ID
+  })
+  const payload=ticket.getPayload();
+  const {email,name,picture,sub}=payload;
+
+  let user=await User.findOne({email:email})
+  if(!user){
+    user=await User.create({
+      email:email,
+      googleId:sub,
+      username:name,
+      provider:"google",
+      picture,
+      otpVerified:true
+    })
+  }
+
+   const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user._id);
+
+   const options = {
+    httpOnly: true,
+    sameSite:"lax",
+    secure: process.env.NODE_ENV === "production"
+    };
+
+    return res
+    .status(200)
+    .cookie("accessToken",accessToken,options)
+    .cookie("refreshToken",refreshToken,options)
+    .json(
+      new ApiResponse(200,{ user: { id: user._id, email: user.email, username: user.username, picture: user.picture }, accessToken, refreshToken },
+      "Google login successful")
+    )
+})
+
+export {registerUser,loginUser,logOutUser,refreshAccessToken,changePassword,sendOTP,verifyOTP,resetPassword,getCurrentUser,googleLogin}

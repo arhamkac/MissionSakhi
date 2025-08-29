@@ -38,6 +38,19 @@ const userSchema=new Schema(
         OTPVerified:{
             type:Boolean,
             default:false
+        },
+        googleId: {
+            type: String,
+            unique: true,
+            sparse: true
+        },
+        provider: {
+            type: String,
+            enum: ["local", "google"],
+            default: "local"
+        },
+        picture: {
+            type: String
         }
     },
     {
