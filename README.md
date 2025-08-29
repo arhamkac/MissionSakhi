@@ -107,6 +107,11 @@ Contributions are what make the open-source community such an amazing place to l
 
 ---
 
+## API Docs-
+<a href="https://github.com/arhamkac/MissionSakhi/blob/main/API.md">API Docs</a>
+
+---
+
 ## 🙏 Acknowledgements
 
 This project is built with ❤️ to empower women and ensure safety online.
