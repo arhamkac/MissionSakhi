@@ -15,8 +15,7 @@ const userSchema=new Schema(
             trim:true
         },
         password:{
-            type:String,
-            required:true
+            type:String
         },
         refreshToken:{
             type:String
@@ -27,7 +26,6 @@ const userSchema=new Schema(
         },
         nickname:{
             type:String,
-            required:true,
         },
         otp:{
             type:Number

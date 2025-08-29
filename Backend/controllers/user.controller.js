@@ -350,7 +350,7 @@ const googleLogin=asyncHandler(async(req,res)=>{
   }
 
   const ticket=await client.verifyIdToken({
-    idToken,
+    idToken:tokenId,
     audience:process.env.GOOGLE_CLIENT_ID
   })
   const payload=ticket.getPayload();
