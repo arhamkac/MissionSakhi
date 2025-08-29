@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken"
 import mongoose from "mongoose";
 import { otpSender,generateOTP } from "../middleware/otp.middleware.js";
 import { BlockedEmail } from "../models/blockedEmails.js";
+import {OAuth2Client} from 'google-auth-library';
 
 const otp=generateOTP()
 let currOTP=111111;
