@@ -67,7 +67,9 @@ export function AuthProvider({ children }) {
 
   const logout = async() => {
     try {
-      const lo=await api.post("/logout")
+      const lo=await api.post("/logout",{},
+        { headers: { Authorization: `Bearer ${accessToken}` } }
+      )
       if(lo.status==200||lo.status==201){
         localStorage.removeItem("accessToken")
         localStorage.removeItem("refreshToken")
