@@ -372,7 +372,7 @@ const googleLogin=asyncHandler(async(req,res)=>{
 
    const options = {
     httpOnly: true,
-    sameSite:"lax",
+    sameSite: "none",
     secure: process.env.NODE_ENV === "production"
     };
 
