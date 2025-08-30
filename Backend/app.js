@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import { createServer } from "node:http";
 import { Server } from "socket.io";
 import fetch from "node-fetch";
+import helmet from "helmet";
 
 const app=express();
 const server=createServer(app);
@@ -86,6 +87,15 @@ app.use(cookieParser())
 app.use(express.json({limit:"100kb"}))
 app.use(express.static("public"))
 app.use(express.urlencoded({extended:true, limit:"100kb"}))
+app.use(
+  helmet({
+    crossOriginOpenerPolicy: false,
+  })
+);
+app.use((req, res, next) => {
+  res.setHeader("Cross-Origin-Opener-Policy", "unsafe-none");
+  next();
+});
 
 import userRouter from "./routes/user.routes.js"
 import postRouter from "./routes/post.routes.js"
