@@ -12,6 +12,6 @@ router.route("/send-otp").post(sendOTP)
 router.route("/verify-otp").post(verifyOTP)
 router.route("/reset-password").post(resetPassword)
 router.route('/login/google').post(googleLogin)
-router.route('/me').get(getCurrentUser)
+router.route('/me').get(verifyJWT,getCurrentUser)
 
 export default router
