@@ -4,7 +4,7 @@ import './App.css'
 import Header from './Pages/Header'
 import Footer from './Pages/Footer'
 import Anonymous_Forum from './Pages/Anonymous_Forum'
-import {Routes,Route} from 'react-router-dom'
+import {Routes,Route, useNavigate} from 'react-router-dom'
 import Chatbot from './Pages/Chatbot'
 import Login from './Pages/Login'
 import SignUp from './Pages/SignUp'
@@ -15,6 +15,7 @@ import Community from './Pages/Community'
 import Dashboard from './Pages/Dashboard'
 import Settings from './Pages/Settings'
 import { AuthProvider } from './Pages/AuthContext'
+import ProtectedRoute from './Pages/ProtectedRoute'
 
 function App() {
 
@@ -34,7 +35,7 @@ function App() {
         <Route path='/otp-verify' element={<OTPVerification />} />
         <Route path='/chatbot' element={<Chatbot_AI />} />
         <Route path='/community-chat' element={<Community />} />
-        <Route path='/dashboard' element={<Dashboard />} />
+        <Route path='/dashboard' element={<ProtectedRoute> <Dashboard /> </ProtectedRoute>} />
         <Route path='/settings' element={<Settings />} />
       </Routes>
       </AuthProvider>

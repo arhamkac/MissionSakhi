@@ -3,31 +3,40 @@ import axios from "axios";
 
 const AuthContext = createContext();
 
+const baseUrl = "http://localhost:8080/api/users";
+
+const api = axios.create({
+  baseURL: "http://localhost:8080/api/users",
+  withCredentials: true
+});
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const baseUrl = "https://missionsakhi.onrender.com/api/users";
-
   useEffect(() => {
-    const savedUser = localStorage.getItem("user");
-    if (savedUser) {
-      const parsedUser = JSON.parse(savedUser);
-      // ensure token is attached
-      setUser(parsedUser.token ? parsedUser : { ...parsedUser, token: localStorage.getItem("accessToken") });
+    const storedUser = localStorage.getItem("user");
+    const accessToken = localStorage.getItem("accessToken");
+    if (storedUser && accessToken) {
+      const parsedUser = JSON.parse(storedUser);
+      setUser({ ...parsedUser, token: accessToken });
     }
     setLoading(false);
   }, []);
 
+  const saveSession = (user, accessToken, refreshToken) => {
+    const userWithToken = { ...user, token: accessToken };
+    localStorage.setItem("accessToken", accessToken);
+    localStorage.setItem("refreshToken", refreshToken);
+    localStorage.setItem("user", JSON.stringify(userWithToken));
+    setUser(userWithToken);
+  };
+
   const googleLogin = async (tokenId) => {
     try {
-      const res = await axios.post(`${baseUrl}/login/google`, { tokenId });
+      const res = await api.post("/login/google", { tokenId });
       const { user, accessToken, refreshToken } = res.data.message;
-      const userWithToken = { ...user, token: accessToken };
-      localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("refreshToken", refreshToken);
-      localStorage.setItem("user", JSON.stringify(userWithToken));
-      setUser(userWithToken);
+      saveSession(user, accessToken, refreshToken);
     } catch (error) {
       throw new Error(error.response?.data?.message || "Google login failed");
     }
@@ -35,36 +44,38 @@ export function AuthProvider({ children }) {
 
   const login = async (email, password) => {
     try {
-      const res = await axios.post(`${baseUrl}/login`, { email, password });
+      const res = await api.post("/login", { email, password });
       if (res.status === 200) {
         const { user, accessToken, refreshToken } = res.data.message;
-        const userWithToken = { ...user, token: accessToken };
-        localStorage.setItem("accessToken", accessToken);
-        localStorage.setItem("refreshToken", refreshToken);
-        localStorage.setItem("user", JSON.stringify(userWithToken));
-        setUser(userWithToken);
+        saveSession(user, accessToken, refreshToken);
       }
     } catch (error) {
       throw new Error(error.response?.data?.message || "Login failed");
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("user");
-    setUser(null);
-  };
-
   const signup = async (formData) => {
     try {
-      console.log(formData)
-      const res = await axios.post(`${baseUrl}/register`, formData);
+      const res = await api.post("/register", formData);
       if (res.status === 201 || res.status === 200) {
         await login(formData.email, formData.password);
       }
     } catch (error) {
       throw new Error(error.response?.data?.message || "Signup failed");
+    }
+  };
+
+  const logout = async() => {
+    try {
+      const lo=await api.post("/logout")
+      if(lo.status==200||lo.status==201){
+        localStorage.removeItem("accessToken")
+        localStorage.removeItem("refreshToken")
+        localStorage.removeItem("user")
+      }
+      setUser(null)
+    } catch (error) {
+      console.error("Logout failed:", error.response?.data?.message || error.message);
     }
   };
 

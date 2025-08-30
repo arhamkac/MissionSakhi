@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { GoogleLogin } from "@react-oauth/google";
 import { useAuth } from "./AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -11,7 +11,7 @@ function SignUp() {
     password: "",
   });
   const [error, setError] = useState("");
-  const { signup, googleLogin } = useAuth();
+  const { signup, googleLogin, user } = useAuth();
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
@@ -24,14 +24,20 @@ function SignUp() {
     setError("");
     try {
       await signup(formData);
-      navigate("/dashboard");
-      alert("SignUp successful!");
+      window.location.reload();
+      navigate('/dashboard')
     } catch (err) {
       console.error("SignUp error:", err);
       setError("SignUp failed. Please try again.");
     }
   };
 
+  useEffect(() => {
+      if (user) {
+        navigate("/dashboard");
+      }
+    }, [user, navigate]);
+  
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-rose-50 flex items-center justify-center p-4">
       <div className="relative z-10 w-full max-w-md">
@@ -109,6 +115,7 @@ function SignUp() {
               onSuccess={async (credentialResponse) => {
                 try {
                   await googleLogin(credentialResponse.credential);
+                  window.location.reload();
                   navigate("/dashboard");
                 } catch (err) {
                   console.error("Google signup error:", err);

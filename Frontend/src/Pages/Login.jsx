@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState,useEffect } from "react"
 import { GoogleLogin, useGoogleLogin } from "@react-oauth/google"
 import { useAuth } from "./AuthContext"
 import { useNavigate } from "react-router-dom"
@@ -9,15 +9,14 @@ function Login() {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
 
-  const { login, googleLogin } = useAuth();
-  const baseURL="https://missionsakhi.onrender.com"
+  const { login, googleLogin, user } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
     setError("");
     try {
       await login(formData.email, formData.password);
+      window.location.reload();
       navigate("/dashboard");
     } catch {
       setError("Invalid email or password");
@@ -32,7 +31,14 @@ function Login() {
     }))
   }
 
+  useEffect(() => {
+    if (user) {
+      navigate("/dashboard");
+    }
+  }, [user, navigate]);
+
   return (
+    
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-rose-50 relative overflow-hidden flex items-center justify-center p-4 sm:p-6 lg:p-8">
       <div className="relative z-10 w-full max-w-sm sm:max-w-md lg:max-w-lg">
         <form
@@ -115,6 +121,7 @@ function Login() {
               try {
                 // console.log(credentialResponse.credential)
                 await googleLogin(credentialResponse.credential);
+                window.location.reload();
                 navigate("/dashboard");
               } catch (err) {
                 console.error("Google login error:", err.message);
