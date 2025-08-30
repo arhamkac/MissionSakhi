@@ -67,6 +67,7 @@ export function AuthProvider({ children }) {
 
   const logout = async() => {
     try {
+      const accessToken = localStorage.getItem("accessToken");
       const lo=await api.post("/logout",{},
         { headers: { Authorization: `Bearer ${accessToken}` } }
       )
