@@ -16,7 +16,7 @@ export function AuthProvider({ children }) {
     const fetchUser = async () => {
       try {
         const res = await api.get("/me");
-        setUser(res.data.user);
+        setUser(res.data.message.user);
       } catch (err) {
         setUser(null);
       } finally {
@@ -30,7 +30,7 @@ export function AuthProvider({ children }) {
   const login = async (email, password) => {
     try {
       const res = await api.post("/login", { email, password });
-      setUser(res.data.user);
+      setUser(res.data.message.user);
     } catch (error) {
       throw new Error(error.response?.data?.message || "Login failed");
     }
@@ -39,7 +39,7 @@ export function AuthProvider({ children }) {
   const googleLogin = async (tokenId) => {
     try {
       const res = await api.post("/login/google", { tokenId });
-      setUser(res.data.user);
+      setUser(res.data.message.user);
     } catch (error) {
       throw new Error(error.response?.data?.message || "Google login failed");
     }
