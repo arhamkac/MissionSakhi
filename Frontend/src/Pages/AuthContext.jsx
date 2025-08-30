@@ -3,10 +3,10 @@ import axios from "axios";
 
 const AuthContext = createContext();
 
-const baseUrl = "http://localhost:8080/api/users";
+const baseUrl = "https://missionsakhi.onrender.com/api/users";
 
 const api = axios.create({
-  baseURL: "http://localhost:8080/api/users",
+  baseURL: "https://missionsakhi.onrender.com/api/users",
   withCredentials: true
 });
 
