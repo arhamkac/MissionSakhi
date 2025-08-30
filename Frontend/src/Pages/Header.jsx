@@ -143,6 +143,7 @@ export default function Header() {
                 <button
                   onClick={() => {
                     logout();
+                    window.location.reload()
                     setIsMobileMenuOpen(false);
                   }}
                   className="w-full text-center bg-white/20 backdrop-blur-sm text-purple-700 px-4 py-3 rounded-lg font-semibold hover:bg-white/30 transition-all duration-300"
