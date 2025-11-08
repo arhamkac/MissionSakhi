@@ -5,6 +5,7 @@ import {Post} from "../models/post.model.js"
 import { User } from "../models/user.model.js";
 import {Comment} from "../models/comment.model.js"
 import mongoose, { Types } from "mongoose";
+import { checkPost } from "../app.js";
 
 const postComment=asyncHandler(async(req,res)=>{
     const {postId}=req.params

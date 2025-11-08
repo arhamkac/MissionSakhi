@@ -243,15 +243,15 @@ const getPosts=asyncHandler(async(req,res)=>{
         },
         {
             $lookup:{
-                from:"users",
-                localField:"owner",
-                foreignField:"_id",
-                as:"ownerDetails",
+                from:"comments",
+                localField:"_id",
+                foreignField:"post",
+                as:"comments",
                 pipeline:[
                     {
                         $project:{
-                            username:1,
-                            nickname:1
+                            content:1,
+                            postedBy:1
                         }
                     }
                 ]

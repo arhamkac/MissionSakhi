@@ -8,7 +8,14 @@ import helmet from "helmet";
 
 const app=express();
 const server=createServer(app);
-const io=new Server(server);
+const io=new Server(server, {
+    cors: {
+    origin: process.env.CORS_ORIGIN,
+    methods: ["GET", "POST"],
+    credentials: true,
+  }
+});
+
 const apiKey=process.env.PERSPECTIVE_API_KEY;
 
 export async function checkPost(text){

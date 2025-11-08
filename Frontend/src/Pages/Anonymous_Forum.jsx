@@ -13,43 +13,14 @@ export default function Anonymous_Forum() {
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editingCommentContent, setEditingCommentContent] = useState("");
 
-  const BASE_URL = "https://missionsakhi.onrender.com/api/posts";
+  const BASE_URL = "https://missionsakhi.onrender.com/api";
 
-  const fetchMyPosts = async () => {
-    if (!user) return;
-
+  const fetchPosts = async () => {
     try {
-      const { data } = await axios.get(`${BASE_URL}/get-posts?owner=${user._id}`, {
-        headers: { Authorization: `Bearer ${user.token}` },
-      });
-
+      const { data } = await axios.get(`${BASE_URL}/posts/get-posts`);
       const postsArray = Array.isArray(data.message) ? data.message : data.message.posts || [];
-
-      const postsWithMyCommentsAndVotes = await Promise.all(
-        postsArray.map(async (post) => {
-          try {
-            const { data: commentData } = await axios.get(
-              `${BASE_URL}/comment/get/${post._id}?owner=${user._id}`,
-              { headers: { Authorization: `Bearer ${user.token}` } }
-            );
-            const { data: voteData } = await axios.get(
-              `${BASE_URL}/vote/get/${post._id}?owner=${user._id}`,
-              { headers: { Authorization: `Bearer ${user.token}` } }
-            );
-
-            return {
-              ...post,
-              comments: commentData.data.comments || [],
-              upvotes: voteData.data.upvotes || 0,
-              downvotes: voteData.data.downvotes || 0,
-            };
-          } catch {
-            return { ...post, comments: [], upvotes: 0, downvotes: 0 };
-          }
-        })
-      );
-
-      setPosts(postsWithMyCommentsAndVotes);
+      console.log(postsArray);
+      setPosts(postsArray);
     } catch (err) {
       console.error("Fetch posts error:", err.response?.data || err.message);
       setPosts([]);
@@ -57,8 +28,8 @@ export default function Anonymous_Forum() {
   };
 
   useEffect(() => {
-    fetchMyPosts();
-  }, [user]);
+    fetchPosts();
+  },[]);
 
   const handleUploadPost = async () => {
     if (!user || !newContent.trim()) return alert("Post content is required");
@@ -210,7 +181,7 @@ export default function Anonymous_Forum() {
         )}
 
         
-        <div className="max-w-4xl w-full space-y-6">
+        <div className="max-w-4xl w-full space-y-6 ">
           {posts.length === 0 && (
             <p className="text-center text-gray-500">No posts yet.</p>
           )}
@@ -218,7 +189,7 @@ export default function Anonymous_Forum() {
           {posts.map((post) => (
             <div
               key={post._id}
-              className="bg-white/60 backdrop-blur-lg border border-white/40 rounded-3xl p-6 shadow-lg hover:shadow-xl transition-all duration-300"
+              className="bg-fuchsia-100 backdrop-blur-lg border border-white/40 rounded-3xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 font-sans"
             >
               {editingPostId === post._id ? (
                 <div className="flex flex-col gap-3">
