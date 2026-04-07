@@ -1,171 +1,107 @@
-import { useState, useEffect } from "react"
-import { Link } from "react-router-dom"
-import { useAuth } from "./AuthContext"
-import axios from "axios"
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { useAuth } from "./AuthContext";
+import axios from "axios";
+import { AUTH_BASE } from "../apiConfig";
 
-function Settings() {
-  const { user, setUser } = useAuth()
-  const [formData, setFormData] = useState(user || {})
-  const [isLoading, setIsLoading] = useState(false)
+export default function Settings() {
+  const { user, setUser } = useAuth();
+  const [form, setForm] = useState(user || {});
+  const [saving, setSaving] = useState(false);
+  const [toast, setToast] = useState("");
 
-  const baseURL = "https://missionsakhi.onrender.com/api/users"
-
-  // Sync local formData when user changes (important after login)
-  useEffect(() => {
-    if (user) setFormData(user)
-  }, [user])
-
-  const handleInputChange = (field, value) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
-  }
+  useEffect(() => { if (user) setForm(user); }, [user]);
 
   const handleSave = async () => {
-    setIsLoading(true)
+    setSaving(true);
     try {
-      const token = localStorage.getItem("token")
-
-      const res = await axios.put(
-        `${baseURL}/api/users/profile`,
-        formData,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      )
-
-      setUser(res.data.user)
-      localStorage.setItem("user", JSON.stringify(res.data.user))
-
+      const token = localStorage.getItem("accessToken");
+      const res = await axios.put(`${AUTH_BASE}/profile`, form,
+        { headers: { Authorization: `Bearer ${token}` } });
+      setUser(res.data.user);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+      setToast("Saved successfully ✨");
+      setTimeout(() => setToast(""), 3000);
     } catch (err) {
-      console.error("Error updating profile:", err.response?.data || err.message)
-    } finally {
-      setIsLoading(false)
-    }
-  }
+      setToast("Save failed. Try again.");
+      setTimeout(() => setToast(""), 3000);
+    } finally { setSaving(false); }
+  };
 
   const handleLogout = async () => {
-    try {
-      await axios.post(`${baseURL}/logout`, {}, { withCredentials: true })
-    } catch (err) {
-      console.error("Logout failed:", err)
-    } finally {
-      localStorage.removeItem("token")
-      setUser(null)
-    }
-  }
+    try { await axios.post(`${AUTH_BASE}/logout`, {}, { withCredentials: true }); }
+    catch { /* ignore */ }
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("token");
+    setUser(null);
+  };
 
-  if (!user) {
-    return (
-      <div className="flex flex-col items-center justify-center h-screen">
-        <h2 className="text-xl font-semibold">Please login to access settings</h2>
+  if (!user) return (
+    <div className="page flex items-center justify-center px-4"
+      style={{ background: "linear-gradient(160deg,#fdf0f5 0%,#f7f0ff 50%,#fdf0f5 100%)" }}>
+      <div className="glass p-10 text-center max-w-sm w-full">
+        <div className="text-4xl mb-4">🔒</div>
+        <Link to="/login" className="btn-primary w-full justify-center">Sign in</Link>
       </div>
-    )
-  }
+    </div>
+  );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-rose-50 relative overflow-hidden p-4 sm:p-6 lg:p-8">
-      
-      {/* Decorative background (kept from your design) */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/5 to-transparent pointer-events-none"></div>
+    <div className="page px-4 py-10 sm:py-14"
+      style={{ background: "linear-gradient(160deg,#fdf0f5 0%,#f7f0ff 50%,#fdf0f5 100%)" }}>
+      <div className="orb w-64 h-64 top-0 left-0 opacity-25"
+        style={{ background: "radial-gradient(circle,#e879f9,transparent 70%)" }} />
 
-      <div className="relative z-10 max-w-4xl mx-auto">
-        
-        {/* Header */}
-        <div className="mb-6 sm:mb-8">
-          <div className="bg-white/60 backdrop-blur-md border border-white/40 rounded-2xl shadow-2xl p-4 sm:p-6">
-            <div className="flex items-center gap-4">
-              <Link to="/dashboard">
-                <button className="bg-white/80 backdrop-blur-sm border border-white/50 hover:bg-white/90 px-4 py-2 rounded-lg text-sm transition-colors cursor-pointer">
-                  ← Back to Dashboard
-                </button>
-              </Link>
-              <div>
-                <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-rose-600 bg-clip-text text-transparent">
-                  Profile Settings
-                </h1>
-                <p className="text-gray-600 text-sm">Manage your profile information</p>
-              </div>
-            </div>
+      <div className="relative z-10 max-w-xl mx-auto">
+        <div className="flex items-center gap-4 mb-8">
+          <Link to="/dashboard" className="btn-ghost text-sm py-2 px-4">← Back</Link>
+          <div>
+            <h1 className="text-2xl font-light grad-text" style={{ fontFamily: "Cormorant Garamond, serif" }}>
+              Profile Settings
+            </h1>
+            <p className="text-xs text-[var(--c-muted)]">Manage your account</p>
           </div>
         </div>
 
-        {/* Form */}
-        <div className="bg-white/60 backdrop-blur-md border border-white/40 shadow-xl p-6 sm:p-8 rounded-lg">
-          <div className="space-y-6">
-            
-            <div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">👤 Basic Information</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                
-                <div className="space-y-2">
-                  <label htmlFor="username" className="text-gray-700 font-medium block">
-                    Full Name
-                  </label>
-                  <input
-                    id="username"
-                    value={formData.username || ""}
-                    onChange={(e) => handleInputChange("username", e.target.value)}
-                    className="w-full bg-white/80 border rounded-lg px-3 py-2 outline-none focus:border-purple-400"
-                  />
-                </div>
+        <div className="glass p-7 sm:p-9">
+          <h3 className="text-xs font-semibold text-[var(--c-muted)] uppercase tracking-widest mb-6">Basic Information</h3>
 
-                <div className="space-y-2">
-                  <label htmlFor="nickname" className="text-gray-700 font-medium block">
-                    Nickname
-                  </label>
-                  <input
-                    id="nickname"
-                    value={formData.nickname || ""}
-                    onChange={(e) => handleInputChange("nickname", e.target.value)}
-                    className="w-full bg-white/80 border rounded-lg px-3 py-2 outline-none focus:border-purple-400"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label htmlFor="email" className="text-gray-700 font-medium block">
-                    Email
-                  </label>
-                  <input
-                    id="email"
-                    type="email"
-                    value={formData.email || ""}
-                    onChange={(e) => handleInputChange("email", e.target.value)}
-                    className="w-full bg-white/80 border rounded-lg px-3 py-2 outline-none focus:border-purple-400"
-                  />
-                </div>
-
+          <div className="space-y-5 mb-8">
+            {[
+              { id: "username", label: "Username",  type: "text"  },
+              { id: "nickname", label: "Nickname",  type: "text"  },
+              { id: "email",    label: "Email",     type: "email" },
+            ].map(({ id, label, type }) => (
+              <div key={id}>
+                <label className="block text-xs font-medium text-[var(--c-muted)] mb-1.5 uppercase tracking-wide">{label}</label>
+                <input id={id} type={type} value={form[id] || ""}
+                  onChange={e => setForm(p => ({ ...p, [id]: e.target.value }))}
+                  className="field" />
               </div>
-            </div>
+            ))}
+          </div>
 
-            {/* Save Button */}
-            <div className="flex justify-end pt-4">
-              <button
-                onClick={handleSave}
-                disabled={isLoading}
-                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-8 py-2 rounded-lg transition-colors disabled:opacity-50 cursor-pointer"
-              >
-                {isLoading ? (
-                  <span className="flex items-center gap-2">
-                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                    Saving...
-                  </span>
-                ) : (
-                  <>💾 Save Changes</>
-                )}
-              </button>
+          {toast && (
+            <div className="mb-5 px-4 py-3 rounded-xl text-sm text-center"
+              style={{
+                background: toast.includes("failed") ? "rgba(244,63,94,0.06)" : "rgba(139,92,246,0.06)",
+                border: `1px solid ${toast.includes("failed") ? "rgba(244,63,94,0.15)" : "rgba(139,92,246,0.15)"}`,
+                color: toast.includes("failed") ? "#f43f5e" : "#7c3aed",
+              }}>
+              {toast}
             </div>
+          )}
 
-            <div className="flex justify-end pt-4">
-             <button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-8 py-2 rounded-lg transition-colors disabled:opacity-50 cursor-pointer"
-             onClick={handleLogout}>
-              Logout
-             </button>
-            </div>
-
+          <div className="flex flex-col sm:flex-row gap-3">
+            <button onClick={handleSave} disabled={saving} className="btn-primary flex-1 py-3">
+              {saving ? <><span className="spinner" /> Saving…</> : "Save changes"}
+            </button>
+            <button onClick={handleLogout} className="btn-danger flex-1 py-3">
+              Sign out
+            </button>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
-
-export default Settings

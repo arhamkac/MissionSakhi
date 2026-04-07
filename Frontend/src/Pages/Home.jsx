@@ -1,267 +1,220 @@
-import { useState } from "react"
-import {Link} from 'react-router-dom'
+import { useState } from "react";
+import { Link } from "react-router-dom";
 
-function Home() {
-  const [openFaq, setOpenFaq] = useState(null)
+const FEATURES = [
+  { icon: "🕊️", tag: "Privacy", title: "Truly Anonymous", body: "No real names, no tracking. Share your story knowing it stays yours." },
+  { icon: "💬", tag: "Community", title: "Real Conversations", body: "Rooms built around what matters — safety, healing, growth, and joy." },
+  { icon: "🤖", tag: "AI", title: "3am Support", body: "Our AI companion listens without judgment, any hour you need her." },
+  { icon: "🛡️", tag: "Safety", title: "Zero Tolerance", body: "Perspective AI + human moderators keep this space genuinely safe." },
+  { icon: "📝", tag: "Forum", title: "Share & Heal", body: "Post anonymously, get upvotes, build solidarity with women worldwide." },
+];
 
-  const faq = [
-    [
-      "Is my identity really protected here?",
-      "We've built this with privacy at the core. You can share your story without anyone knowing who you are - that's a promise.",
-    ],
-    [
-      "Who actually moderates this space?",
-      "We have a mix of AI tools and real human moderators (mostly women) who understand the nuances of what we're dealing with.",
-    ],
-    [
-      "What happens if someone's being toxic?",
-      "Our community is pretty good at self-policing. If someone gets multiple reports, we review and take action quickly.",
-    ],
-    [
-      "How do you spot fake accounts?",
-      "Honestly, we rely on our amazing community to flag suspicious behavior. Plus, we have some behind-the-scenes checks.",
-    ],
-    [
-      "Can I delete my posts later?",
-      "Of course! Your content, your choice. You can edit or delete anything you've shared whenever you want.",
-    ],
-  ]
+const TESTIMONIALS = [
+  { quote: "Finally a platform that actually gets it. I've never felt safer sharing online.", name: "Sarah", age: 28 },
+  { quote: "The AI chatbot helped me process things at 2am when I had no one to call.", name: "Maya", age: 24 },
+  { quote: "I came here broken and left feeling like I had a whole sisterhood behind me.", name: "Priya", age: 31 },
+  { quote: "No judgment, no toxicity. Just real women being real with each other.", name: "Anonymous" },
+];
+
+const FAQ = [
+  ["Is my identity really protected?", "Completely. You can share without anyone knowing who you are — that's a core promise, not a feature."],
+  ["Who moderates this space?", "A mix of Perspective AI and real human moderators (mostly women) who understand nuance."],
+  ["What happens if someone is toxic?", "Multiple reports trigger an immediate review. We act fast. Zero tolerance is real here."],
+  ["Can I delete my posts?", "Always. Your content, your choice — edit or delete anything, anytime."],
+];
+
+export default function Home() {
+  const [openFaq, setOpenFaq] = useState(null);
 
   return (
-    <div className="bg-gradient-to-br from-pink-50 via-purple-50 to-rose-50 relative overflow-hidden">
-      
-      <div className="absolute inset-0 pointer-events-none hidden md:block">
+    <div className="page" style={{ background: "linear-gradient(160deg, #fdf0f5 0%, #f7f0ff 40%, #fdf0f5 100%)" }}>
+      {/* Ambient orbs */}
+      <div className="orb w-96 h-96 top-0 left-0" style={{ background: "radial-gradient(circle, #e879f9, transparent 70%)" }} />
+      <div className="orb w-80 h-80 bottom-40 right-0" style={{ background: "radial-gradient(circle, #818cf8, transparent 70%)", animationDelay: "3s" }} />
+      <div className="orb w-64 h-64 top-1/2 left-1/3" style={{ background: "radial-gradient(circle, #f9a8d4, transparent 70%)", animationDelay: "6s" }} />
 
-        <div
-          className="absolute top-16 left-12 w-7 h-7 lg:w-9 lg:h-9 bg-pink-300/25 rounded-full animate-bounce"
-          style={{ animationDelay: "0.3s", animationDuration: "3.7s" }}
-        ></div>
-        <div
-          className="absolute top-44 right-16 w-5 h-5 lg:w-7 lg:h-7 bg-purple-300/30 rounded-full animate-bounce"
-          style={{ animationDelay: "1.2s", animationDuration: "4.3s" }}
-        ></div>
-        <div
-          className="absolute bottom-36 left-24 w-9 h-9 lg:w-11 lg:h-11 bg-rose-300/20 rounded-full animate-bounce"
-          style={{ animationDelay: "2.1s", animationDuration: "3.2s" }}
-        ></div>
-        <div
-          className="absolute bottom-28 right-8 w-6 h-6 lg:w-8 lg:h-8 bg-pink-400/35 rounded-full animate-bounce"
-          style={{ animationDelay: "0.8s", animationDuration: "4.8s" }}
-        ></div>
-        <div
-          className="absolute top-1/3 left-8 w-4 h-4 bg-purple-200/40 rounded-full animate-pulse"
-          style={{ animationDelay: "1.7s", animationDuration: "2.9s" }}
-        ></div>
-        <div
-          className="absolute top-2/3 right-1/4 w-3 h-3 bg-rose-200/45 rounded-full animate-pulse"
-          style={{ animationDelay: "2.4s", animationDuration: "3.6s" }}
-        ></div>
+      <div className="relative z-10">
 
-        <div
-          className="absolute top-28 right-28 w-11 h-11 lg:w-13 lg:h-13 bg-gradient-to-br from-purple-300 to-pink-300 rounded-lg rotate-45 animate-pulse opacity-18 transform-gpu"
-          style={{ animationDuration: "2.7s", transform: "rotate(47deg)" }}
-        ></div>
-        <div
-          className="absolute bottom-40 left-36 w-13 h-13 lg:w-17 lg:h-17 bg-gradient-to-br from-rose-300 to-purple-300 rounded-full animate-pulse opacity-12 transform-gpu"
-          style={{ animationDuration: "3.4s" }}
-        ></div>
-        <div
-          className="absolute top-1/4 left-1/3 w-5 h-5 bg-gradient-to-br from-pink-200 to-purple-200 rounded-lg rotate-12 animate-pulse opacity-28"
-          style={{ animationDuration: "2.3s", transform: "rotate(15deg)" }}
-        ></div>
-      </div>
-
-      
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/5 to-transparent pointer-events-none"></div>
-
-      <main className="relative z-10 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto text-center flex flex-col gap-8 sm:gap-12 lg:gap-16 items-center justify-center py-8 sm:py-12 lg:py-16">
-          
-          <section className="flex flex-col gap-4 relative w-full">
-            <div className="absolute inset-0 bg-gradient-to-r from-pink-200/20 via-purple-200/20 to-rose-200/20 rounded-2xl sm:rounded-3xl blur-xl transform scale-110"></div>
-            <div className="relative bg-white/40 backdrop-blur-md border border-white/30 rounded-2xl sm:rounded-3xl p-6 sm:p-8 lg:p-10 shadow-2xl transform hover:scale-105 transition-all duration-300">
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-rose-600 bg-clip-text text-transparent drop-shadow-lg leading-tight">
-                Hey there, welcome to Mission Sakhi
-              </h1>
-              <p className="text-base sm:text-lg lg:text-xl text-gray-700 italic mt-3 sm:mt-4 leading-relaxed">
-                Finally, a space that gets it. Your stories matter here.
-              </p>
-              <div className="flex flex-wrap gap-3 sm:gap-4 justify-center mt-4 sm:mt-6">
-                <button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold py-2 sm:py-3 px-6 sm:px-8 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg text-sm sm:text-base">
-                  <Link to="/community-chat">Let's do this together</Link>
-                </button>
-              </div>
+        {/* ── Hero ─────────────────────────────────────────── */}
+        <section className="max-w-6xl mx-auto px-5 sm:px-8 pt-20 pb-16 sm:pt-28 sm:pb-24">
+          <div className="max-w-3xl">
+            <div className="tag tag-purple mb-6">Women-first platform</div>
+            <h1 className="hero-title text-[var(--c-ink)] mb-6">
+              A space built<br />
+              <em className="grad-text">for you</em><br />
+            </h1>
+            <p className="text-lg text-[var(--c-muted)] leading-relaxed max-w-xl mb-10"
+              style={{ fontWeight: 300 }}>
+              Mission Sakhi is where women come to be real — share stories, find support,
+              and connect without the toxicity of mainstream platforms.
+            </p>
+            <div className="flex flex-wrap gap-3 items-center">
+              <Link to="/signup" className="btn-primary text-base px-7 py-3.5">
+                Join the community
+              </Link>
+              <Link to="/forum" className="btn-ghost text-base px-7 py-3.5">
+                Browse stories
+              </Link>
             </div>
-          </section>
 
-          
-          <section className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 w-full max-w-6xl">
-            <div className="relative group">
-              <div className="absolute inset-0 bg-gradient-to-br from-pink-300/20 to-purple-300/20 rounded-xl sm:rounded-2xl blur-lg transform scale-105"></div>
-              <img
-                src="/happy-women-supporting.png"
-                alt="Happy Women"
-                className="relative w-full h-60 sm:h-72 lg:h-80 object-cover rounded-xl sm:rounded-2xl shadow-xl transform group-hover:scale-105 transition-all duration-300"
-              />
-            </div>
-            <div className="relative group">
-              <div className="absolute inset-0 bg-gradient-to-br from-rose-300/20 to-pink-300/20 rounded-xl sm:rounded-2xl blur-lg transform scale-105"></div>
-              <img
-                src="/empowered-women-community.png"
-                alt="Empowered Women"
-                className="relative w-full h-60 sm:h-72 lg:h-80 object-cover rounded-xl sm:rounded-2xl shadow-xl transform group-hover:scale-105 transition-all duration-300"
-              />
-            </div>
-          </section>
-
-         
-          <section className="w-full max-w-4xl relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-200/30 to-pink-200/30 rounded-2xl sm:rounded-3xl blur-lg"></div>
-            <div className="relative bg-white/50 backdrop-blur-md border border-white/40 rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-2xl text-left">
-              <h2 className="text-lg sm:text-xl lg:text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-3 sm:mb-4">
-                What we're really about
-              </h2>
-              <p className="text-sm sm:text-base leading-relaxed text-gray-700">
-                Look, we know there are tons of platforms out there, but most weren't built with us in mind. Mission
-                Sakhi is different - it's privacy-first, women-centered, and actually safe. Whether you're dealing with
-                workplace harassment, relationship issues, or just need someone who gets it, this is your space. No
-                judgment, just real support from real women.
-              </p>
-            </div>
-          </section>
-
-          
-          <section className="w-full">
-            <h2 className="text-lg sm:text-xl lg:text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-6 sm:mb-8">
-              What makes us different
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-              {[
-                {
-                  icon: "💬",
-                  title: "Anonymous & Safe",
-                  desc: "Share your real stories without worrying about who's watching. Complete anonymity, always.",
-                },
-                {
-                  icon: "🤝",
-                  title: "Genuine Support",
-                  desc: "Connect with women who actually understand what you're going through. No fake positivity here.",
-                },
-                {
-                  icon: "👩‍👩‍👧‍👧",
-                  title: "Real Women, Real Talk",
-                  desc: "Honest conversations with people who've been there. No bots, no fake accounts.",
-                },
-                {
-                  icon: "🔒",
-                  title: "Privacy That Actually Works",
-                  desc: "We built this from the ground up with your privacy in mind. Your identity stays yours.",
-                },
-                {
-                  icon: "🤖",
-                  title: "AI Support When You Need It",
-                  desc: "Sometimes you need to talk at 3am. Our AI assistant is trained to actually help, not just chat.",
-                },
-              ].map((feature, i) => (
-                <div key={i} className="group relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-pink-300/20 to-purple-300/20 rounded-xl sm:rounded-2xl blur-lg transform scale-105 group-hover:scale-110 transition-all duration-300"></div>
-                  <div className="relative bg-white/60 backdrop-blur-md border border-white/40 p-4 sm:p-6 rounded-xl sm:rounded-2xl shadow-xl text-center hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
-                    <div className="text-3xl sm:text-4xl mb-3 sm:mb-4">{feature.icon}</div>
-                    <h3 className="text-base sm:text-lg font-semibold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                      {feature.title}
-                    </h3>
-                    <p className="mt-2 text-sm sm:text-base text-gray-600 leading-relaxed">{feature.desc}</p>
-                  </div>
+            {/* Stats row */}
+            <div className="flex flex-wrap gap-3 mt-10">
+              {["100% anonymous", "AI-moderated", "Women-only space"].map(s => (
+                <div key={s} className="stat-pill">
+                  <span className="w-1.5 h-1.5 rounded-full bg-violet-400 inline-block" />
+                  {s}
                 </div>
               ))}
             </div>
-          </section>
+          </div>
+        </section>
 
-          
-          <section className="w-full max-w-4xl text-center relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-rose-200/30 to-purple-200/30 rounded-2xl sm:rounded-3xl blur-lg"></div>
-            <div className="relative bg-white/50 backdrop-blur-md border border-white/40 p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-2xl">
-              <h3 className="text-base sm:text-lg lg:text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4 sm:mb-6">
-                What our community says
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                {[
-                  {
-                    quote:
-                      "Finally found a place where I can talk about workplace harassment without fear. The support here is incredible.",
-                    name: "– Sarah, 28",
-                  },
-                  {
-                    quote:
-                      "I was skeptical at first, but this community genuinely cares. It's not just another social media platform.",
-                    name: "– Anonymous user",
-                  },
-                  {
-                    quote:
-                      "The AI chatbot actually helped me process some difficult emotions at 2am when I couldn't sleep.",
-                    name: "– Maya, 24",
-                  },
-                  {
-                    quote: "Love that I can be completely honest here without judgment. It's therapeutic.",
-                    name: "– K, 31",
-                  },
-                ].map((t, i) => (
-                  <div
-                    key={i}
-                    className="bg-white/70 backdrop-blur-sm text-gray-800 p-3 sm:p-4 rounded-lg sm:rounded-xl shadow-lg border border-white/30"
-                  >
-                    <p className="italic text-sm sm:text-base">"{t.quote}"</p>
-                    <p className="text-xs sm:text-sm font-medium mt-2 text-purple-600">{t.name}</p>
-                  </div>
-                ))}
+        {/* ── Images ───────────────────────────────────────── */}
+        <section className="max-w-6xl mx-auto px-5 sm:px-8 pb-20">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            {["/happy-women-supporting.png", "/empowered-women-community.png"].map((src, i) => (
+              <div key={i} className="relative overflow-hidden rounded-2xl group"
+                style={{ boxShadow: "0 20px 60px rgba(139,92,246,0.12)" }}>
+                <img src={src} alt="" className="w-full h-64 sm:h-80 object-cover transition-transform duration-700 group-hover:scale-105" />
+                <div className="absolute inset-0 rounded-2xl"
+                  style={{ background: "linear-gradient(to top, rgba(124,58,237,0.15), transparent)" }} />
               </div>
-            </div>
-          </section>
+            ))}
+          </div>
+        </section>
 
-          <section className="w-full max-w-4xl relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-pink-200/30 to-rose-200/30 rounded-2xl sm:rounded-3xl blur-lg"></div>
-            <div className="relative bg-white/50 backdrop-blur-md border border-white/40 p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-2xl text-left">
-              <h2 className="text-base sm:text-lg lg:text-xl font-bold mb-3 sm:mb-4 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                Questions we get asked a lot
+        {/* ── About strip ──────────────────────────────────── */}
+        <section className="max-w-6xl mx-auto px-5 sm:px-8 pb-20">
+          <div className="glass noise relative overflow-hidden p-8 sm:p-12">
+            <div className="orb w-48 h-48 -top-12 -right-12 opacity-30"
+              style={{ background: "radial-gradient(circle, #e879f9, transparent 70%)" }} />
+            <div className="relative z-10 max-w-2xl">
+              <div className="tag tag-pink mb-4">Our mission</div>
+              <h2 className="text-3xl sm:text-4xl font-light mb-4" style={{ fontFamily: "Cormorant Garamond, serif" }}>
+                Built different, on purpose.
               </h2>
-              <div className="space-y-3 sm:space-y-4">
-                {faq.map(([q, a], i) => (
-                  <div
-                    key={i}
-                    className="bg-white/40 backdrop-blur-sm p-3 sm:p-4 rounded-lg sm:rounded-xl border border-white/30"
-                  >
-                    <button
-                      className="font-semibold flex justify-between w-full cursor-pointer text-gray-700 hover:text-purple-600 transition-colors text-sm sm:text-base"
-                      onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                    >
-                      <span className="text-left">💜 {q}</span>
-                      <span className="ml-2 flex-shrink-0">{openFaq === i ? "−" : "+"}</span>
-                    </button>
-                    {openFaq === i && <p className="text-sm sm:text-base mt-2 text-gray-600 leading-relaxed">{a}</p>}
-                  </div>
-                ))}
-              </div>
+              <p className="text-[var(--c-muted)] leading-relaxed" style={{ fontWeight: 300 }}>
+                Most platforms weren't built with women in mind. Mission Sakhi is privacy-first,
+                women-centered, and genuinely safe. Whether you're navigating workplace harassment,
+                relationship struggles, or just need someone who gets it — this is your space.
+                No judgment. Just real support from real women.
+              </p>
             </div>
-          </section>
-        </div>
-      </main>
+          </div>
+        </section>
 
-      <div className="fixed bottom-4 sm:bottom-8 right-4 sm:right-8 flex flex-col gap-2 sm:gap-4">
-        <div
-          className="w-10 h-10 sm:w-14 sm:h-14 bg-gradient-to-br from-pink-400 to-purple-500 rounded-full shadow-lg flex items-center justify-center text-white text-lg sm:text-xl cursor-pointer hover:scale-110 transition-transform duration-300 animate-pulse"
-          style={{ animationDuration: "2.3s" }}
-        >
-          💬
-        </div>
-        <div
-          className="w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-br from-rose-400 to-pink-500 rounded-full shadow-lg flex items-center justify-center text-white text-sm sm:text-lg cursor-pointer hover:scale-110 transition-transform duration-300"
-          style={{ transform: "translateX(-2px)" }}
-        >
-          ❤️
-        </div>
+        {/* ── Features ─────────────────────────────────────── */}
+        <section className="max-w-6xl mx-auto px-5 sm:px-8 pb-20">
+          <div className="text-center mb-12">
+            <div className="tag tag-purple mb-4 mx-auto">Why us</div>
+            <h2 className="text-3xl sm:text-4xl font-light" style={{ fontFamily: "Cormorant Garamond, serif" }}>
+              What makes us <em>different</em>
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {FEATURES.map((f, i) => (
+              <div key={i} className="glass feature-card p-6 sm:p-7">
+                <div className="text-3xl mb-4">{f.icon}</div>
+                <div className="tag tag-purple mb-3">{f.tag}</div>
+                <h3 className="text-xl font-semibold text-[var(--c-ink)] mb-2"
+                  style={{ fontFamily: "Cormorant Garamond, serif" }}>
+                  {f.title}
+                </h3>
+                <p className="text-sm text-[var(--c-muted)] leading-relaxed">{f.body}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ── Testimonials ─────────────────────────────────── */}
+        <section className="max-w-6xl mx-auto px-5 sm:px-8 pb-20">
+          <div className="text-center mb-12">
+            <div className="tag tag-pink mb-4 mx-auto">Community voices</div>
+            <h2 className="text-3xl sm:text-4xl font-light" style={{ fontFamily: "Cormorant Garamond, serif" }}>
+              What our sisters say
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            {TESTIMONIALS.map((t, i) => (
+              <div key={i} className="glass p-6 sm:p-8 relative overflow-hidden">
+                <div className="quote-mark absolute top-3 left-5">"</div>
+                <p className="text-[var(--c-ink)] leading-relaxed mb-4 pt-4 relative z-10"
+                  style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "1.1rem", fontStyle: "italic", fontWeight: 400 }}>
+                  {t.quote}
+                </p>
+                <div className="flex items-center gap-2">
+                  <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white"
+                    style={{ background: "linear-gradient(135deg,#8b5cf6,#ec4899)" }}>
+                    {t.name[0]}
+                  </div>
+                  <span className="text-sm text-[var(--c-muted)]">
+                    {t.name}{t.age ? `, ${t.age}` : ""}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ── FAQ ──────────────────────────────────────────── */}
+        <section className="max-w-3xl mx-auto px-5 sm:px-8 pb-20">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl sm:text-4xl font-light" style={{ fontFamily: "Cormorant Garamond, serif" }}>
+              Questions we hear often
+            </h2>
+          </div>
+          <div className="glass overflow-hidden">
+            {FAQ.map(([q, a], i) => (
+              <div key={i} className="faq-item">
+                <button
+                  className="w-full flex items-center justify-between px-6 py-5 text-left"
+                  onClick={() => setOpenFaq(openFaq === i ? null : i)}>
+                  <span className="font-medium text-[var(--c-ink)] text-sm sm:text-base">{q}</span>
+                  <span className="text-[var(--c-violet)] text-xl ml-4 flex-shrink-0 transition-transform duration-200"
+                    style={{ transform: openFaq === i ? "rotate(45deg)" : "none" }}>+</span>
+                </button>
+                {openFaq === i && (
+                  <div className="px-6 pb-5">
+                    <p className="text-sm text-[var(--c-muted)] leading-relaxed">{a}</p>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ── CTA banner ───────────────────────────────────── */}
+        <section className="max-w-6xl mx-auto px-5 sm:px-8 pb-24">
+          <div className="relative overflow-hidden rounded-3xl p-10 sm:p-16 text-center"
+            style={{ background: "linear-gradient(135deg,#6d28d9 0%,#c026d3 50%,#f43f5e 100%)" }}>
+            <div className="orb w-64 h-64 -top-16 -left-16 opacity-30"
+              style={{ background: "radial-gradient(circle,rgba(255,255,255,0.4),transparent 70%)" }} />
+            <div className="relative z-10">
+              <h2 className="text-3xl sm:text-5xl font-light text-white mb-4"
+                style={{ fontFamily: "Cormorant Garamond, serif" }}>
+                Ready to find your people?
+              </h2>
+              <p className="text-white/70 mb-8 max-w-md mx-auto">
+                Join thousands of women who've found their safe space here.
+              </p>
+              <Link to="/signup"
+                className="inline-flex items-center gap-2 bg-white text-purple-700 font-semibold px-8 py-3.5 rounded-full hover:bg-white/90 transition-all shadow-xl"
+                style={{ fontSize: "0.95rem" }}>
+                Get started — it's free
+              </Link>
+            </div>
+          </div>
+        </section>
+
       </div>
-    </div>
-  )
-}
 
-export default Home
+      {/* Floating action */}
+      <Link to="/chatbot"
+        className="fixed bottom-6 right-6 z-50 w-13 h-13 flex items-center justify-center rounded-full text-white text-xl shadow-2xl transition-transform hover:scale-110"
+        style={{ background: "linear-gradient(135deg,#8b5cf6,#ec4899)", width: "3.25rem", height: "3.25rem", boxShadow: "0 8px 32px rgba(139,92,246,0.4)" }}
+        title="Chat with AI">
+        🤖
+      </Link>
+    </div>
+  );
+}

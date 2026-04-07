@@ -1,59 +1,77 @@
 import { Link } from "react-router-dom";
 
-function Footer() {
+const footerStyle = {
+  background: "linear-gradient(135deg,rgba(109,40,217,0.95) 0%,rgba(192,38,211,0.95) 50%,rgba(244,63,94,0.9) 100%)",
+  backdropFilter: "blur(24px)",
+  borderTop: "1px solid rgba(255,255,255,0.1)",
+};
+
+export default function Footer() {
   return (
-    <footer className="relative overflow-hidden">
-      
-      <div
-        className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-pink-400 via-purple-400 to-rose-400"
-        style={{ transform: "scaleY(1.1)" }}
-      ></div>
+    <footer style={footerStyle} className="relative">
+      <div className="absolute top-0 left-0 right-0 h-px"
+        style={{ background: "linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent)" }} />
 
-      
-      <div className="absolute inset-0 bg-gradient-to-r from-purple-500/80 via-pink-500/80 to-rose-500/80 backdrop-blur-md"></div>
+      <div className="max-w-6xl mx-auto px-5 sm:px-8 py-10 sm:py-12">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-8">
+          {/* Brand */}
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-7 h-7 rounded-lg flex items-center justify-center text-sm"
+                style={{ background: "rgba(255,255,255,0.15)", border: "1px solid rgba(255,255,255,0.25)" }}>
+                🌸
+              </div>
+              <span className="text-white font-semibold" style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "1.1rem" }}>
+                Mission Sakhi
+              </span>
+            </div>
+            <p className="text-white/60 text-xs leading-relaxed">
+              Creating safe spaces for women, one conversation at a time.
+            </p>
+          </div>
 
-     
-      <div className="relative z-10 max-w-xl mx-auto px-4 sm:px-6 py-6 text-center text-white">
-        
-        
-        <h3 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-pink-200 to-purple-200 bg-clip-text text-transparent mb-1">
-          Mission Sakhi ✨
-        </h3>
-        <p className="text-xs sm:text-sm text-pink-100 mb-4">
-          Creating safe spaces, one conversation at a time 💜
-        </p>
+          {/* Links */}
+          <div>
+            <p className="text-white/40 text-xs font-semibold uppercase tracking-widest mb-3">Explore</p>
+            <div className="space-y-2">
+              {[
+                { to: "/forum",          label: "Anonymous Forum"  },
+                { to: "/community-chat", label: "Community Rooms"  },
+                { to: "/chatbot",        label: "AI Support"       },
+                { to: "/mental-health",  label: "Mental Health"    },
+              ].map(({ to, label }) => (
+                <Link key={to} to={to}
+                  className="block text-white/65 hover:text-white text-sm transition-colors">
+                  {label}
+                </Link>
+              ))}
+            </div>
+          </div>
 
-       
-        <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 text-xs sm:text-sm text-pink-100">
-            <p className="font-semibold">Drop us a line:</p>
-            <p className="text-white">hellomissionsakhi.org</p>
-            <span className="text-white/50">|</span>
-            <p className="font-semibold">Call us:</p>
-            <p className="text-white">+91-9468804026</p>
-            <span className="text-white/50">|</span>
-            <Link to="/mental-health">Mental Health Support</Link>
+          {/* Contact */}
+          <div>
+            <p className="text-white/40 text-xs font-semibold uppercase tracking-widest mb-3">Contact</p>
+            <div className="space-y-2 text-sm text-white/65">
+              <p>hellomissionsakhi.org</p>
+              <p>+91-9468804026</p>
+            </div>
+          </div>
         </div>
-        
-        
-        <div className="w-12 h-0.5 bg-gradient-to-r from-pink-400 to-purple-400 rounded-full mx-auto my-6"></div>
-        
-        
-        <p className="text-[10px] sm:text-xs text-pink-100 leading-relaxed mb-2">
-          Mission Sakhi is where women come to be real, share their stories, and find genuine support.
-        </p>
-        <p className="text-[10px] sm:text-xs text-pink-100">
-          © {new Date().getFullYear()} All rights reserved. Made with love for our amazing community.
-        </p>
-        
-      </div>
-      
-      
-      <div
-        className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent"
-        style={{ transform: "translateY(-0.5px)" }}
-      ></div>
-    </footer>
-  )
-}
 
-export default Footer;
+        <div className="border-t pt-6 flex flex-col sm:flex-row items-center justify-between gap-3"
+          style={{ borderColor: "rgba(255,255,255,0.1)" }}>
+          <p className="text-white/40 text-xs">
+            © {new Date().getFullYear()} Mission Sakhi. Made with love for our community.
+          </p>
+          <div className="flex gap-4 text-xs text-white/40">
+            <span>Privacy-first</span>
+            <span>·</span>
+            <span>Women-only</span>
+            <span>·</span>
+            <span>Always free</span>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}

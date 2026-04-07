@@ -1,3 +1,5 @@
+import dotenv from "dotenv";
+dotenv.config({ path: "./.env" });
 import express, { response, urlencoded } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -10,7 +12,7 @@ const app=express();
 const server=createServer(app);
 const io=new Server(server, {
     cors: {
-    origin: process.env.CORS_ORIGIN,
+    origin: ["http://localhost:5173", "https://mission-sakhi.vercel.app", process.env.CORS_ORIGIN].filter(Boolean),
     methods: ["GET", "POST"],
     credentials: true,
   }
@@ -87,8 +89,10 @@ socket.on('disconnect',()=>{
 })
 
 app.use(cors({
-    origin:process.env.CORS_ORIGIN,
-    credentials:true
+    origin: ["http://localhost:5173", "https://mission-sakhi.vercel.app", process.env.CORS_ORIGIN].filter(Boolean),
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
 }))
 app.use(cookieParser())
 app.use(express.json({limit:"100kb"}))
@@ -101,6 +105,7 @@ app.use(
 );
 app.use((req, res, next) => {
   res.setHeader("Cross-Origin-Opener-Policy", "unsafe-none");
+  res.setHeader("Cross-Origin-Embedder-Policy", "unsafe-none");
   next();
 });
 

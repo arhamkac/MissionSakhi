@@ -1,22 +1,32 @@
 import express, { Router } from "express";
 import cors from "cors";
 import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 import dotenv from "dotenv";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const router=Router();
 
-// dotenv.config()
-
-// const app=express();
-// app.use(cors());
-// app.use(express.json());
+// Initialize API
+if (!process.env.GOOGLE_API_KEY) {
+  console.error("ERROR: GOOGLE_API_KEY not found in environment variables");
+}
 
 const genAI=new GoogleGenerativeAI(process.env.GOOGLE_API_KEY)
 const model=genAI.getGenerativeModel({model:"gemini-2.0-flash"})
 
-const knowledge=fs.readFileSync("./chatbot/womens_chatbot_dataset.csv","utf-8")
-const rows=knowledge.split('\n')
+// Load knowledge base from CSV file
+const csvPath = path.join(__dirname, "womens_chatbot_dataset.csv");
+let knowledge = "";
+try {
+  knowledge = fs.readFileSync(csvPath, "utf-8");
+} catch (error) {
+  console.error(`ERROR: Could not read CSV file at ${csvPath}:`, error.message);
+  knowledge = "";
+}
+const rows=knowledge.split('\n').filter(row => row.trim())
 
 import stringSimilarity from 'string-similarity';
 
@@ -45,9 +55,14 @@ function cleanAnswer(raw) {
 router.route('/ask').post(async (req, res) => {
   const { question, history } = req.body;
 
-  const context=getRelevantContext(question)
+  if (!question) {
+    return res.status(400).json({ error: "Question is required" });
+  }
 
-  const prompt = `
+  try {
+    const context=getRelevantContext(question)
+
+    const prompt = `
   You are Sakhi, a helpful chatbot built by Arhan to support and inform users, especially around women's safety topics.
 
   Always answer as Sakhi — do not mention you're a Google AI or Gemini model. Use the provided context when relevant.
@@ -60,20 +75,19 @@ ${context}
 === END CONTEXT ===
 
   Previous conversation:
-  ${history}
+  ${history || ""}
 
   New Question:
   ${question}
   `;
 
-  try {
     const result = await model.generateContent(prompt);
     let text = result.response.text();
     text=cleanAnswer(text);
     res.status(200).json({ answer: text });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Something went wrong" });
+    console.error("CHATBOT ERROR:", error);
+    res.status(500).json({ error: error.message || "Something went wrong" });
   }
 });
 

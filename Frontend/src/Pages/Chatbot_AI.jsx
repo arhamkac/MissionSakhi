@@ -1,166 +1,131 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
+import { useAuth } from "./AuthContext";
+import { CHATBOT_BASE } from "../apiConfig";
 
-function Chatbot_AI() {
-  const username = "User";
+export default function Chatbot_AI() {
+  const { user } = useAuth();
+  const name = user?.username || "You";
 
   const [messages, setMessages] = useState(() => {
-    const saved = localStorage.getItem("chatMessages");
-    return saved ? JSON.parse(saved) : [];
+    try { return JSON.parse(localStorage.getItem("sakhiChat")) || []; } catch { return []; }
   });
-
-  const [inputMess, setInputMess] = useState("");
+  const [input, setInput] = useState("");
+  const [typing, setTyping] = useState(false);
+  const bottomRef = useRef(null);
 
   useEffect(() => {
-    localStorage.setItem("chatMessages", JSON.stringify(messages));
+    localStorage.setItem("sakhiChat", JSON.stringify(messages));
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const handleSend = async () => {
-    if (!inputMess.trim()) return;
+  const send = async () => {
+    if (!input.trim() || typing) return;
+    const text = input.trim();
+    setInput("");
+    setMessages(p => [...p, { sender: name, text, isBot: false }]);
+    setTyping(true);
 
-    const userInput = inputMess;
-    setMessages((prev) => [...prev, { sender: username, text: userInput, isBot: false }]);
-    setInputMess("");
-    await askQuestion(userInput);
-  };
-
-  const askQuestion = async (userInput) => {
     try {
-      const chatHistory = messages
-        .map((msg) => `${msg.sender}: ${msg.text}`)
-        .concat(`${username}: ${userInput}`);
-
-      const res = await axios.post("https://missionsakhi.onrender.com/api/chatbot/ask", {
-        question: userInput,
-        history: chatHistory.join("\n"),
-      });
-
-      setMessages((prev) => [...prev, { sender: "Chatbot", text: res.data.answer, isBot: true }]);
-    } catch (err) {
-      console.error(err);
-      setMessages((prev) => [
-        ...prev,
-        { sender: "Chatbot", text: "Sorry, something went wrong.", isBot: true },
-      ]);
+      const history = messages.map(m => `${m.sender}: ${m.text}`).concat(`${name}: ${text}`).join("\n");
+      const { data } = await axios.post(`${CHATBOT_BASE}/ask`, { question: text, history });
+      setMessages(p => [...p, { sender: "Sakhi", text: data.answer, isBot: true }]);
+    } catch {
+      setMessages(p => [...p, { sender: "Sakhi", text: "Sorry, I'm having trouble connecting right now. Please try again 💜", isBot: true }]);
+    } finally {
+      setTyping(false);
     }
   };
 
-  const handleClearChat = () => {
-    setMessages([]);
-    localStorage.removeItem("chatMessages");
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-100 via-purple-50 to-rose-100 relative overflow-hidden">
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-r from-pink-300/30 to-purple-300/30 rounded-full blur-xl animate-pulse"></div>
-        <div className="absolute top-40 right-20 w-24 h-24 bg-gradient-to-r from-rose-300/30 to-pink-300/30 rounded-full blur-lg animate-pulse delay-1000"></div>
-        <div className="absolute bottom-32 left-1/4 w-40 h-40 bg-gradient-to-r from-purple-300/20 to-rose-300/20 rounded-2xl blur-2xl animate-pulse delay-2000"></div>
-        <div className="absolute bottom-20 right-1/3 w-28 h-28 bg-gradient-to-r from-pink-300/25 to-purple-300/25 rounded-full blur-xl animate-pulse delay-500"></div>
-      </div>
+    <div className="page flex flex-col" style={{ background: "linear-gradient(160deg,#fdf0f5 0%,#f7f0ff 50%,#fdf0f5 100%)", height: "calc(100vh - 4rem)" }}>
+      <div className="orb w-80 h-80 top-0 right-0 opacity-20" style={{ background: "radial-gradient(circle,#e879f9,transparent 70%)" }} />
+      <div className="orb w-64 h-64 bottom-0 left-0 opacity-15" style={{ background: "radial-gradient(circle,#818cf8,transparent 70%)", animationDelay: "4s" }} />
 
-      <div className="relative z-10 flex justify-center items-center min-h-screen p-4 sm:p-6 lg:p-8">
-        <div className="w-full max-w-4xl">
-          <div className="mb-8 sm:mb-10 lg:mb-12 text-center">
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-rose-600 bg-clip-text text-transparent mb-4 sm:mb-6">
-              Sakhi AI Chatbot
-            </h1>
-            <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
-              Your supportive AI companion for meaningful conversations and guidance
-            </p>
-            <button
-              onClick={handleClearChat}
-              className="mt-4 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition"
-            >
-              Clear Chat
-            </button>
-          </div>
+      <div className="relative z-10 flex flex-col h-full max-w-3xl mx-auto w-full px-4 py-5">
 
-          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl shadow-2xl overflow-hidden">
-            <div className="h-[500px] sm:h-[600px] lg:h-[700px] flex flex-col">
-              <div className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 backdrop-blur-sm border-b border-white/20 p-4 sm:p-6">
-                <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 text-center">
-                  Chat with Sakhi
-                </h2>
-              </div>
-
-              <div className="flex-1 overflow-hidden">
-                <ul className="h-full overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-0">
-                  
-                  {messages.length === 0 && (
-                    <li className="flex justify-start mb-4 sm:mb-6">
-                      <div className="flex flex-col items-start max-w-[85%] sm:max-w-[75%] lg:max-w-[70%]">
-                        <label className="text-xs sm:text-sm text-gray-600 mb-2 font-medium">
-                          Chatbot
-                        </label>
-                        <div className="bg-gradient-to-r from-purple-600/80 to-pink-600/80 backdrop-blur-sm border border-white/20 
-                        text-white px-4 py-3 sm:px-6 sm:py-4 rounded-2xl shadow-lg text-sm sm:text-base leading-relaxed">
-                          Hello, how are you doing Sakhi?
-                        </div>
-                      </div>
-                    </li>
-                  )}
-
-                  {messages.map((msg, index) => (
-                    <li
-                      key={index}
-                      className={`flex ${msg.isBot ? "justify-start" : "justify-end"} mb-4 sm:mb-6`}
-                    >
-                      <div
-                        className={`flex flex-col max-w-[85%] sm:max-w-[75%] lg:max-w-[70%] ${
-                          msg.isBot ? "items-start" : "items-end"
-                        }`}
-                      >
-                        <label className="text-xs sm:text-sm text-gray-200 mb-2 font-medium">
-                          {msg.sender}
-                        </label>
-                        <div
-                          className={`${
-                            msg.isBot
-                              ? "bg-gradient-to-r from-purple-600/80 to-pink-600/80"
-                              : "bg-gradient-to-r from-pink-500/80 to-rose-500/80"
-                          } 
-                          backdrop-blur-sm border border-white/20 text-white px-4 py-3 sm:px-6 sm:py-4 rounded-2xl shadow-lg
-                          text-sm sm:text-base leading-relaxed`}
-                        >
-                          {msg.text}
-                        </div>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 backdrop-blur-sm border-t border-white/20 p-4 sm:p-6">
-                <div className="flex items-center gap-3 sm:gap-4">
-                  <input
-                    type="text"
-                    placeholder="Enter your message..."
-                    className="flex-1 px-4 py-3 sm:px-6 sm:py-4 rounded-2xl bg-white/80 backdrop-blur-sm border border-white/30 
-                      text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-transparent
-                      text-sm sm:text-base transition-all duration-300"
-                    value={inputMess}
-                    onChange={(e) => setInputMess(e.target.value)}
-                    onKeyDown={async (e) => {
-                      if (e.key === "Enter") await handleSend();
-                    }}
-                  />
-                  <button
-                    className="px-6 py-3 sm:px-8 sm:py-4 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 
-                      text-white font-semibold hover:from-purple-700 hover:to-pink-700 transform hover:scale-105 
-                      transition-all duration-300 shadow-lg text-sm sm:text-base"
-                    onClick={handleSend}
-                  >
-                    Send
-                  </button>
-                </div>
+        {/* Header */}
+        <div className="glass p-4 mb-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl flex items-center justify-center text-xl"
+              style={{ background: "linear-gradient(135deg,#8b5cf6,#ec4899)" }}>
+              🤖
+            </div>
+            <div>
+              <h1 className="font-semibold text-[var(--c-ink)] text-sm" style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "1.1rem" }}>
+                Sakhi AI
+              </h1>
+              <div className="flex items-center gap-1.5">
+                <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="text-xs text-[var(--c-muted)]">Always here for you</span>
               </div>
             </div>
           </div>
+          <button onClick={() => { setMessages([]); localStorage.removeItem("sakhiChat"); }}
+            className="btn-ghost text-xs py-1.5 px-3">
+            Clear chat
+          </button>
+        </div>
+
+        {/* Messages */}
+        <div className="flex-1 overflow-y-auto space-y-4 pr-1 pb-2">
+          {messages.length === 0 && (
+            <div className="flex justify-start">
+              <div className="max-w-xs sm:max-w-sm">
+                <p className="text-xs text-[var(--c-muted)] mb-1 ml-1">Sakhi</p>
+                <div className="bubble" style={{ borderRadius: "0 var(--radius) var(--radius) var(--radius)" }}>
+                  Hey there 🌸 I'm Sakhi, your AI companion. I'm here to listen, support, and help — whatever you need. What's on your mind?
+                </div>
+              </div>
+            </div>
+          )}
+
+          {messages.map((msg, i) => (
+            <div key={i} className={`flex ${msg.isBot ? "justify-start" : "justify-end"}`}>
+              <div className={`max-w-xs sm:max-w-sm ${msg.isBot ? "" : "items-end flex flex-col"}`}>
+                <p className="text-xs text-[var(--c-muted)] mb-1 mx-1">{msg.sender}</p>
+                {msg.isBot ? (
+                  <div className="bubble">{msg.text}</div>
+                ) : (
+                  <div className="px-4 py-3 text-sm text-white rounded-2xl leading-relaxed"
+                    style={{ background: "linear-gradient(135deg,#8b5cf6,#ec4899)", borderRadius: "var(--radius) 0 var(--radius) var(--radius)" }}>
+                    {msg.text}
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+
+          {typing && (
+            <div className="flex justify-start">
+              <div className="max-w-xs">
+                <p className="text-xs text-[var(--c-muted)] mb-1 ml-1">Sakhi</p>
+                <div className="bubble flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-purple-400 animate-bounce" style={{ animationDelay: "0ms" }} />
+                  <span className="w-2 h-2 rounded-full bg-pink-400 animate-bounce" style={{ animationDelay: "150ms" }} />
+                  <span className="w-2 h-2 rounded-full bg-rose-400 animate-bounce" style={{ animationDelay: "300ms" }} />
+                </div>
+              </div>
+            </div>
+          )}
+          <div ref={bottomRef} />
+        </div>
+
+        {/* Input */}
+        <div className="glass p-3 mt-3 flex gap-3">
+          <input
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            onKeyDown={e => e.key === "Enter" && send()}
+            placeholder="Share what's on your mind…"
+            className="field flex-1 py-3"
+            disabled={typing}
+          />
+          <button onClick={send} disabled={typing || !input.trim()} className="btn-primary px-6 py-3 disabled:opacity-50">
+            {typing ? <span className="spinner" /> : "Send"}
+          </button>
         </div>
       </div>
     </div>
   );
 }
-
-export default Chatbot_AI;

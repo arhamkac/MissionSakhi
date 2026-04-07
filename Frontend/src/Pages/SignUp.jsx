@@ -1,135 +1,115 @@
-import { useState,useEffect } from "react";
-import { GoogleLogin } from "@react-oauth/google";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
-import { useNavigate } from "react-router-dom";
 
-function SignUp() {
-  const [formData, setFormData] = useState({
-    email: "",
-    username: "",
-    nickname: "",
-    password: "",
-  });
+export default function SignUp() {
+  const [form, setForm] = useState({ email: "", username: "", nickname: "", password: "" });
   const [error, setError] = useState("");
-  const { signup, googleLogin, user } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const { signup, googleLogin, user, isConfigured, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  if (authLoading) return null;
+  if (user) { navigate("/dashboard"); return null; }
 
-  const handleSignUp = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
+    setError(""); setLoading(true);
     try {
-      await signup(formData);
-      window.location.reload();
-      navigate('/dashboard')
+      await signup(form);
+      navigate("/dashboard");
     } catch (err) {
-      console.error("SignUp error:", err);
-      setError("SignUp failed. Please try again.");
-    }
+      setError(err.message || "Sign up failed. Please try again.");
+    } finally { setLoading(false); }
   };
 
-  useEffect(() => {
-      if (user) {
-        navigate("/dashboard");
-      }
-    }, [user, navigate]);
-  
+  const handleGoogle = async () => {
+    if (!isConfigured) {
+      setError("Google sign-in is not configured yet. Use email/password signup.");
+      return;
+    }
+    setError(""); setLoading(true);
+    try {
+      await googleLogin();
+      navigate("/dashboard");
+    } catch {
+      setError("Google sign-in failed. Please try again.");
+    } finally { setLoading(false); }
+  };
+
+  const fields = [
+    { key: "username",  label: "Username",           type: "text",     placeholder: "how_you_appear" },
+    { key: "email",     label: "Email",               type: "email",    placeholder: "you@example.com", required: true },
+    { key: "nickname",  label: "Nickname (optional)", type: "text",     placeholder: "your vibe name" },
+    { key: "password",  label: "Password",            type: "password", placeholder: "••••••••", required: true },
+  ];
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-rose-50 flex items-center justify-center p-4">
+    <div className="page flex items-center justify-center px-4 py-16"
+      style={{ background: "linear-gradient(160deg,#fdf0f5 0%,#f7f0ff 50%,#fdf0f5 100%)" }}>
+      <div className="orb w-80 h-80 top-0 right-0 opacity-30"
+        style={{ background: "radial-gradient(circle,#e879f9,transparent 70%)" }} />
+      <div className="orb w-64 h-64 bottom-0 left-0 opacity-25"
+        style={{ background: "radial-gradient(circle,#818cf8,transparent 70%)", animationDelay: "4s" }} />
+
       <div className="relative z-10 w-full max-w-md">
-        <form
-          onSubmit={handleSignUp}
-          className="bg-white/60 backdrop-blur-md border border-white/40 rounded-2xl shadow-2xl p-8 space-y-4"
-        >
-          <h1 className="text-center text-2xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-rose-600 bg-clip-text text-transparent">
-            Join Our Community
+        <div className="text-center mb-8">
+          <Link to="/" className="inline-flex items-center gap-2 mb-6 text-[var(--c-muted)] hover:text-[var(--c-violet)] text-sm transition-colors">
+            ← Back to home
+          </Link>
+          <h1 className="text-4xl sm:text-5xl font-light grad-text mb-2"
+            style={{ fontFamily: "Cormorant Garamond, serif" }}>
+            Join us
           </h1>
+          <p className="text-[var(--c-muted)] text-sm">Your safe space starts here 🌸</p>
+        </div>
 
-          {error && (
-            <p className="bg-red-100 text-red-600 text-center p-2 rounded-lg">
-              {error}
-            </p>
-          )}
-
-          <input
-            type="text"
-            name="username"
-            value={formData.username}
-            onChange={handleInputChange}
-            placeholder="Username"
-            className="w-full p-3 rounded-lg border focus:ring-2 focus:ring-purple-400"
-          />
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleInputChange}
-            placeholder="Email"
-            className="w-full p-3 rounded-lg border focus:ring-2 focus:ring-purple-400"
-            required
-          />
-          <input
-            type="text"
-            name="nickname"
-            value={formData.nickname}
-            onChange={handleInputChange}
-            placeholder="Nickname (optional)"
-            className="w-full p-3 rounded-lg border focus:ring-2 focus:ring-purple-400"
-          />
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleInputChange}
-            placeholder="Password"
-            className="w-full p-3 rounded-lg border focus:ring-2 focus:ring-purple-400"
-            required
-          />
-
-          <button
-            type="submit"
-            className="w-full py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg font-semibold hover:from-purple-600 hover:to-pink-600 transition"
-          >
-            Sign Up
+        <div className="glass p-7 sm:p-9">
+          <button onClick={handleGoogle} disabled={loading}
+            className="w-full flex items-center justify-center gap-3 py-3 rounded-xl border transition-all mb-5 font-medium text-sm"
+            style={{ background: "rgba(255,255,255,0.9)", borderColor: "rgba(139,92,246,0.15)", color: "var(--c-ink)" }}
+            onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(139,92,246,0.35)"}
+            onMouseLeave={e => e.currentTarget.style.borderColor = "rgba(139,92,246,0.15)"}>
+            <svg width="18" height="18" viewBox="0 0 18 18">
+              <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/>
+              <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/>
+              <path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/>
+              <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/>
+            </svg>
+            Continue with Google
           </button>
 
-          <div className="text-center text-sm text-gray-500">
-            Already have an account?{" "}
-            <a href="/login" className="text-purple-600 hover:text-pink-600">
+          <div className="divider mb-5">or create with email</div>
+
+          {error && (
+            <div className="mb-4 px-4 py-3 rounded-xl text-sm text-rose-600"
+              style={{ background: "rgba(244,63,94,0.06)", border: "1px solid rgba(244,63,94,0.15)" }}>
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {fields.map(({ key, label, type, placeholder, required }) => (
+              <div key={key}>
+                <label className="block text-xs font-medium text-[var(--c-muted)] mb-1.5 uppercase tracking-wide">{label}</label>
+                <input type={type} value={form[key]}
+                  onChange={e => setForm(p => ({ ...p, [key]: e.target.value }))}
+                  className="field" placeholder={placeholder} required={required} />
+              </div>
+            ))}
+            <button type="submit" disabled={loading} className="btn-primary w-full py-3.5 mt-1">
+              {loading ? <span className="spinner" /> : "Create my account"}
+            </button>
+          </form>
+
+          <p className="text-center text-sm text-[var(--c-muted)] mt-5">
+            Already a member?{" "}
+            <Link to="/login" className="text-[var(--c-violet)] font-medium hover:text-[var(--c-pink)] transition-colors">
               Sign in
-            </a>
-          </div>
-
-          <div className="flex items-center my-4">
-            <div className="flex-1 h-px bg-gray-300"></div>
-            <span className="px-2 text-sm text-gray-500">or continue with</span>
-            <div className="flex-1 h-px bg-gray-300"></div>
-          </div>
-
-          <div className="flex justify-center">
-            <GoogleLogin
-              onSuccess={async (credentialResponse) => {
-                try {
-                  await googleLogin(credentialResponse.credential);
-                  window.location.reload();
-                  navigate("/dashboard");
-                } catch (err) {
-                  console.error("Google signup error:", err);
-                }
-              }}
-              onError={() => {
-                console.log("Google signup failed");
-              }}
-            />
-          </div>
-        </form>
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );
 }
-
-export default SignUp;

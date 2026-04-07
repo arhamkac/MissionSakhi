@@ -1,254 +1,229 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useAuth } from "./AuthContext";
+import { ROOMS_BASE, MESSAGE_BASE } from "../apiConfig";
+
+const GRADIENTS = [
+  "linear-gradient(135deg,#8b5cf6,#ec4899)",
+  "linear-gradient(135deg,#ec4899,#f43f5e)",
+  "linear-gradient(135deg,#6d28d9,#c026d3)",
+  "linear-gradient(135deg,#f43f5e,#f97316)",
+  "linear-gradient(135deg,#0ea5e9,#8b5cf6)",
+];
+
+const initials = (name) => {
+  const w = name.trim().split(" ");
+  return w.length === 1 ? w[0][0].toUpperCase() : (w[0][0] + w[1][0]).toUpperCase();
+};
 
 export default function Community() {
-  const [chatTopics, setChatTopics] = useState([]);
+  const [rooms, setRooms] = useState([]);
   const [messages, setMessages] = useState({});
-  const [selectedTopic, setSelectedTopic] = useState(null);
-  const [newMessage, setNewMessage] = useState("");
-  const [newRoomName, setNewRoomName] = useState("");
-  const [newRoomDesc, setNewRoomDesc] = useState("");
-  const [editingMessageId, setEditingMessageId] = useState(null);
-  const [editingContent, setEditingContent] = useState("");
-
+  const [selected, setSelected] = useState(null);
+  const [newMsg, setNewMsg] = useState("");
+  const [roomName, setRoomName] = useState("");
+  const [roomDesc, setRoomDesc] = useState("");
+  const [editId, setEditId] = useState(null);
+  const [editText, setEditText] = useState("");
   const { user, loading } = useAuth();
-  const BASE_URL = "https://missionsakhi.onrender.com/api/rooms";
-  const MSG_URL = "https://missionsakhi.onrender.com/api/message";
 
-  const getRoomInitials = (name) => {
-    const words = name.split(" ");
-    return words.length === 1 ? words[0][0].toUpperCase() : (words[0][0] + words[1][0]).toUpperCase();
-  };
-
-  const stringToColor = (str) => {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
-    return `hsl(${hash % 360}, 60%, 70%)`;
-  };
+  const BASE = ROOMS_BASE;
+  const MSG  = MESSAGE_BASE;
+  const auth = { headers: { Authorization: `Bearer ${user?.token}` } };
 
   useEffect(() => {
     if (!user) return;
-    const fetchRooms = async () => {
-      try {
-        const { data } = await axios.get(`${BASE_URL}/get-rooms`);
-        setChatTopics(data.message.rooms || []);
-      } catch (err) {
-        console.error("Fetch rooms error:", err.response?.data || err.message);
-      }
-    };
-    fetchRooms();
+    axios.get(`${BASE}/get-rooms`)
+      .then(({ data }) => setRooms(data.message.rooms || []))
+      .catch(console.error);
   }, [user]);
 
   useEffect(() => {
-    if (!selectedTopic || !user) return;
-    const fetchMessages = async () => {
-      try {
-        console.log(user.token)
-        const { data } = await axios.get(`${BASE_URL}/messages/${selectedTopic}`, {
-          headers: { Authorization: `Bearer ${user.token}` },
-        });
-        setMessages((prev) => ({ ...prev, [selectedTopic]: data.message || [] }));
-      } catch (err) {
-        console.error("Fetch messages error:", err.response?.data || err.message);
-      }
-    };
-    fetchMessages();
-  }, [selectedTopic, user]);
+    if (!selected || !user) return;
+    axios.get(`${BASE}/messages/${selected}`, auth)
+      .then(({ data }) => setMessages(p => ({ ...p, [selected]: data.message || [] })))
+      .catch(console.error);
+  }, [selected, user]);
 
-  const handleSendMessage = async () => {
-    if (!user || !newMessage.trim() || !selectedTopic) return;
+  const send = async () => {
+    if (!newMsg.trim() || !selected) return;
     try {
-      console.log("")
-      const { data } = await axios.post(
-        `${BASE_URL}/${selectedTopic}`,
-        { headers: { Authorization: `Bearer ${user.token}` } },
-        { message: newMessage }
-      );
-      setMessages((prev) => ({
-        ...prev,
-        [selectedTopic]: [data.message, ...(prev[selectedTopic] || [])],
-      }));
-      setNewMessage("");
-    } catch (err) {
-      console.error("Send message error:", err.response?.data || err.message);
-    }
+      const { data } = await axios.post(`${BASE}/${selected}`, { headers: auth.headers }, { message: newMsg });
+      setMessages(p => ({ ...p, [selected]: [data.message, ...(p[selected] || [])] }));
+      setNewMsg("");
+    } catch (e) { console.error(e); }
   };
 
-  const handleEditMessage = async (messageId) => {
-    if (!editingContent.trim()) return;
+  const editMsg = async (id) => {
+    if (!editText.trim()) return;
     try {
-      const { data } = await axios.patch(
-        `${MSG_URL}/${messageId}`,
-        { content: editingContent },
-        { headers: { Authorization: `Bearer ${user.token}` } }
-      );
-      setMessages((prev) => ({
-        ...prev,
-        [selectedTopic]: prev[selectedTopic].map((msg) =>
-          msg._id === messageId ? data.message : msg
-        ),
-      }));
-      setEditingMessageId(null);
-      setEditingContent("");
-    } catch (err) {
-      console.error("Edit message error:", err.response?.data || err.message);
-    }
+      const { data } = await axios.patch(`${MSG}/${id}`, { content: editText }, auth);
+      setMessages(p => ({ ...p, [selected]: p[selected].map(m => m._id === id ? data.message : m) }));
+      setEditId(null); setEditText("");
+    } catch (e) { console.error(e); }
   };
 
-  const handleDeleteMessage = async (messageId) => {
-    if (!user) return;
+  const deleteMsg = async (id) => {
     try {
-      await axios.delete(`${MSG_URL}/${messageId}`, {
-        headers: { Authorization: `Bearer ${user.token}` },
-      });
-      setMessages((prev) => ({
-        ...prev,
-        [selectedTopic]: prev[selectedTopic].filter((msg) => msg._id !== messageId),
-      }));
-    } catch (err) {
-      console.error("Delete message error:", err.response?.data || err.message);
-    }
+      await axios.delete(`${MSG}/${id}`, auth);
+      setMessages(p => ({ ...p, [selected]: p[selected].filter(m => m._id !== id) }));
+    } catch (e) { console.error(e); }
   };
 
-  const handleLike = (messageId) => {
-    setMessages((prev) => ({
-      ...prev,
-      [selectedTopic]: prev[selectedTopic].map((msg) =>
-        msg._id === messageId ? { ...msg, likes: (msg.likes || 0) + 1 } : msg
-      ),
-    }));
-  };
+  const like = (id) => setMessages(p => ({
+    ...p, [selected]: p[selected].map(m => m._id === id ? { ...m, likes: (m.likes || 0) + 1 } : m)
+  }));
 
-  const handleCreateRoom = async () => {
-    if (!user || !newRoomName.trim()) return alert("Room name cannot be empty");
+  const createRoom = async () => {
+    if (!roomName.trim()) return;
     try {
-      const { data } = await axios.post(
-        `${BASE_URL}/create-room`,
-        { name: newRoomName, description: newRoomDesc },
-        { headers: { Authorization: `Bearer ${user.token}` } }
-      );
-      setChatTopics((prev) => [...prev, data.message]);
-      setNewRoomName("");
-      setNewRoomDesc("");
-      alert("Room created successfully!");
-    } catch (err) {
-      console.error("Create room error:", err.response?.data || err.message);
-    }
+      const { data } = await axios.post(`${BASE}/create-room`, { name: roomName, description: roomDesc }, auth);
+      setRooms(p => [...p, data.message]);
+      setRoomName(""); setRoomDesc("");
+    } catch (e) { console.error(e); }
   };
 
-  const currentMessages = selectedTopic ? messages[selectedTopic] || [] : [];
+  if (loading) return (
+    <div className="page flex items-center justify-center"
+      style={{ background: "linear-gradient(160deg,#fdf0f5 0%,#f7f0ff 50%,#fdf0f5 100%)" }}>
+      <div className="glass p-8 text-center">
+        <div className="spinner mx-auto mb-3" style={{ borderTopColor: "#8b5cf6", borderColor: "rgba(139,92,246,0.2)", width: "2rem", height: "2rem" }} />
+        <p className="text-sm text-[var(--c-muted)]">Loading community…</p>
+      </div>
+    </div>
+  );
 
-  if (loading) return <div className="text-center p-6">Loading...</div>;
-
-  if (selectedTopic) {
-    const topic = chatTopics.find((t) => t._id === selectedTopic);
+  /* ── Chat view ── */
+  if (selected) {
+    const room = rooms.find(r => r._id === selected);
+    const msgs = messages[selected] || [];
     return (
-      <div className="relative overflow-hidden min-h-screen">
-        <div className="relative z-10 max-w-4xl mx-auto p-4 sm:p-6">
-          <div className="mb-6 sm:mb-8 flex items-center gap-4">
-            <button onClick={() => setSelectedTopic(null)} className="bg-white/20 ...">← Back</button>
+      <div className="page flex flex-col"
+        style={{ background: "linear-gradient(160deg,#fdf0f5 0%,#f7f0ff 50%,#fdf0f5 100%)", height: "calc(100vh - 4rem)" }}>
+        <div className="orb w-64 h-64 top-0 right-0 opacity-20"
+          style={{ background: "radial-gradient(circle,#e879f9,transparent 70%)" }} />
+
+        <div className="relative z-10 flex flex-col h-full max-w-3xl mx-auto w-full px-4 py-5">
+          {/* Room header */}
+          <div className="glass p-4 mb-4 flex items-center gap-4">
+            <button onClick={() => setSelected(null)} className="btn-ghost text-sm py-1.5 px-3">← Back</button>
             <div>
-              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800">{topic.name}</h1>
-              <p className="text-sm sm:text-base text-gray-600">{topic.description}</p>
+              <h2 className="font-semibold text-[var(--c-ink)]">{room?.name}</h2>
+              <p className="text-xs text-[var(--c-muted)]">{room?.description}</p>
             </div>
           </div>
 
-          <div className="bg-white/40 backdrop-blur-md border border-white/30 rounded-2xl p-4 sm:p-6 mb-6 shadow-xl max-h-96 overflow-y-auto space-y-4">
-            {currentMessages.map((message) => (
-              <div key={message._id} className="bg-white/50 rounded-xl p-4 border border-white/20">
-                <div className="flex justify-between items-start gap-3">
-                  <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="font-semibold text-gray-800">{message.user}</span>
-                      <span className="text-xs text-gray-500">{message.time || "now"}</span>
+          {/* Messages */}
+          <div className="flex-1 overflow-y-auto space-y-3 mb-4 pr-1">
+            {msgs.length === 0 && (
+              <div className="text-center py-16 text-[var(--c-muted)] text-sm">
+                <p className="text-3xl mb-2">💬</p>
+                No messages yet. Start the conversation!
+              </div>
+            )}
+            {msgs.map(m => (
+              <div key={m._id} className="flex gap-3">
+                <div className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold text-white"
+                  style={{ background: "linear-gradient(135deg,#8b5cf6,#ec4899)" }}>
+                  {m.user?.[0]?.toUpperCase() || "A"}
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-xs font-semibold text-[var(--c-ink)]">{m.user}</span>
+                    <span className="text-xs text-[var(--c-muted)]">{m.time || "now"}</span>
+                  </div>
+                  {editId === m._id ? (
+                    <div className="flex gap-2">
+                      <input value={editText} onChange={e => setEditText(e.target.value)}
+                        className="field flex-1 py-1.5 text-sm" />
+                      <button onClick={() => editMsg(m._id)} className="text-violet-600 text-xs font-medium">Save</button>
+                      <button onClick={() => setEditId(null)} className="text-rose-400 text-xs font-medium">Cancel</button>
                     </div>
-
-                    {editingMessageId === message._id ? (
-                      <div className="flex gap-2">
-                        <input
-                          value={editingContent}
-                          onChange={(e) => setEditingContent(e.target.value)}
-                          className="flex-1 border rounded px-2 py-1"
-                        />
-                        <button
-                          onClick={() => handleEditMessage(message._id)}
-                          className="text-green-600 font-medium"
-                        >
-                          Save
-                        </button>
-                        <button
-                          onClick={() => setEditingMessageId(null)}
-                          className="text-red-500 font-medium"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    ) : (
-                      <p className="text-gray-700 mb-2">{message.message}</p>
+                  ) : (
+                    <div className="bubble inline-block max-w-xs sm:max-w-sm">{m.message}</div>
+                  )}
+                  <div className="flex gap-3 mt-1">
+                    <button onClick={() => like(m._id)} className="text-xs text-[var(--c-muted)] hover:text-pink-500 transition-colors">
+                      💖 {m.likes || 0}
+                    </button>
+                    {m.sender === user?._id && editId !== m._id && (
+                      <>
+                        <button onClick={() => { setEditId(m._id); setEditText(m.message); }}
+                          className="text-xs text-[var(--c-muted)] hover:text-violet-600 transition-colors">Edit</button>
+                        <button onClick={() => deleteMsg(m._id)}
+                          className="text-xs text-[var(--c-muted)] hover:text-rose-500 transition-colors">Delete</button>
+                      </>
                     )}
-
-                    <div className="flex items-center gap-3 text-xs">
-                      <button onClick={() => handleLike(message._id)}>💖 {message.likes || 0}</button>
-                      {message.sender === user._id && editingMessageId !== message._id && (
-                        <>
-                          <button onClick={() => { setEditingMessageId(message._id); setEditingContent(message.message); }}>Edit</button>
-                          <button onClick={() => handleDeleteMessage(message._id)}>Delete</button>
-                        </>
-                      )}
-                    </div>
                   </div>
                 </div>
               </div>
             ))}
           </div>
 
-          <div className="flex gap-3">
-            <input
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              placeholder={`Share your thoughts about ${topic.name.toLowerCase()}...`}
-              className="flex-1 ..."
-              onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
-            />
-            <button onClick={handleSendMessage} className="bg-gradient-to-r ...">Send</button>
+          {/* Input */}
+          <div className="glass p-3 flex gap-3">
+            <input value={newMsg} onChange={e => setNewMsg(e.target.value)}
+              onKeyDown={e => e.key === "Enter" && send()}
+              placeholder={`Message ${room?.name}…`}
+              className="field flex-1 py-2.5" />
+            <button onClick={send} className="btn-primary px-5 py-2.5 text-sm">Send</button>
           </div>
         </div>
       </div>
     );
   }
 
+  /* ── Rooms list ── */
   return (
-    <div className="relative overflow-hidden min-h-screen">
-      <div className="relative z-10 max-w-6xl mx-auto p-4 sm:p-6">
-        <div className="text-center mb-8">
-          <div className="bg-white/40 backdrop-blur-md border border-white/30 rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-2xl">
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-rose-600 bg-clip-text text-transparent mb-4">
-              Community Chat Rooms
-            </h1>
-            <p className="text-gray-600">Connect with amazing women ...</p>
-          </div>
+    <div className="page px-4 py-10 sm:py-14"
+      style={{ background: "linear-gradient(160deg,#fdf0f5 0%,#f7f0ff 50%,#fdf0f5 100%)" }}>
+      <div className="orb w-80 h-80 top-0 left-0 opacity-25"
+        style={{ background: "radial-gradient(circle,#e879f9,transparent 70%)" }} />
+      <div className="orb w-64 h-64 bottom-0 right-0 opacity-20"
+        style={{ background: "radial-gradient(circle,#818cf8,transparent 70%)", animationDelay: "4s" }} />
+
+      <div className="relative z-10 max-w-6xl mx-auto">
+        <div className="text-center mb-12">
+          <div className="tag tag-purple mb-4 mx-auto">Community</div>
+          <h1 className="text-4xl sm:text-5xl font-light grad-text mb-3"
+            style={{ fontFamily: "Cormorant Garamond, serif" }}>
+            Find your room
+          </h1>
+          <p className="text-[var(--c-muted)] text-sm max-w-md mx-auto">
+            Every room is a safe space built with love. Join a conversation or start your own.
+          </p>
         </div>
 
         {user && (
-          <div className="mb-6 bg-white/40 ... flex flex-col sm:flex-row gap-3">
-            <input value={newRoomName} onChange={(e) => setNewRoomName(e.target.value)} placeholder="New room name" className="flex-1 ..." />
-            <input value={newRoomDesc} onChange={(e) => setNewRoomDesc(e.target.value)} placeholder="Room description" className="flex-1 ..." />
-            <button onClick={handleCreateRoom} className="bg-gradient-to-r ...">Create Room</button>
+          <div className="glass p-5 mb-8 flex flex-col sm:flex-row gap-3">
+            <input value={roomName} onChange={e => setRoomName(e.target.value)}
+              placeholder="Room name…" className="field flex-1" />
+            <input value={roomDesc} onChange={e => setRoomDesc(e.target.value)}
+              placeholder="What's it about?" className="field flex-1" />
+            <button onClick={createRoom} className="btn-primary whitespace-nowrap px-6">Create room</button>
           </div>
         )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-          {chatTopics.map((topic) => (
-            <div key={topic._id} className="bg-white/40 ..." onClick={() => setSelectedTopic(topic._id)}>
-              <div className="w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg mx-auto mb-4" style={{ backgroundColor: stringToColor(topic.name) }}>
-                {getRoomInitials(topic.name)}
+        {rooms.length === 0 ? (
+          <div className="text-center py-20 text-[var(--c-muted)]">
+            <p className="text-5xl mb-4">🌸</p>
+            <p>No rooms yet. Create the first one!</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+            {rooms.map((room, i) => (
+              <div key={room._id} className="room-card p-6" onClick={() => setSelected(room._id)}>
+                <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-white font-bold text-lg mb-4 shadow-lg"
+                  style={{ background: GRADIENTS[i % GRADIENTS.length] }}>
+                  {initials(room.name)}
+                </div>
+                <h3 className="font-semibold text-[var(--c-ink)] mb-1 text-sm">{room.name}</h3>
+                <p className="text-xs text-[var(--c-muted)] leading-relaxed mb-4">{room.description}</p>
+                <div className="text-xs font-medium" style={{ color: "#8b5cf6" }}>Join conversation →</div>
               </div>
-              <h3 className="font-semibold text-gray-800 mb-2">{topic.name}</h3>
-              <p className="text-xs sm:text-sm text-gray-700">{topic.description}</p>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
