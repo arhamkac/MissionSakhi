@@ -1,31 +1,19 @@
-# Mission Sakhi - Backend Documentation
+# Mission Sakhi — Backend
 
-## Overview
-Mission Sakhi is a comprehensive backend API for a community-driven platform designed to provide support, forums, and AI-powered chatbot services. The backend is built with **Express.js**, **MongoDB**, and **Socket.io** for real-time communication.
+This is the backend server for Mission Sakhi, a women's community platform. Built with **Express.js**, **MongoDB**, and **Groq AI**.
 
 ---
 
 ## Quick Start
 
-### Prerequisites
-- Node.js (v16+)
-- MongoDB
-- Environment variables configured in `.env`
-
-### Installation & Running
-
 ```bash
-# Install dependencies
+cd Backend
 npm install
-
-# Development (with auto-reload)
+# create .env (see Environment Variables section below)
 npm run dev
-
-# Production
-npm start
 ```
 
-The server runs on `http://localhost:8000` by default.
+Server runs on `http://localhost:8080`.
 
 ---
 
@@ -33,503 +21,291 @@ The server runs on `http://localhost:8000` by default.
 
 ```
 Backend/
-├── controllers/       # Business logic for each feature
-├── routes/           # API endpoints
-├── models/           # MongoDB schemas
-├── middleware/       # Authentication, file upload, OTP
-├── utils/            # Helper functions and error handling
-├── db/               # Database connection
-├── chatbot/          # AI chatbot implementation
-├── public/           # Static files
-└── app.js           # Express app setup & Socket.io
+├── controllers/       # Business logic — one file per feature
+├── routes/            # Express route definitions
+├── models/            # MongoDB schemas (Mongoose)
+├── middleware/        # JWT auth, file upload, OTP
+├── utils/             # ApiError, ApiResponse, asyncHandler, cloudinary
+├── chatbot/
+│   ├── server.js                    # Groq RAG chatbot endpoint
+│   └── womens_chatbot_dataset.csv   # Knowledge base
+├── db/                # MongoDB connection
+└── app.js             # Express setup, middleware, route mounting
 ```
 
 ---
 
-## Core Features & APIs
+## API Overview
 
-### 1. **User Authentication & Management**
-**File:** `controllers/user.controller.js` | `routes/user.routes.js`
-
-#### Features:
-- User registration and login
-- JWT-based authentication (access & refresh tokens)
-- OTP verification for password reset
-- Google OAuth login
-- Password change & reset
-- Get current user profile
-
-#### API Endpoints:
-
-| Method | Endpoint | Auth Required | Description |
-|--------|----------|---------------|-------------|
-| POST | `/auth/register` | ❌ | Register new user |
-| POST | `/auth/login` | ❌ | Login user |
-| POST | `/auth/logout` | ✅ | Logout user |
-| POST | `/auth/refresh-access-token` | ❌ | Refresh JWT token |
-| POST | `/auth/change-password` | ✅ | Change password |
-| POST | `/auth/send-otp` | ❌ | Send OTP to email |
-| POST | `/auth/verify-otp` | ❌ | Verify OTP |
-| POST | `/auth/reset-password` | ❌ | Reset password with OTP |
-| POST | `/auth/login/google` | ❌ | Google OAuth login |
-| GET | `/auth/me` | ✅ | Get current user info |
-
-**Key Logic:**
-- Passwords hashed with bcrypt before storage
-- Accounts can be temporarily banned (blocked emails)
-- OTP-based account recovery
+All routes are prefixed with `/api`. 🔒 = requires `Authorization: Bearer <token>` header.
 
 ---
 
-### 2. **Posts & Community Forum**
-**File:** `controllers/post.controller.js` | `routes/post.routes.js`
+### Users — `/api/users`
 
-#### Features:
-- Create posts with title, content, and categories
-- Upload images with posts (via Cloudinary)
-- Edit and delete posts (owner only)
-- Fetch posts with pagination
-- Content moderation using Google Perspective API (checks toxicity, profanity, threats, etc.)
-- Posts must have non-empty title and content
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| POST | `/register` | — | Create a new account |
+| POST | `/login` | — | Login, returns tokens |
+| POST | `/logout` | 🔒 | Logout, clears cookies |
+| GET | `/me` | 🔒 | Get current logged-in user |
+| PUT | `/profile` | 🔒 | Update profile (nickname, bio, avatar) |
+| POST | `/refresh-access-token` | — | Get new access token using refresh cookie |
+| POST | `/change-password` | 🔒 | Change password |
+| POST | `/login/google` | — | Login via Firebase Google OAuth |
+| POST | `/send-otp` | — | Send OTP email for password reset |
+| POST | `/verify-otp` | — | Verify OTP code |
+| POST | `/reset-password` | — | Reset password after verification |
 
-#### API Endpoints:
-
-| Method | Endpoint | Auth Required | Description |
-|--------|----------|---------------|-------------|
-| POST | `/posts/upload-post` | ✅ | Create new post with image |
-| PATCH | `/posts/update-post/:postId` | ✅ | Update post (owner only) |
-| DELETE | `/posts/delete-post/:postId` | ✅ | Delete post (owner only) |
-| GET | `/posts/get-post/:postId` | ❌ | Get single post details |
-| GET | `/posts/get-posts` | ❌ | Get all posts (paginated) |
-
-**Key Logic:**
-- Content safety: Posts are checked for toxicity, explicit content, threats, insults, and profanity
-- If scores exceed thresholds, post is rejected
-- Images stored on Cloudinary cloud
-- Owner verification for edit/delete operations
-
----
-
-### 3. **Comments System**
-**File:** `controllers/comment.controller.js` | `routes/comment.routes.js`
-
-#### Features:
-- Post comments on any post
-- Edit own comments
-- Delete own comments
-- Fetch all comments for a post
-- Content moderation on comments
-
-#### API Endpoints:
-
-| Method | Endpoint | Auth Required | Description |
-|--------|----------|---------------|-------------|
-| POST | `/comments/post/:postId` | ✅ | Post comment on a post |
-| PATCH | `/comments/post/:commentId` | ✅ | Update comment (owner only) |
-| DELETE | `/comments/delete/:commentId` | ✅ | Delete comment (owner only) |
-| GET | `/comments/getcomments/:postId` | ❌ | Get all comments for a post |
-
-**Key Logic:**
-- Comments undergo safety checks like posts
-- Only comment author can edit/delete
-- Comments linked to specific posts
-
----
-
-### 4. **Voting System (Upvote/Downvote)**
-**File:** `controllers/vote.controller.js` | `routes/vote.routes.js`
-
-#### Features:
-- Toggle upvote/downvote on posts
-- Toggle upvote/downvote on comments
-- One vote per user per item (replaces previous vote)
-
-#### API Endpoints:
-
-| Method | Endpoint | Auth Required | Description |
-|--------|----------|---------------|-------------|
-| POST | `/votes/toggle-post-vote/:postId` | ✅ | Toggle post vote |
-| POST | `/votes/toggle-comment-vote/:commentId` | ✅ | Toggle comment vote |
-
-**Key Logic:**
-- Users can upvote, downvote, or remove vote
-- Previous vote is deleted if changing vote type
-- Vote counts affect post ranking
-
----
-
-### 5. **Real-time Chat & Messaging**
-**File:** `controllers/room.controller.js` | `controllers/message.controller.js` | `routes/room.routes.js` | `routes/message.routes.js`
-
-#### Features:
-- Create chat rooms
-- Join chat rooms
-- Send real-time messages using Socket.io
-- Edit and delete messages
-- Fetch room messages
-- Delete rooms (admin only)
-
-#### API Endpoints:
-
-| Method | Endpoint | Auth Required | Description |
-|--------|----------|---------------|-------------|
-| POST | `/rooms/create-room` | ✅ | Create new chat room |
-| GET | `/rooms/get-rooms` | ❌ | Get all available rooms |
-| GET | `/rooms/:roomId` | ❌ | Get room details |
-| POST | `/rooms/:roomId` | ✅ | Join a room |
-| DELETE | `/rooms/:roomId` | ✅ | Delete room (admin only) |
-| GET | `/rooms/messages/:roomId` | ✅ | Get all messages in room |
-| PATCH | `/messages/:messageId` | ✅ | Edit message (sender only) |
-| DELETE | `/messages/:messageId` | ✅ | Delete message (sender only) |
-
-**Socket.io Events:**
-```javascript
-socket.on('join room', (roomId))  // Join a room
-socket.on('send message', (data)) // Send message in room
+**Login response:**
+```json
+{
+  "message": {
+    "user": { "_id": "...", "email": "...", "nickname": "..." },
+    "accessToken": "eyJ...",
+    "refreshToken": "eyJ..."
+  }
+}
 ```
 
-**Key Logic:**
-- Messages are stored in database with timestamps
-- Room admin can delete the entire room
-- Socket.io handles real-time message broadcasting
-- Messages checked for safety before sending
+Tokens are also set as HttpOnly cookies. Passwords are hashed with bcrypt. Banned emails (`BlockedEmail` collection) are rejected at login and register.
 
 ---
 
-### 6. **Reporting & Moderation**
-**File:** `controllers/report.controller.js` | `routes/report.routes.js`
+### Posts — `/api/posts`
 
-#### Features:
-- Report inappropriate posts, comments, messages, rooms, or users
-- Automatic account banning after threshold of reports
-- Report tracking and history
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| POST | `/upload-post` | 🔒 | Create a post (multipart/form-data) |
+| GET | `/get-posts` | — | All posts with vote counts + comments |
+| GET | `/get-post/:postId` | — | Single post with vote counts + comments |
+| PATCH | `/update-post/:postId` | 🔒 | Edit post (owner only) |
+| DELETE | `/delete-post/:postId` | 🔒 | Delete post (owner only) |
+| GET | `/get-user-posts` | 🔒 | Posts by the logged-in user |
 
-#### API Endpoints:
+`/upload-post` fields (`multipart/form-data`):
 
-| Method | Endpoint | Auth Required | Description |
-|--------|----------|---------------|-------------|
-| POST | `/reports/:postId` | ✅ | Report a post |
-| POST | `/reports/:commentId` | ✅ | Report a comment |
-| POST | `/reports/:messageId` | ✅ | Report a message |
-| POST | `/reports/:userId` | ✅ | Report a user |
-| POST | `/reports/:roomId` | ✅ | Report a room |
+| Field | Type | Required |
+|-------|------|----------|
+| `title` | string | ✅ |
+| `content` | string | ✅ |
+| `category` | JSON string (array) | — |
+| `image` | file | — |
 
-**Key Logic:**
-- Reports accumulate against users
-- After multiple reports, user email is blocked (banned)
-- Bans are temporary (bannedTill timestamp)
-- Helps maintain community safety
+All content is screened by **Google Perspective API** before saving. Toxicity > 0.6, explicit content > 0.5 are rejected with a 400.
+
+---
+
+### Comments — `/api/comment`
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| POST | `/post/:postId` | 🔒 | Add a comment |
+| PATCH | `/update/:commentId` | 🔒 | Edit a comment (owner only) |
+| DELETE | `/delete/:commentId` | 🔒 | Delete a comment (owner only) |
+| GET | `/getcomments/:postId` | — | Get all comments for a post |
+
+---
+
+### Votes — `/api/vote`
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| POST | `/toggle-post-vote/:postId?vote=true` | 🔒 | Upvote a post |
+| POST | `/toggle-post-vote/:postId?vote=false` | 🔒 | Downvote a post |
+| POST | `/toggle-comment-vote/:commentId?vote=true` | 🔒 | Upvote a comment |
+
+Calling the same vote again removes it (toggle off). Changing from up→down replaces the previous vote.
+
+---
+
+### Rooms — `/api/rooms`
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| GET | `/get-rooms` | — | List all rooms |
+| POST | `/create-room` | 🔒 | Create a room (name required, description optional) |
+| GET | `/:roomId` | — | Get room details |
+| POST | `/:roomId` | 🔒 | Join a room |
+| DELETE | `/:roomId` | 🔒 | Delete a room |
+| GET | `/messages/:roomId` | — | Get all messages in a room |
+
+---
+
+### Messages — `/api/messages`
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| POST | `/create/:roomId` | 🔒 | Send a message |
+| PATCH | `/:messageId` | 🔒 | Edit a message (sender only) |
+| DELETE | `/:messageId` | 🔒 | Delete a message (sender only) |
+
+All messages are Perspective API screened before saving.
+
+---
+
+### Reports — `/api/report`
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| POST | `/:type/:id` | 🔒 | Report any entity |
+
+Valid `:type` values: `post`, `comment`, `message`
+
+```json
+{ "type": "Harassment", "content": "Optional description" }
+```
+
+Report categories: `Abuse`, `Harassment`, `Spam`, `Fake Profile`, `Nudity`, `Hate Speech`, `Mental Health Concern`, `Inappropriate Content`, `Other`
+
+When a user hits **5 reports**, their email is added to `BlockedEmail` for 48 hours automatically.
+
+---
+
+### Chatbot — `/api/chatbot`
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| POST | `/ask` | — | Ask Sakhi a question |
+| GET | `/history` | — | Get recent chat history |
+
+```json
+// POST /ask
+{
+  "question": "What are my rights if I face workplace harassment?",
+  "history": "Previous conversation text..."
+}
+
+// Response
+{ "answer": "**Workplace harassment** is covered under..." }
+```
+
+Uses **Groq `llama-3.3-70b-versatile`** with a RAG approach — top matching rows from `womens_chatbot_dataset.csv` are injected as context. The model answers from general knowledge when CSV doesn't cover a topic. Responses are formatted in markdown.
 
 ---
 
 ## Database Models
 
 ### User
-```javascript
-{
-  username: String,
-  email: String (required, unique),
-  password: String (hashed),
-  nickname: String,
-  picture: String (profile image URL),
-  joinedGroups: [ObjectId],
-  OTPVerified: Boolean,
-  googleId: String (for OAuth),
-  provider: String (local/google),
-  refreshToken: String,
-  createdAt: Date,
-  updatedAt: Date
-}
+```js
+{ email, password (bcrypt), nickname, username, picture, refreshToken, googleId, provider, joinedGroups }
 ```
 
 ### Post
-```javascript
-{
-  title: String (required),
-  content: String (required),
-  image: String (Cloudinary URL),
-  category: [String],
-  owner: ObjectId (User),
-  views: Number,
-  createdAt: Date,
-  updatedAt: Date
-}
+```js
+{ title, content, image (Cloudinary URL), category: [String], owner: User }
 ```
 
 ### Comment
-```javascript
-{
-  content: String (required),
-  post: ObjectId (Post),
-  postedBy: ObjectId (User),
-  createdAt: Date,
-  updatedAt: Date
-}
+```js
+{ content, post: Post, postedBy: User }
 ```
 
 ### Vote
-```javascript
-{
-  owner: ObjectId (User),
-  post: ObjectId (Post),
-  comment: ObjectId (Comment),
-  upvote: Boolean,
-  downvote: Boolean,
-  createdAt: Date
-}
+```js
+{ owner: User, post: Post, comment: Comment, upvote: Boolean, downvote: Boolean }
 ```
 
 ### Room
-```javascript
-{
-  name: String (required),
-  description: String,
-  admin: ObjectId (User),
-  members: [ObjectId],
-  createdAt: Date,
-  updatedAt: Date
-}
+```js
+{ name, description, admin: User, members: [User] }
 ```
 
 ### Message
-```javascript
-{
-  sender: ObjectId (User),
-  content: String,
-  group: ObjectId (Room),
-  createdAt: Date,
-  updatedAt: Date
-}
+```js
+{ content, sender: User, group: Room }
 ```
 
 ### Report
-```javascript
-{
-  reportedBy: ObjectId (User),
-  reportedUser: ObjectId (User),
-  type: String,
-  content: String,
-  post: ObjectId,
-  comment: ObjectId,
-  message: ObjectId,
-  room: ObjectId,
-  createdAt: Date
-}
+```js
+{ reportedBy: User, reportedUser: User, type: String, content: String, post, comment, message }
+```
+
+### BlockedEmail
+```js
+{ email, bannedTill: Date }
 ```
 
 ---
 
-## Middleware
+## Utility Classes
 
-### 1. **Authentication Middleware** (`auth.middleware.js`)
-- Validates JWT tokens
-- Protects routes requiring authentication
-- Extracts user info from token
+All controllers use these three utilities:
 
-### 2. **File Upload Middleware** (`multer.middleware.js`)
-- Handles image uploads
-- Supports multiple file formats
-- Stores files temporarily for Cloudinary upload
+```js
+// Standardized success response
+return res.status(200).json(new ApiResponse(200, data, "Success message"));
 
-### 3. **OTP Middleware** (`otp.middleware.js`)
-- Generates OTP (One-Time Password)
-- Sends OTP via email using Nodemailer
-- Validates OTP for account recovery
+// Standardized error (triggers global error handler)
+throw new ApiError(400, "Descriptive error message");
 
----
-
-## Utility Functions
-
-### ApiResponse (`utils/ApiResponse.js`)
-Standardized success response format:
-```javascript
-new ApiResponse(statusCode, data, message)
+// Wraps async controller to auto-catch errors — no try/catch needed per route
+const myController = asyncHandler(async (req, res) => { ... });
 ```
-
-### ApiError (`utils/ApiError.js`)
-Standardized error response format:
-```javascript
-throw new ApiError(statusCode, message, error)
-```
-
-### AsyncHandler (`utils/asyncHandler.js`)
-Wraps async route handlers to catch errors automatically:
-```javascript
-const myController = asyncHandler(async(req, res) => { ... })
-```
-
-### Cloudinary (`utils/cloudinary.js`)
-- Upload images to Cloudinary cloud storage
-- Delete images from Cloudinary
-- Returns secure URLs for stored images
-
----
-
-## Content Moderation
-
-The system uses **Google Perspective API** to check content safety:
-
-**Checked Attributes:**
-- TOXICITY (threshold: 0.6)
-- SEXUALLY_EXPLICIT (threshold: 0.5)
-- THREAT (threshold: 0.5)
-- INSULT (threshold: 0.5)
-- PROFANITY (threshold: 0.5)
-
-**Applied to:**
-- Post titles & content
-- Comments
-- Messages
-
-If content exceeds thresholds, it's rejected with error message.
 
 ---
 
 ## Environment Variables
 
-Create a `.env` file with:
+Create `Backend/.env`:
 
-```
-PORT=8000
-MONGODB_URI=mongodb://localhost:27017/sakhiverse
-CORS_ORIGIN=http://localhost:5173
+```env
+PORT=8080
+NODE_ENV=development
 
-# JWT
-JWT_ACCESS_TOKEN_SECRET=your_secret_here
-JWT_REFRESH_TOKEN_SECRET=your_secret_here
-JWT_ACCESS_TOKEN_EXPIRY=7d
-JWT_REFRESH_TOKEN_EXPIRY=30d
+MONGODB_URI=mongodb+srv://<user>:<pass>@cluster.mongodb.net/missionsakhi
 
-# Google OAuth
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_SECRET=your_google_secret
+ACCESS_TOKEN_SECRET=any_long_random_string
+REFRESH_TOKEN_SECRET=another_long_random_string
+ACCESS_TOKEN_EXPIRY=1d
+REFRESH_TOKEN_EXPIRY=10d
 
-# Email Service (Nodemailer)
-EMAIL_USER=your_email@gmail.com
-EMAIL_PASSWORD=your_app_password
+CLOUDINARY_CLOUD_NAME=your_value
+CLOUDINARY_API_KEY=your_value
+CLOUDINARY_API_SECRET=your_value
 
-# Cloudinary
-CLOUDINARY_NAME=your_cloudinary_name
-CLOUDINARY_API_KEY=your_api_key
-CLOUDINARY_API_SECRET=your_api_secret
+MAIL_USER=your_email@gmail.com
+MAIL_PASS=your_gmail_app_password
 
-# Perspective API (Content Moderation)
-PERSPECTIVE_API_KEY=your_perspective_api_key
+GROQ_API_KEY=gsk_...
+PERSPECTIVE_API_KEY=your_perspective_key
+
+# Firebase Admin (only needed for Google login)
+FIREBASE_PROJECT_ID=
+FIREBASE_CLIENT_EMAIL=
+FIREBASE_PRIVATE_KEY=
 ```
 
 ---
 
-## Error Handling
+## Error Responses
 
-All errors follow a standard format:
-```javascript
+```json
 {
-  statusCode: number,
-  message: string,
-  success: false,
-  data: null
+  "statusCode": 401,
+  "message": "Unauthorized request — no token provided",
+  "success": false
 }
 ```
 
-Common error codes:
-- **400**: Bad Request (validation errors)
-- **401**: Unauthorized (missing/invalid auth)
-- **404**: Not Found
-- **500**: Server Error
-
----
-
-## Authentication Flow
-
-1. **Register**: User provides email, nickname, password
-2. **Login**: User provides email & password, receives access + refresh tokens
-3. **Protected Routes**: Include JWT token in `Authorization` header: `Bearer <token>`
-4. **Token Refresh**: Use refresh token to get new access token when expired
-5. **Logout**: User's refresh token is cleared from database
-
----
-
-## Real-time Features (Socket.io)
-
-- Users can join chat rooms in real-time
-- Messages are broadcasted to all room members instantly
-- Connection tracking with unique socket IDs
-- Graceful disconnection handling
-
----
-
-## Key Technologies
-
-- **Express.js**: Web framework
-- **MongoDB + Mongoose**: Database
-- **Socket.io**: Real-time communication
-- **JWT**: Authentication
-- **Bcrypt**: Password hashing
-- **Cloudinary**: Image storage
-- **Nodemailer**: Email service
-- **Google APIs**: OAuth & content moderation
-- **Multer**: File uploads
-- **Helmet**: Security headers
-- **CORS**: Cross-origin requests
-
----
-
-## Performance & Security
-
-✅ **Security Features:**
-- Bcrypt password hashing
-- JWT token-based authentication
-- CORS protection
-- Helmet headers for security
-- Content moderation on user inputs
-- Email verification for sensitive operations
-- Account blocking for abusive users
-
-✅ **Performance Features:**
-- Mongoose pagination support
-- Indexed database queries
-- Cloud-based image storage
-- Real-time messaging with Socket.io
+| Code | Meaning |
+|------|---------|
+| 400 | Bad request — missing or invalid fields |
+| 401 | Unauthorized — no or expired token |
+| 403 | Forbidden — not the owner of this resource |
+| 404 | Not found |
+| 500 | Server error |
 
 ---
 
 ## Troubleshooting
 
-### Common Issues
+**`MongooseServerSelectionError`** — MongoDB can't connect. Check your `MONGODB_URI` in `.env`.
 
-**Database Connection Failed:**
-- Ensure MongoDB is running
-- Check `MONGODB_URI` in `.env`
+**`401 Unauthorized` on protected routes** — Make sure you're sending `Authorization: Bearer <token>` in request headers.
 
-**JWT Token Expired:**
-- Use `/auth/refresh-access-token` endpoint with refresh token
+**Post upload returns 500** — Check Cloudinary credentials. The image goes to Cloudinary before the post is saved.
 
-**Image Upload Failed:**
-- Verify Cloudinary credentials
-- Check file size limits
+**Chatbot returns empty answer** — Check `GROQ_API_KEY` is set and the CSV file exists at `chatbot/womens_chatbot_dataset.csv`.
 
-**Socket.io Connection Issues:**
-- Ensure CORS is properly configured
-- Check client-side socket connection setup
-
----
-
-## Next Steps for First-Time Users
-
-1. **Set up environment variables** - Copy `.env.example` to `.env`
-2. **Install dependencies** - Run `npm install`
-3. **Start the server** - Run `npm run dev`
-4. **Test APIs** - Use Postman or similar tool
-5. **Connect frontend** - Configure frontend to point to backend URL
-6. **Enable Socket.io** - Ensure frontend subscribes to real-time events
-
----
-
-## Support & Questions
-
-For issues or questions, refer to:
-- API documentation in `API.md`
-- Individual controller files for detailed logic
-- Test endpoints using Postman/Insomnia
-
-**Last Updated:** January 2026
+**Perspective API errors** — If `PERSPECTIVE_API_KEY` is missing, content moderation will fail on all post/comment/message creation. Either set the key or temporarily disable the `checkPost` call in controllers during local development.
