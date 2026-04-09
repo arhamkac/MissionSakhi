@@ -1,30 +1,76 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "./AuthContext";
 
 const FEATURES = [
-  { icon: "🕊️", tag: "Privacy", title: "Truly Anonymous", body: "No real names, no tracking. Share your story knowing it stays yours." },
-  { icon: "💬", tag: "Community", title: "Real Conversations", body: "Rooms built around what matters — safety, healing, growth, and joy." },
-  { icon: "🤖", tag: "AI", title: "3am Support", body: "Our AI companion listens without judgment, any hour you need her." },
-  { icon: "🛡️", tag: "Safety", title: "Zero Tolerance", body: "Perspective AI + human moderators keep this space genuinely safe." },
-  { icon: "📝", tag: "Forum", title: "Share & Heal", body: "Post anonymously, get upvotes, build solidarity with women worldwide." },
+  {
+    icon: "🕊️",
+    tag: "Privacy",
+    title: "Truly Anonymous",
+    body: "Share stories, post in the forum, and chat in rooms — all without revealing your real identity. Your name, your choice.",
+    link: "/forum",
+    linkText: "Browse Forum →"
+  },
+  {
+    icon: "💬",
+    tag: "Community",
+    title: "Safe Chat Rooms",
+    body: "Join topic-based rooms for real conversations — from mental health to career growth, self-defense to travel safety.",
+    link: "/community-chat",
+    linkText: "Join a Room →"
+  },
+  {
+    icon: "🤖",
+    tag: "AI",
+    title: "24/7 AI Companion",
+    body: "Our Groq-powered AI chatbot is trained on women's safety resources. Ask anything — health, legal rights, safety tips — any hour.",
+    link: "/chatbot",
+    linkText: "Talk to AI →"
+  },
+  {
+    icon: "🛡️",
+    tag: "Safety",
+    title: "Auto-Moderation",
+    body: "Every post, comment, and message is screened in real time by Google's Perspective AI to block toxic content before it reaches you.",
+    link: "/forum",
+    linkText: "See Posts →"
+  },
+  {
+    icon: "📝",
+    tag: "Forum",
+    title: "Anonymous Posts",
+    body: "Share your experience, ask for advice, or just vent. Vote on posts that resonate, and comment without judgment.",
+    link: "/forum",
+    linkText: "Read Stories →"
+  },
+  {
+    icon: "🚩",
+    tag: "Reporting",
+    title: "Community Reports",
+    body: "See something wrong? Flag posts, comments, or messages instantly. Repeat offenders are automatically reviewed and banned.",
+    link: "/forum",
+    linkText: "Explore →"
+  },
 ];
 
-const TESTIMONIALS = [
-  { quote: "Finally a platform that actually gets it. I've never felt safer sharing online.", name: "Sarah", age: 28 },
-  { quote: "The AI chatbot helped me process things at 2am when I had no one to call.", name: "Maya", age: 24 },
-  { quote: "I came here broken and left feeling like I had a whole sisterhood behind me.", name: "Priya", age: 31 },
-  { quote: "No judgment, no toxicity. Just real women being real with each other.", name: "Anonymous" },
+const HOW_IT_WORKS = [
+  { step: "01", title: "Create an account", body: "Sign up with email or Google. No real name needed — pick a username that's yours." },
+  { step: "02", title: "Post or explore", body: "Browse anonymous forum posts by category, or create your own. No judgment, just support." },
+  { step: "03", title: "Join the conversation", body: "Comment on posts, join live chat rooms, or have a private conversation with our AI." },
+  { step: "04", title: "Stay safe", body: "Report anything that feels wrong. The platform auto-screens all content so your feed stays clean." },
 ];
 
 const FAQ = [
-  ["Is my identity really protected?", "Completely. You can share without anyone knowing who you are — that's a core promise, not a feature."],
-  ["Who moderates this space?", "A mix of Perspective AI and real human moderators (mostly women) who understand nuance."],
-  ["What happens if someone is toxic?", "Multiple reports trigger an immediate review. We act fast. Zero tolerance is real here."],
-  ["Can I delete my posts?", "Always. Your content, your choice — edit or delete anything, anytime."],
+  ["Is my identity really protected?", "Yes — completely. You can post and chat without anyone knowing who you are. That's built into the core architecture, not an add-on."],
+  ["What is the AI chatbot trained on?", "It uses a curated dataset of women's safety resources, mental health guidance, legal rights, and emergency contacts — all powered by Groq's llama-3.3 model."],
+  ["What happens when I report someone?", "Each report is logged instantly. If a user accumulates 5 or more reports, their account is automatically reviewed and temporarily suspended for 48 hours."],
+  ["Can I delete my own posts and comments?", "Absolutely. You own your content — you can edit or delete your posts and comments at any time, no questions asked."],
+  ["Is the chat real-time?", "Yes — community rooms use WebSocket connections for live messaging. Messages are also saved so you can catch up when you return."],
 ];
 
 export default function Home() {
   const [openFaq, setOpenFaq] = useState(null);
+  const { user } = useAuth();
 
   return (
     <div className="page" style={{ background: "linear-gradient(160deg, #fdf0f5 0%, #f7f0ff 40%, #fdf0f5 100%)" }}>
@@ -35,7 +81,7 @@ export default function Home() {
 
       <div className="relative z-10">
 
-        {/* ── Hero ─────────────────────────────────────────── */}
+        {/* ── Hero ──────────────────────────────────────────── */}
         <section className="max-w-6xl mx-auto px-5 sm:px-8 pt-20 pb-16 sm:pt-28 sm:pb-24">
           <div className="max-w-3xl">
             <div className="tag tag-purple mb-6">Women-first platform</div>
@@ -43,23 +89,22 @@ export default function Home() {
               A space built<br />
               <em className="grad-text">for you</em><br />
             </h1>
-            <p className="text-lg text-[var(--c-muted)] leading-relaxed max-w-xl mb-10"
-              style={{ fontWeight: 300 }}>
-              Mission Sakhi is where women come to be real — share stories, find support,
-              and connect without the toxicity of mainstream platforms.
+            <p className="text-lg text-[var(--c-muted)] leading-relaxed max-w-xl mb-10" style={{ fontWeight: 300 }}>
+              Mission Sakhi is an anonymous community platform for women — real conversations in safe chat rooms,
+              an AI powered by women's safety data, and a forum where every voice matters.
             </p>
             <div className="flex flex-wrap gap-3 items-center">
-              <Link to="/signup" className="btn-primary text-base px-7 py-3.5">
-                Join the community
+              <Link to={user ? "/forum" : "/signup"} className="btn-primary text-base px-7 py-3.5">
+                {user ? "Go to Forum" : "Join the community"}
               </Link>
               <Link to="/forum" className="btn-ghost text-base px-7 py-3.5">
-                Browse stories
+                Browse Forum
               </Link>
             </div>
 
-            {/* Stats row */}
+            {/* Stats pills */}
             <div className="flex flex-wrap gap-3 mt-10">
-              {["100% anonymous", "AI-moderated", "Women-only space"].map(s => (
+              {["100% anonymous", "AI-moderated content", "Open source community"].map(s => (
                 <div key={s} className="stat-pill">
                   <span className="w-1.5 h-1.5 rounded-full bg-violet-400 inline-block" />
                   {s}
@@ -69,35 +114,21 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── Images ───────────────────────────────────────── */}
-        <section className="max-w-6xl mx-auto px-5 sm:px-8 pb-20">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-            {["/happy-women-supporting.png", "/empowered-women-community.png"].map((src, i) => (
-              <div key={i} className="relative overflow-hidden rounded-2xl group"
-                style={{ boxShadow: "0 20px 60px rgba(139,92,246,0.12)" }}>
-                <img src={src} alt="" className="w-full h-64 sm:h-80 object-cover transition-transform duration-700 group-hover:scale-105" />
-                <div className="absolute inset-0 rounded-2xl"
-                  style={{ background: "linear-gradient(to top, rgba(124,58,237,0.15), transparent)" }} />
-              </div>
-            ))}
-          </div>
-        </section>
-
         {/* ── About strip ──────────────────────────────────── */}
         <section className="max-w-6xl mx-auto px-5 sm:px-8 pb-20">
           <div className="glass noise relative overflow-hidden p-8 sm:p-12">
             <div className="orb w-48 h-48 -top-12 -right-12 opacity-30"
               style={{ background: "radial-gradient(circle, #e879f9, transparent 70%)" }} />
             <div className="relative z-10 max-w-2xl">
-              <div className="tag tag-pink mb-4">Our mission</div>
+              <div className="tag tag-pink mb-4">What is Mission Sakhi?</div>
               <h2 className="text-3xl sm:text-4xl font-light mb-4" style={{ fontFamily: "Cormorant Garamond, serif" }}>
-                Built different, on purpose.
+                Built from scratch, just for this.
               </h2>
               <p className="text-[var(--c-muted)] leading-relaxed" style={{ fontWeight: 300 }}>
-                Most platforms weren't built with women in mind. Mission Sakhi is privacy-first,
-                women-centered, and genuinely safe. Whether you're navigating workplace harassment,
-                relationship struggles, or just need someone who gets it — this is your space.
-                No judgment. Just real support from real women.
+                Mission Sakhi combines an <strong>anonymous forum</strong>, <strong>live topic-based chat rooms</strong>,
+                and a <strong>Groq-powered AI chatbot</strong> trained on women's safety resources into one safe space.
+                Every piece of content is screened by Google's Perspective API. You can share, talk, and get support —
+                all without giving up your identity.
               </p>
             </div>
           </div>
@@ -106,51 +137,45 @@ export default function Home() {
         {/* ── Features ─────────────────────────────────────── */}
         <section className="max-w-6xl mx-auto px-5 sm:px-8 pb-20">
           <div className="text-center mb-12">
-            <div className="tag tag-purple mb-4 mx-auto">Why us</div>
+            <div className="tag tag-purple mb-4 mx-auto">Features</div>
             <h2 className="text-3xl sm:text-4xl font-light" style={{ fontFamily: "Cormorant Garamond, serif" }}>
-              What makes us <em>different</em>
+              Everything that's actually <em>built in</em>
             </h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {FEATURES.map((f, i) => (
-              <div key={i} className="glass feature-card p-6 sm:p-7">
+              <div key={i} className="glass feature-card p-6 sm:p-7 flex flex-col">
                 <div className="text-3xl mb-4">{f.icon}</div>
                 <div className="tag tag-purple mb-3">{f.tag}</div>
                 <h3 className="text-xl font-semibold text-[var(--c-ink)] mb-2"
                   style={{ fontFamily: "Cormorant Garamond, serif" }}>
                   {f.title}
                 </h3>
-                <p className="text-sm text-[var(--c-muted)] leading-relaxed">{f.body}</p>
+                <p className="text-sm text-[var(--c-muted)] leading-relaxed flex-1">{f.body}</p>
+                <Link to={f.link} className="mt-4 text-sm font-medium text-violet-500 hover:text-violet-700 transition-colors">
+                  {f.linkText}
+                </Link>
               </div>
             ))}
           </div>
         </section>
 
-        {/* ── Testimonials ─────────────────────────────────── */}
+        {/* ── How it works ─────────────────────────────────── */}
         <section className="max-w-6xl mx-auto px-5 sm:px-8 pb-20">
           <div className="text-center mb-12">
-            <div className="tag tag-pink mb-4 mx-auto">Community voices</div>
+            <div className="tag tag-pink mb-4 mx-auto">How it works</div>
             <h2 className="text-3xl sm:text-4xl font-light" style={{ fontFamily: "Cormorant Garamond, serif" }}>
-              What our sisters say
+              Simple to start, real from day one
             </h2>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            {TESTIMONIALS.map((t, i) => (
-              <div key={i} className="glass p-6 sm:p-8 relative overflow-hidden">
-                <div className="quote-mark absolute top-3 left-5">"</div>
-                <p className="text-[var(--c-ink)] leading-relaxed mb-4 pt-4 relative z-10"
-                  style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "1.1rem", fontStyle: "italic", fontWeight: 400 }}>
-                  {t.quote}
-                </p>
-                <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white"
-                    style={{ background: "linear-gradient(135deg,#8b5cf6,#ec4899)" }}>
-                    {t.name[0]}
-                  </div>
-                  <span className="text-sm text-[var(--c-muted)]">
-                    {t.name}{t.age ? `, ${t.age}` : ""}
-                  </span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {HOW_IT_WORKS.map((step, i) => (
+              <div key={i} className="glass p-6">
+                <div className="text-4xl font-light mb-3 grad-text" style={{ fontFamily: "Cormorant Garamond, serif" }}>
+                  {step.step}
                 </div>
+                <h3 className="font-semibold text-[var(--c-ink)] mb-2 text-base">{step.title}</h3>
+                <p className="text-sm text-[var(--c-muted)] leading-relaxed">{step.body}</p>
               </div>
             ))}
           </div>
@@ -160,7 +185,7 @@ export default function Home() {
         <section className="max-w-3xl mx-auto px-5 sm:px-8 pb-20">
           <div className="text-center mb-10">
             <h2 className="text-3xl sm:text-4xl font-light" style={{ fontFamily: "Cormorant Garamond, serif" }}>
-              Questions we hear often
+              Common questions
             </h2>
           </div>
           <div className="glass overflow-hidden">
@@ -192,23 +217,39 @@ export default function Home() {
             <div className="relative z-10">
               <h2 className="text-3xl sm:text-5xl font-light text-white mb-4"
                 style={{ fontFamily: "Cormorant Garamond, serif" }}>
-                Ready to find your people?
+                Ready to find your place?
               </h2>
               <p className="text-white/70 mb-8 max-w-md mx-auto">
-                Join thousands of women who've found their safe space here.
+                Join the community — post anonymously, chat in real time, or just talk to the AI. No pressure, no judgment.
               </p>
-              <Link to="/signup"
-                className="inline-flex items-center gap-2 bg-white text-purple-700 font-semibold px-8 py-3.5 rounded-full hover:bg-white/90 transition-all shadow-xl"
-                style={{ fontSize: "0.95rem" }}>
-                Get started — it's free
-              </Link>
+              <div className="flex flex-wrap gap-3 justify-center">
+                {!user && (
+                  <Link to="/signup"
+                    className="inline-flex items-center gap-2 bg-white text-purple-700 font-semibold px-8 py-3.5 rounded-full hover:bg-white/90 transition-all shadow-xl"
+                    style={{ fontSize: "0.95rem" }}>
+                    Create your account
+                  </Link>
+                )}
+                <Link to="/chatbot"
+                  className="inline-flex items-center gap-2 bg-white/10 border border-white/30 text-white font-semibold px-8 py-3.5 rounded-full hover:bg-white/20 transition-all"
+                  style={{ fontSize: "0.95rem" }}>
+                  Try the AI first →
+                </Link>
+                {user && (
+                  <Link to="/community-chat"
+                    className="inline-flex items-center gap-2 bg-white text-purple-700 font-semibold px-8 py-3.5 rounded-full hover:bg-white/90 transition-all shadow-xl"
+                    style={{ fontSize: "0.95rem" }}>
+                    Go to community →
+                  </Link>
+                )}
+              </div>
             </div>
           </div>
         </section>
 
       </div>
 
-      {/* Floating action */}
+      {/* Floating chatbot button */}
       <Link to="/chatbot"
         className="fixed bottom-6 right-6 z-50 w-13 h-13 flex items-center justify-center rounded-full text-white text-xl shadow-2xl transition-transform hover:scale-110"
         style={{ background: "linear-gradient(135deg,#8b5cf6,#ec4899)", width: "3.25rem", height: "3.25rem", boxShadow: "0 8px 32px rgba(139,92,246,0.4)" }}

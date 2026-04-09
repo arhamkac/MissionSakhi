@@ -20,7 +20,7 @@ function App() {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <main className="flex-grow">
+      <main className="flex-grow flex flex-col min-h-0">
         <Routes>
           <Route path="/"               element={<Home />} />
           <Route path="/forum"          element={<Anonymous_Forum />} />

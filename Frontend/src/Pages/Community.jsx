@@ -82,9 +82,13 @@ export default function Community() {
     if (!roomName.trim()) return;
     try {
       const { data } = await axios.post(`${BASE}/create-room`, { name: roomName, description: roomDesc }, auth);
-      setRooms(p => [...p, data.message]);
+      const newRoom = data.message;
+      setRooms(p => [...p, newRoom]);
       setRoomName(""); setRoomDesc("");
-    } catch (e) { console.error(e);    }
+    } catch (e) {
+      alert(e.response?.data?.message || "Failed to create room. Make sure you're logged in.");
+      console.error(e);
+    }
   };
 
   const openReport = (type, id) => {

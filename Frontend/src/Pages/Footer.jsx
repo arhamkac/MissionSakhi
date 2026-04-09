@@ -1,4 +1,7 @@
 import { Link } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+
+const HIDE_ON = ["/chatbot", "/community-chat", "/ai-chatbot"];
 
 const footerStyle = {
   background: "linear-gradient(135deg,rgba(109,40,217,0.95) 0%,rgba(192,38,211,0.95) 50%,rgba(244,63,94,0.9) 100%)",
@@ -7,6 +10,9 @@ const footerStyle = {
 };
 
 export default function Footer() {
+  const { pathname } = useLocation();
+  if (HIDE_ON.includes(pathname)) return null;
+
   return (
     <footer style={footerStyle} className="relative">
       <div className="absolute top-0 left-0 right-0 h-px"

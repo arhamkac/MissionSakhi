@@ -29,8 +29,8 @@ const getRoomMessages=asyncHandler(async(req,res)=>{
 
 const createRoom=asyncHandler(async(req,res)=>{
     const {name,description}=req.body
-    if([name,description].some((field)=>field.trim()==="")){
-        throw new ApiError(400,"Room ID and description are required to create room")
+    if(!name?.trim()){
+        throw new ApiError(400,"Room name is required to create room")
     }
 
     const room=await Room.create({
@@ -79,7 +79,7 @@ const getRooms=asyncHandler(async(req,res)=>{
     const rooms=await Room.aggregatePaginate(aggregate,options)
 
     if(rooms.rooms.length==0){
-        throw new ApiError(404,"The following search query couldn't be found")
+        return res.status(200).json(new ApiResponse(200,rooms,"No rooms yet"))
     }
 
     return res
