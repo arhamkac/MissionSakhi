@@ -258,7 +258,25 @@ const googleLogin = asyncHandler(async (req, res) => {
     );
 });
 
+const updateProfile = asyncHandler(async (req, res) => {
+  const { username, nickname } = req.body;
+  const user = await User.findById(req.user?._id);
+  
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  if (username) user.username = username;
+  if (nickname) user.nickname = nickname;
+
+  await user.save({ validateBeforeSave: false });
+
+  const updatedUser = await User.findById(req.user._id).select("-password -refreshToken");
+
+  return res.status(200).json(new ApiResponse(200, updatedUser, "Profile updated successfully"));
+});
+
 export {
   registerUser, loginUser, logOutUser, refreshAccessToken,
-  changePassword, sendOTP, verifyOTP, resetPassword, getCurrentUser, googleLogin,
+  changePassword, sendOTP, verifyOTP, resetPassword, getCurrentUser, googleLogin, updateProfile
 };

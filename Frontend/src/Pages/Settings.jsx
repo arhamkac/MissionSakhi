@@ -18,8 +18,8 @@ export default function Settings() {
       const token = localStorage.getItem("accessToken");
       const res = await axios.put(`${AUTH_BASE}/profile`, form,
         { headers: { Authorization: `Bearer ${token}` } });
-      setUser(res.data.user);
-      localStorage.setItem("user", JSON.stringify(res.data.user));
+      setUser(res.data.message);
+      localStorage.setItem("user", JSON.stringify(res.data.message));
       setToast("Saved successfully ✨");
       setTimeout(() => setToast(""), 3000);
     } catch (err) {
