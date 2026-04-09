@@ -12,33 +12,109 @@ const SUGGESTIONS = [
   "Tell me about self-defense basics for women.",
 ];
 
-// Renders plain text with basic markdown: **bold**, *italic*, line breaks, bullet lists
+// Full markdown renderer for bot responses
 function BotMessage({ text }) {
   const lines = text.split("\n");
-  return (
-    <div className="text-sm leading-relaxed space-y-1">
-      {lines.map((line, i) => {
-        if (!line.trim()) return <br key={i} />;
-        // Bullet
-        if (line.trim().startsWith("- ") || line.trim().startsWith("• ")) {
-          return (
-            <div key={i} className="flex gap-2 items-start">
-              <span className="mt-1 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: "#8b5cf6", marginTop: "0.45rem" }} />
-              <span dangerouslySetInnerHTML={{ __html: formatInline(line.replace(/^[-•]\s/, "")) }} />
-            </div>
-          );
+  const elements = [];
+  let i = 0;
+
+  while (i < lines.length) {
+    const raw = lines[i];
+    const trimmed = raw.trim();
+
+    // Skip empty
+    if (!trimmed) {
+      elements.push(<div key={i} className="h-2" />);
+      i++; continue;
+    }
+
+    // Numbered list  1. 2. 3.
+    if (/^\d+\.\s/.test(trimmed)) {
+      const items = [];
+      while (i < lines.length && /^\d+\.\s/.test(lines[i].trim())) {
+        items.push(lines[i].trim().replace(/^\d+\.\s/, ""));
+        i++;
+      }
+      elements.push(
+        <ol key={`ol-${i}`} className="list-none space-y-1.5 pl-1">
+          {items.map((item, j) => (
+            <li key={j} className="flex gap-2.5 items-start">
+              <span className="flex-shrink-0 w-5 h-5 rounded-full text-[10px] font-bold flex items-center justify-center text-white mt-0.5"
+                style={{ background: "linear-gradient(135deg,#8b5cf6,#ec4899)", minWidth: "1.25rem" }}>
+                {j + 1}
+              </span>
+              <span className="flex-1" dangerouslySetInnerHTML={{ __html: formatInline(item) }} />
+            </li>
+          ))}
+        </ol>
+      );
+      continue;
+    }
+
+    // Top-level bullet  - or * or •
+    if (/^[-*•]\s/.test(trimmed)) {
+      const items = [];
+      while (i < lines.length && /^[-*•]\s/.test(lines[i].trim())) {
+        const bullet = lines[i].trim().replace(/^[-*•]\s/, "");
+        const subitems = [];
+        i++;
+        // collect nested (tab or +)
+        while (i < lines.length && /^(\t|\s{2,})[+\-*•]?\s/.test(lines[i])) {
+          subitems.push(lines[i].trim().replace(/^[+\-*•]\s/, ""));
+          i++;
         }
-        return <p key={i} dangerouslySetInnerHTML={{ __html: formatInline(line) }} />;
-      })}
-    </div>
-  );
+        items.push({ bullet, subitems });
+      }
+      elements.push(
+        <ul key={`ul-${i}`} className="space-y-1.5 pl-1">
+          {items.map((item, j) => (
+            <li key={j}>
+              <div className="flex gap-2 items-start">
+                <span className="flex-shrink-0 w-1.5 h-1.5 rounded-full mt-2" style={{ background: "#8b5cf6" }} />
+                <span dangerouslySetInnerHTML={{ __html: formatInline(item.bullet) }} />
+              </div>
+              {item.subitems.length > 0 && (
+                <ul className="ml-5 mt-1 space-y-1">
+                  {item.subitems.map((sub, k) => (
+                    <li key={k} className="flex gap-2 items-start text-[var(--c-muted)]">
+                      <span className="flex-shrink-0 w-1 h-1 rounded-full mt-2" style={{ background: "#c4b5fd" }} />
+                      <span dangerouslySetInnerHTML={{ __html: formatInline(sub) }} />
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </li>
+          ))}
+        </ul>
+      );
+      continue;
+    }
+
+    // Bold heading (line is just **text**)
+    if (/^\*\*[^*]+\*\*:?$/.test(trimmed)) {
+      elements.push(
+        <p key={i} className="font-semibold text-[var(--c-ink)] mt-2"
+          dangerouslySetInnerHTML={{ __html: formatInline(trimmed) }} />
+      );
+      i++; continue;
+    }
+
+    // Regular paragraph
+    elements.push(
+      <p key={i} className="leading-relaxed"
+        dangerouslySetInnerHTML={{ __html: formatInline(trimmed) }} />
+    );
+    i++;
+  }
+
+  return <div className="text-sm space-y-2">{elements}</div>;
 }
 
 function formatInline(text) {
   return text
     .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
     .replace(/\*(.+?)\*/g, "<em>$1</em>")
-    .replace(/`(.+?)`/g, "<code style='background:rgba(139,92,246,0.1);padding:1px 5px;border-radius:4px;font-size:0.85em'>$1</code>");
+    .replace(/`(.+?)`/g, "<code style='background:rgba(139,92,246,0.1);padding:1px 6px;border-radius:4px;font-size:0.82em;font-family:monospace'>$1</code>");
 }
 
 export default function Chatbot_AI() {
