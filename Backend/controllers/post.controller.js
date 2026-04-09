@@ -15,8 +15,15 @@ function extractPublicId(url) {
 }
 
 const uploadPost=asyncHandler(async(req,res)=>{
-    const {title,content,category}=req.body
-    if([title,content].some((field)=>field.trim()==="") && category.length===0){
+    let {title,content,category}=req.body
+    
+    if (typeof category === 'string') {
+        try {
+            category = JSON.parse(category);
+        } catch(e) {}
+    }
+
+    if([title,content].some((field)=>field.trim()==="") && (!category || category.length===0)){
         throw new ApiError(400,"Please enter title and content and category for the post to proceed")
     }
 
@@ -32,7 +39,7 @@ const uploadPost=asyncHandler(async(req,res)=>{
     }
 
     
-    const imageLocalPath=req.files?.image[0]?.path
+    const imageLocalPath=req.files?.image?.[0]?.path
     if(imageLocalPath){
       const uploadedPhoto=await uploadOnCloudinary(imageLocalPath)
       if(!uploadedPhoto){
