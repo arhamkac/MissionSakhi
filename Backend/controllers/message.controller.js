@@ -66,7 +66,7 @@ const editMessage=asyncHandler(async(req,res)=>{
         }
     }
 
-    const updatedMessage=await Message.findByIdAndUpdate({content:content})
+    const updatedMessage=await Message.findByIdAndUpdate(messageId,{$set:{content}},{new:true})
     if(!updatedMessage){
         throw new ApiError(400,"Message couldn't be updated")
     }

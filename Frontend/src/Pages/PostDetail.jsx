@@ -48,7 +48,7 @@ export default function PostDetail() {
     if (!commentText.trim()) return;
     setSubmittingComment(true);
     try {
-      await axios.post(`${BASE}/comment/add-comment/${id}`, { content: commentText }, auth);
+      await axios.post(`${BASE}/comment/post/${id}`, { content: commentText }, auth);
       setCommentText("");
       fetchPost();
     } catch (e) { console.error(e); }

@@ -86,8 +86,8 @@ const deleteComment=asyncHandler(async(req,res)=>{
         throw new ApiError(400,"You don't have access to delete this post")
     }
 
-    const deleteCommt=await Comment.findByIdAndDelete(commentId)
-    if(!deleteComment){
+    const deleteCommt2=await Comment.findByIdAndDelete(commentId)
+    if(!deleteCommt2){
         throw new ApiError(500,"Comment could not be deleted due to some server error")
     }
 
@@ -129,7 +129,7 @@ const getPostComments=asyncHandler(async(req,res)=>{
 
     const comment=await Comment.aggregatePaginate(Comment.aggregate(commentagg),
     {
-      $page:1,
+      page:1,
       customLabels:{
         docs:"comments"
       }

@@ -24,6 +24,51 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Auto-refresh access token on 401
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+  failedQueue.forEach(prom => error ? prom.reject(error) : prom.resolve(token));
+  failedQueue = [];
+};
+
+api.interceptors.response.use(
+  res => res,
+  async (error) => {
+    const originalRequest = error.config;
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        }).then(token => {
+          originalRequest.headers.Authorization = `Bearer ${token}`;
+          return api(originalRequest);
+        });
+      }
+      originalRequest._retry = true;
+      isRefreshing = true;
+      try {
+        const { data } = await axios.post(`${AUTH_BASE}/refresh-access-token`, {}, { withCredentials: true });
+        const newToken = data.message?.accessToken;
+        if (newToken) {
+          localStorage.setItem("accessToken", newToken);
+          api.defaults.headers.common.Authorization = `Bearer ${newToken}`;
+          originalRequest.headers.Authorization = `Bearer ${newToken}`;
+          processQueue(null, newToken);
+          return api(originalRequest);
+        }
+      } catch (refreshError) {
+        processQueue(refreshError, null);
+        localStorage.removeItem("accessToken");
+      } finally {
+        isRefreshing = false;
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   // Start as loading=true so nothing renders until session is checked

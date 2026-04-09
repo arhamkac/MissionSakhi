@@ -99,20 +99,47 @@ export default function Anonymous_Forum() {
 
   const vote = async (id, up) => {
     if (!user) { alert("Please login to vote"); return; }
+    const wasVote = userVotes[id];
+    const newVote = wasVote === (up ? 'up' : 'down') ? null : (up ? 'up' : 'down');
+
+    // Optimistic update — change UI immediately
+    setUserVotes(v => ({ ...v, [id]: newVote }));
+    setPosts(prev => prev.map(p => {
+      if (p._id !== id) return p;
+      let ups = p.upvotes || 0;
+      let downs = p.downvotes || 0;
+      // remove previous vote
+      if (wasVote === 'up') ups--;
+      if (wasVote === 'down') downs--;
+      // add new vote
+      if (newVote === 'up') ups++;
+      if (newVote === 'down') downs++;
+      return { ...p, upvotes: ups, downvotes: downs };
+    }));
+
     try {
       await axios.post(`${BASE}/vote/toggle-post-vote/${id}?vote=${up}`, {}, auth);
-      setUserVotes(v => ({
-        ...v,
-        [id]: userVotes[id] === (up ? 'up' : 'down') ? null : (up ? 'up' : 'down')
+    } catch (e) {
+      // Rollback on failure
+      console.error(e);
+      setUserVotes(v => ({ ...v, [id]: wasVote }));
+      setPosts(prev => prev.map(p => {
+        if (p._id !== id) return p;
+        let ups = p.upvotes || 0;
+        let downs = p.downvotes || 0;
+        if (newVote === 'up') ups--;
+        if (newVote === 'down') downs--;
+        if (wasVote === 'up') ups++;
+        if (wasVote === 'down') downs++;
+        return { ...p, upvotes: ups, downvotes: downs };
       }));
-      fetchPosts();
-    } catch (e) { console.error(e); }
+    }
   };
 
   const addComment = async (postId) => {
     if (!user || !commentText[postId]?.trim()) return;
     try {
-      const { data } = await axios.post(`${BASE}/comment/${postId}`, { content: commentText[postId] }, auth);
+      const { data } = await axios.post(`${BASE}/comment/post/${postId}`, { content: commentText[postId] }, auth);
       setPosts(p => p.map(x => x._id === postId ? { ...x, comments: [data.message, ...(x.comments || [])] } : x));
       setCommentText(t => ({ ...t, [postId]: "" }));
     } catch (e) { console.error(e); }

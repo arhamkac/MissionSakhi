@@ -32,7 +32,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
   const blocked = await BlockedEmail.findOne({ email });
   if (blocked) {
-    if (blocked.bannedTill < Date.now()) {
+    if (blocked.bannedTill > Date.now()) {
       throw new ApiError(400, "Your account is temporarily banned due to various reports");
     } else {
       await BlockedEmail.deleteOne({ email });
