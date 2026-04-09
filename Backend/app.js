@@ -117,7 +117,7 @@ import roomRouter from "./routes/room.routes.js"
 import messageRouter from "./routes/message.routes.js"
 import reportRouter from "./routes/report.routes.js"
 import chatbotRouter from "./chatbot/server.js"
-import { group } from "node:console";
+import { Message } from "./models/message.model.js";
 
 app.use("/api/users",userRouter)
 app.use("/api/posts",postRouter)

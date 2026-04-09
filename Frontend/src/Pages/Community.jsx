@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 import { useAuth } from "./AuthContext";
 import { ROOMS_BASE, MESSAGE_BASE } from "../apiConfig";
 
@@ -29,17 +30,16 @@ export default function Community() {
 
   const BASE = ROOMS_BASE;
   const MSG  = MESSAGE_BASE;
-  const auth = { headers: { Authorization: `Bearer ${user?.token}` } };
+  const auth = { headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` } };
 
   useEffect(() => {
-    if (!user) return;
     axios.get(`${BASE}/get-rooms`)
       .then(({ data }) => setRooms(data.message.rooms || []))
       .catch(console.error);
   }, [user]);
 
   useEffect(() => {
-    if (!selected || !user) return;
+    if (!selected) return;
     axios.get(`${BASE}/messages/${selected}`, auth)
       .then(({ data }) => setMessages(p => ({ ...p, [selected]: data.message || [] })))
       .catch(console.error);
@@ -48,7 +48,7 @@ export default function Community() {
   const send = async () => {
     if (!newMsg.trim() || !selected) return;
     try {
-      const { data } = await axios.post(`${BASE}/${selected}`, { headers: auth.headers }, { message: newMsg });
+      const { data } = await axios.post(`${MSG}/create/${selected}`, { content: newMsg }, auth);
       setMessages(p => ({ ...p, [selected]: [data.message, ...(p[selected] || [])] }));
       setNewMsg("");
     } catch (e) { console.error(e); }
@@ -125,11 +125,11 @@ export default function Community() {
               <div key={m._id} className="flex gap-3">
                 <div className="w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold text-white"
                   style={{ background: "linear-gradient(135deg,#8b5cf6,#ec4899)" }}>
-                  {m.user?.[0]?.toUpperCase() || "A"}
+                  {m.sender?.username?.[0]?.toUpperCase() || "A"}
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs font-semibold text-[var(--c-ink)]">{m.user}</span>
+                    <span className="text-xs font-semibold text-[var(--c-ink)]">{m.sender?.username || "Anonymous"}</span>
                     <span className="text-xs text-[var(--c-muted)]">{m.time || "now"}</span>
                   </div>
                   {editId === m._id ? (
@@ -140,15 +140,15 @@ export default function Community() {
                       <button onClick={() => setEditId(null)} className="text-rose-400 text-xs font-medium">Cancel</button>
                     </div>
                   ) : (
-                    <div className="bubble inline-block max-w-xs sm:max-w-sm">{m.message}</div>
+                    <div className="bubble inline-block max-w-xs sm:max-w-sm">{m.content}</div>
                   )}
                   <div className="flex gap-3 mt-1">
                     <button onClick={() => like(m._id)} className="text-xs text-[var(--c-muted)] hover:text-pink-500 transition-colors">
                       💖 {m.likes || 0}
                     </button>
-                    {m.sender === user?._id && editId !== m._id && (
+                    {m.sender?._id === user?._id && editId !== m._id && (
                       <>
-                        <button onClick={() => { setEditId(m._id); setEditText(m.message); }}
+                        <button onClick={() => { setEditId(m._id); setEditText(m.content); }}
                           className="text-xs text-[var(--c-muted)] hover:text-violet-600 transition-colors">Edit</button>
                         <button onClick={() => deleteMsg(m._id)}
                           className="text-xs text-[var(--c-muted)] hover:text-rose-500 transition-colors">Delete</button>
@@ -162,11 +162,19 @@ export default function Community() {
 
           {/* Input */}
           <div className="glass p-3 flex gap-3">
-            <input value={newMsg} onChange={e => setNewMsg(e.target.value)}
-              onKeyDown={e => e.key === "Enter" && send()}
-              placeholder={`Message ${room?.name}…`}
-              className="field flex-1 py-2.5" />
-            <button onClick={send} className="btn-primary px-5 py-2.5 text-sm">Send</button>
+            {user ? (
+              <>
+                <input value={newMsg} onChange={e => setNewMsg(e.target.value)}
+                  onKeyDown={e => e.key === "Enter" && send()}
+                  placeholder={`Message ${room?.name}…`}
+                  className="field flex-1 py-2.5" />
+                <button onClick={send} className="btn-primary px-5 py-2.5 text-sm">Send</button>
+              </>
+            ) : (
+              <div className="flex-1 text-center py-2 text-sm text-[var(--c-muted)]">
+                Please <Link to="/login" className="text-violet-600 font-semibold hover:underline">sign in</Link> to join the conversation
+              </div>
+            )}
           </div>
         </div>
       </div>

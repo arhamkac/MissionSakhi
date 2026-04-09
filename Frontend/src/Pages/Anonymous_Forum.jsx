@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 import { useAuth } from "./AuthContext";
 import { Heart, ThumbsDown, MessageCircle, Share2, X, MoreHorizontal } from "lucide-react";
 import { API_BASE } from "../apiConfig";
@@ -32,7 +33,7 @@ export default function Anonymous_Forum() {
   const [expandedComments, setExpandedComments] = useState({});
 
   const BASE = API_BASE;
-  const auth = { headers: { Authorization: `Bearer ${user?.token}` } };
+  const auth = { headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` } };
 
   const fetchPosts = async () => {
     try {
@@ -56,7 +57,7 @@ export default function Anonymous_Forum() {
     try {
       const { data } = await axios.post(`${BASE}/posts/upload-post`, fd,
         { headers: { ...auth.headers, "Content-Type": "multipart/form-data" } });
-      setPosts(p => [data.data, ...p]);
+      setPosts(p => [data.message, ...p]);
       setNewTitle(""); setNewContent(""); setNewImage(null); setNewCategory([]);
       setShowComposer(false);
     } catch (e) { 
@@ -73,7 +74,7 @@ export default function Anonymous_Forum() {
     try {
       const { data } = await axios.patch(`${BASE}/posts/update-post/${id}`, 
         { title: editTitle, content: editContent }, auth);
-      setPosts(p => p.map(x => x._id === id ? data.data : x));
+      setPosts(p => p.map(x => x._id === id ? data.message : x));
       setEditPostId(null); setEditTitle(""); setEditContent("");
     } catch (e) { 
       alert(e.response?.data?.message || "Error updating post");
@@ -108,7 +109,7 @@ export default function Anonymous_Forum() {
     if (!user || !commentText[postId]?.trim()) return;
     try {
       const { data } = await axios.post(`${BASE}/comment/${postId}`, { content: commentText[postId] }, auth);
-      setPosts(p => p.map(x => x._id === postId ? { ...x, comments: [data.data, ...(x.comments || [])] } : x));
+      setPosts(p => p.map(x => x._id === postId ? { ...x, comments: [data.message, ...(x.comments || [])] } : x));
       setCommentText(t => ({ ...t, [postId]: "" }));
     } catch (e) { console.error(e); }
   };
@@ -118,7 +119,7 @@ export default function Anonymous_Forum() {
     try {
       const { data } = await axios.patch(`${BASE}/comment/update/${commentId}`, { content: editCommentText }, auth);
       setPosts(p => p.map(x => x._id === postId
-        ? { ...x, comments: x.comments.map(c => c._id === commentId ? data.data : c) } : x));
+        ? { ...x, comments: x.comments.map(c => c._id === commentId ? data.message : c) } : x));
       setEditCommentId(null); setEditCommentText("");
     } catch (e) { console.error(e); }
   };
@@ -241,7 +242,7 @@ export default function Anonymous_Forum() {
           </>
         ) : (
           <div className="mb-8 p-6 rounded-2xl text-center" style={{ background: "rgba(255,255,255,0.8)", border: "1px solid rgba(139,92,246,0.2)" }}>
-            <p className="text-[var(--c-muted)] text-sm">Sign in to share your story</p>
+            <p className="text-[var(--c-muted)] text-sm"><Link to="/login" className="text-violet-600 font-semibold hover:underline">Sign in</Link> to share your story</p>
           </div>
         )}
 
@@ -411,13 +412,17 @@ export default function Anonymous_Forum() {
                     </div>
 
                     {/* Add Comment Input */}
-                    {user && (
+                    {user ? (
                       <div className="flex gap-2 pt-3 border-t" style={{ borderColor: "rgba(139,92,246,0.08)" }}>
                         <input placeholder="Add a comment…"
                           value={commentText[post._id] || ""}
                           onChange={e => setCommentText(t => ({ ...t, [post._id]: e.target.value }))}
                           className="field flex-1 py-2 text-xs border-0 bg-gray-50 rounded-lg focus:bg-white" />
                         <button onClick={() => addComment(post._id)} className="btn-primary text-xs px-5 py-2 rounded-lg">Reply</button>
+                      </div>
+                    ) : (
+                      <div className="pt-3 border-t text-center" style={{ borderColor: "rgba(139,92,246,0.08)" }}>
+                        <p className="text-[var(--c-muted)] text-xs"><Link to="/login" className="text-violet-600 font-semibold hover:underline">Sign in</Link> to add a comment</p>
                       </div>
                     )}
                   </div>

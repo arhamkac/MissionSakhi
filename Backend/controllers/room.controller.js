@@ -14,7 +14,7 @@ const getRoomMessages=asyncHandler(async(req,res)=>{
     if(!room){
         throw new ApiError(400,"Room with given Id doesn't exist")
     }
-    const messages=await Message.find({group:roomId}).sort({createdAt:1});
+    const messages=await Message.find({group:roomId}).sort({createdAt:1}).populate("sender", "username nickname");
     if(!messages){
         throw new ApiError(400,"Error in finding group messages")
     }

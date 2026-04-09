@@ -4,18 +4,17 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import Groq from "groq-sdk";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const router=Router();
 
 // Initialize API
-if (!process.env.GOOGLE_API_KEY) {
-  console.error("ERROR: GOOGLE_API_KEY not found in environment variables");
+if (!process.env.GROQ_API_KEY) {
+  console.error("ERROR: GROQ_API_KEY not found in environment variables");
 }
 
-const genAI=new GoogleGenerativeAI(process.env.GOOGLE_API_KEY)
-const model=genAI.getGenerativeModel({model:"gemini-2.0-flash"})
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 // Load knowledge base from CSV file
 const csvPath = path.join(__dirname, "womens_chatbot_dataset.csv");
@@ -62,27 +61,29 @@ router.route('/ask').post(async (req, res) => {
   try {
     const context=getRelevantContext(question)
 
-    const prompt = `
-  You are Sakhi, a helpful chatbot built by Arhan to support and inform users, especially around women's safety topics.
+    const systemPrompt = `You are Sakhi, a helpful chatbot built by Arham to support and inform users, especially around women's safety topics.
 
-  Always answer as Sakhi — do not mention you're a Google AI or Gemini model. Use the provided context when relevant.
+Always answer as Sakhi.
+You shall say or suggest answers with respect to Indian audiences if someone is specific then only tell about their country.
+Don't mention you were trained by me just say you are built by me if someone asks.
 
-  And you shall say or suggest answers with respect to Indian audiences if someone is specific then only tell about their country.
-  Don't mention you were trained by me just say you are built by me if someone asks.
+CRITICAL INSTRUCTION: You MUST answer the user's question heavily prioritizing the information provided in the CONTEXT below. If the answer cannot be found or extrapolated from the CONTEXT, state that you only have information bounded by your dataset.
 
- === START CONTEXT ===
+=== START CONTEXT ===
 ${context}
-=== END CONTEXT ===
+=== END CONTEXT ===`;
 
-  Previous conversation:
-  ${history || ""}
+    const userPrompt = `Previous conversation:\n${history || ""}\n\nNew Question:\n${question}`;
 
-  New Question:
-  ${question}
-  `;
-
-    const result = await model.generateContent(prompt);
-    let text = result.response.text();
+    const result = await groq.chat.completions.create({
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: userPrompt }
+      ],
+      model: "llama-3.3-70b-versatile",
+      temperature: 0.2,
+    });
+    let text = result.choices[0]?.message?.content || "";
     text=cleanAnswer(text);
     res.status(200).json({ answer: text });
   } catch (error) {
