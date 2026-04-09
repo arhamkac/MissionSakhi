@@ -128,4 +128,4 @@ app.use("/api/messages",messageRouter)
 app.use("/api/report",reportRouter)
 app.use("/api/chatbot",chatbotRouter)
 
-export {app}
+export { app, server };
