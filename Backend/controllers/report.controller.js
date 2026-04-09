@@ -8,56 +8,64 @@ import {Room} from "../models/room.model.js"
 import {User} from "../models/user.model.js"
 import { BlockedEmail } from "../models/blockedEmails.js";
 
-async function getReportedUserId({ postId, commentId, messageId, roomId, userId }) {
-  if (userId) return userId;
+import { Report } from "../models/report.model.js";
 
-  if (postId) {
-    const post = await Post.findById(postId).select("owner");
-    return post?.user;
+async function getReportedUserId(type, id) {
+  if (type === "user") return id;
+
+  if (type === "post") {
+    const post = await Post.findById(id).select("owner");
+    return post?.owner;
   }
-  if (commentId) {
-    const comment = await Comment.findById(commentId).select("postedBy");
-    return comment?.user;
+  if (type === "comment") {
+    const comment = await Comment.findById(id).select("postedBy");
+    return comment?.postedBy;
   }
-  if (messageId) {
-    const message = await Message.findById(messageId).select("sender");
+  if (type === "message") {
+    const message = await Message.findById(id).select("sender");
     return message?.sender;
   }
-  if (roomId) {
-    const room = await Room.findById(roomId).select("admin");
-    return room?.owner;
+  if (type === "room") {
+    const room = await Room.findById(id).select("admin");
+    return room?.admin;
   }
 
   return null;
 }
 
 const createReport=asyncHandler(async(req,res)=>{
-    const {type,content}=req.body
-    const {postId,commentId,userId,messageId,roomId}=req.params
-    if(!postId && !commentId && !userId && !messageId &&!roomId){
-        throw new ApiError(404,"One of the ids is required to continue the report")
+    const {content}=req.body;
+    let reportType = req.body.type || "Other";
+    const {type, id}=req.params;
+    
+    if(!type || !id){
+        throw new ApiError(404,"Valid target type and ID are required to report")
     }
-    const reportedUserId=getReportedUserId({postId,commentId,userId,messageId,roomId})
+    
+    const reportedUserId=await getReportedUserId(type, id);
 
-    const report=await Report.create({
-        reportedBy:req.user?._id,
-        user:reportedUserId,
-        type,
-        content,
-        post:postId,comment:commentId,message:messageId,room:roomId,user:userId
-    })
+    let reportData = {
+        reportedBy: req.user?._id,
+        user: reportedUserId,
+        type: reportType,
+        content: content || "No content provided",
+    };
+    reportData[type] = id;
 
-    const reportCount=await Report.countDocuments({reportedUser:reportedUserId})
-    if(reportCount>=5){
-        const user=await User.findById(reportedUserId)
-        if(user){
-            await BlockedEmail.create(
-            {
-                email:user.email, 
-                bannedTill:Date.now()+48*60*60*1000 
-            }
-            )
-        }
+    const report=await Report.create(reportData);
+
+    if (reportedUserId) {
+      const reportCount=await Report.countDocuments({user:reportedUserId});
+      if(reportCount>=5){
+          const userObj=await User.findById(reportedUserId);
+          if(userObj){
+              await BlockedEmail.create(
+              {
+                  email:userObj.email, 
+                  bannedTill:Date.now()+48*60*60*1000 
+              })
+          }
+      }
     }
 
     return res

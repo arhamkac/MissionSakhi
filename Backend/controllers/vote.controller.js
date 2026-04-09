@@ -44,7 +44,7 @@ const toggleUpvotePost=asyncHandler(async(req,res)=>{
         )
     }
 
-        if(vote==true){
+        if(vote==="true"){
         const upvote=await Vote.create({
             owner:req.user?._id,
             post:postId,
@@ -119,7 +119,7 @@ const toggleUpvoteComment=asyncHandler(async(req,res)=>{
         )
     }
 
-        if(vote==true){
+        if(vote==="true"){
         const upvote=await Vote.create({
             owner:req.user?._id,
             comment:commentId,

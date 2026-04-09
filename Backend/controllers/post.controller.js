@@ -265,6 +265,36 @@ const getPosts=asyncHandler(async(req,res)=>{
             }
         },
         {
+            $lookup:{
+                from:"votes",
+                localField:"_id",
+                foreignField:"post",
+                as:"votes"
+            }
+        },
+        {
+            $addFields:{
+                upvotes:{
+                    $size:{
+                        $filter:{
+                            input:"$votes",
+                            as:"v",
+                            cond:{$eq:["$$v.upvote",true]}
+                        }
+                    }
+                },
+                downvotes:{
+                    $size:{
+                        $filter:{
+                            input:"$votes",
+                            as:"v",
+                            cond:{$eq:["$$v.downvote",true]}
+                        }
+                    }
+                }
+            }
+        },
+        {
             $sample:{size:parseInt(limit)}
         }
     ]

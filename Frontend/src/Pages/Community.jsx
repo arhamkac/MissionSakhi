@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { useAuth } from "./AuthContext";
-import { ROOMS_BASE, MESSAGE_BASE } from "../apiConfig";
+import { ROOMS_BASE, MESSAGE_BASE, API_BASE } from "../apiConfig";
 
 const GRADIENTS = [
   "linear-gradient(135deg,#8b5cf6,#ec4899)",
@@ -80,7 +80,20 @@ export default function Community() {
       const { data } = await axios.post(`${BASE}/create-room`, { name: roomName, description: roomDesc }, auth);
       setRooms(p => [...p, data.message]);
       setRoomName(""); setRoomDesc("");
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error(e);    }
+  };
+
+  const report = async (type, id) => {
+    if (!user) { alert("Please login to report"); return; }
+    const reason = prompt("Why are you reporting this?");
+    if (!reason) return;
+    try {
+      await axios.post(`${API_BASE}/report/${type}/${id}`, { content: reason }, auth);
+      alert("Report submitted successfully");
+    } catch (e) {
+      console.error(e);
+      alert("Failed to report");
+    }
   };
 
   if (loading) return (
@@ -146,14 +159,17 @@ export default function Community() {
                     <button onClick={() => like(m._id)} className="text-xs text-[var(--c-muted)] hover:text-pink-500 transition-colors">
                       💖 {m.likes || 0}
                     </button>
-                    {m.sender?._id === user?._id && editId !== m._id && (
+                    {m.sender?._id === user?._id && editId !== m._id ? (
                       <>
                         <button onClick={() => { setEditId(m._id); setEditText(m.content); }}
                           className="text-xs text-[var(--c-muted)] hover:text-violet-600 transition-colors">Edit</button>
                         <button onClick={() => deleteMsg(m._id)}
                           className="text-xs text-[var(--c-muted)] hover:text-rose-500 transition-colors">Delete</button>
                       </>
-                    )}
+                    ) : user?._id !== m.sender?._id ? (
+                        <button onClick={() => report('message', m._id)}
+                          className="text-xs text-[var(--c-muted)] hover:text-rose-500 transition-colors">Report</button>
+                    ) : null}
                   </div>
                 </div>
               </div>

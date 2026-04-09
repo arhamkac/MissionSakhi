@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { useAuth } from "./AuthContext";
-import { Heart, ThumbsDown, MessageCircle, Share2, X, MoreHorizontal } from "lucide-react";
+import { Heart, ThumbsDown, MessageCircle, Share2, X, MoreHorizontal, Flag } from "lucide-react";
 import { API_BASE } from "../apiConfig";
 
 const CATEGORIES = [
@@ -130,6 +130,19 @@ export default function Anonymous_Forum() {
       setPosts(p => p.map(x => x._id === postId
         ? { ...x, comments: x.comments.filter(c => c._id !== commentId) } : x));
     } catch (e) { console.error(e); }
+  };
+
+  const report = async (type, id) => {
+    if (!user) { alert("Please login to report"); return; }
+    const reason = prompt("Why are you reporting this?");
+    if (!reason) return;
+    try {
+      await axios.post(`${BASE}/report/${type}/${id}`, { content: reason }, auth);
+      alert("Report submitted successfully");
+    } catch (e) {
+      console.error(e);
+      alert("Failed to report");
+    }
   };
 
   if (loading) return (
@@ -366,6 +379,9 @@ export default function Anonymous_Forum() {
                       <button className="p-2 rounded-2xl text-[var(--c-muted)] hover:bg-gray-100 transition-colors">
                         <Share2 size={16} />
                       </button>
+                      <button onClick={() => report('post', post._id)} className="p-2 rounded-2xl text-[var(--c-muted)] hover:bg-rose-50 hover:text-rose-500 transition-colors" title="Report Post">
+                        <Flag size={16} />
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -398,6 +414,9 @@ export default function Anonymous_Forum() {
                                         <button onClick={() => deleteComment(post._id, c._id)}
                                           className="text-xs text-[var(--c-muted)] hover:text-rose-500">Delete</button>
                                       </div>
+                                    )}
+                                    {user && user?._id !== c.postedBy && (
+                                       <button onClick={() => report('comment', c._id)} className="text-xs text-[var(--c-muted)] hover:text-rose-500">Report</button>
                                     )}
                                   </div>
                                   <p className="text-xs text-[var(--c-ink)] leading-relaxed break-words">{c.content}</p>
