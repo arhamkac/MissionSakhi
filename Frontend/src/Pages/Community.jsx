@@ -3,6 +3,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { useAuth } from "./AuthContext";
 import { ROOMS_BASE, MESSAGE_BASE, API_BASE } from "../apiConfig";
+import ReportModal from "../Components/ReportModal";
 
 const GRADIENTS = [
   "linear-gradient(135deg,#8b5cf6,#ec4899)",
@@ -20,6 +21,9 @@ const initials = (name) => {
 export default function Community() {
   const [rooms, setRooms] = useState([]);
   const [messages, setMessages] = useState({});
+  const [socket, setSocket] = useState(null);
+  const [reportConfig, setReportConfig] = useState({ isOpen: false, type: "", id: "" });
+  const [isSubmittingReport, setIsSubmittingReport] = useState(false);
   const [selected, setSelected] = useState(null);
   const [newMsg, setNewMsg] = useState("");
   const [roomName, setRoomName] = useState("");
@@ -83,16 +87,23 @@ export default function Community() {
     } catch (e) { console.error(e);    }
   };
 
-  const report = async (type, id) => {
+  const openReport = (type, id) => {
     if (!user) { alert("Please login to report"); return; }
-    const reason = prompt("Why are you reporting this?");
-    if (!reason) return;
+    setReportConfig({ isOpen: true, type, id });
+  };
+
+  const handleReportSubmit = async (selectedType, content) => {
+    setIsSubmittingReport(true);
     try {
-      await axios.post(`${API_BASE}/report/${type}/${id}`, { content: reason }, auth);
+      await axios.post(`${API_BASE}/report/${reportConfig.type}/${reportConfig.id}`, 
+        { type: selectedType, content }, auth);
       alert("Report submitted successfully");
+      setReportConfig({ isOpen: false, type: "", id: "" });
     } catch (e) {
       console.error(e);
       alert("Failed to report");
+    } finally {
+      setIsSubmittingReport(false);
     }
   };
 
@@ -167,7 +178,7 @@ export default function Community() {
                           className="text-xs text-[var(--c-muted)] hover:text-rose-500 transition-colors">Delete</button>
                       </>
                     ) : user?._id !== m.sender?._id ? (
-                        <button onClick={() => report('message', m._id)}
+                        <button onClick={() => openReport('message', m._id)}
                           className="text-xs text-[var(--c-muted)] hover:text-rose-500 transition-colors">Report</button>
                     ) : null}
                   </div>
@@ -249,6 +260,12 @@ export default function Community() {
           </div>
         )}
       </div>
+      <ReportModal 
+         isOpen={reportConfig.isOpen} 
+         onClose={() => setReportConfig({ isOpen: false, type: "", id: "" })} 
+         onSubmit={handleReportSubmit} 
+         isSubmitting={isSubmittingReport} 
+      />
     </div>
   );
 }

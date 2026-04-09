@@ -208,17 +208,55 @@ const deletePost=asyncHandler(async(req,res)=>{
 
 const getPostById=asyncHandler(async(req,res)=>{
     const {postId}=req.params
-    const post=await Post.findById(postId)
-    if(!post){
+    const mongoose = await import("mongoose")
+    
+    const post = await Post.aggregate([
+        { $match: { _id: new mongoose.default.Types.ObjectId(postId) } },
+        {
+            $lookup:{
+                from:"comments",
+                localField:"_id",
+                foreignField:"post",
+                as:"comments",
+                pipeline:[
+                    {
+                        $lookup:{
+                            from:"users",
+                            localField:"postedBy",
+                            foreignField:"_id",
+                            as:"postedByUser",
+                            pipeline:[{ $project:{ username:1, nickname:1 } }]
+                        }
+                    },
+                    { $addFields:{ postedByUser:{ $first:"$postedByUser" } } }
+                ]
+            }
+        },
+        {
+            $lookup:{
+                from:"votes",
+                localField:"_id",
+                foreignField:"post",
+                as:"votes"
+            }
+        },
+        {
+            $addFields:{
+                upvotes:{ $size:{ $filter:{ input:"$votes", as:"v", cond:{ $eq:["$$v.upvote",true] } } } },
+                downvotes:{ $size:{ $filter:{ input:"$votes", as:"v", cond:{ $eq:["$$v.downvote",true] } } } }
+            }
+        }
+    ])
+
+    if(!post || post.length===0){
         throw new ApiError(400,"Post doesn't exist")
     }
 
     return res
     .status(200)
     .json(
-        new ApiResponse(200,post,"Post fetched successfully")
+        new ApiResponse(200, post[0], "Post fetched successfully")
     )
-
 })
 
 const getUserPosts=asyncHandler(async(req,res)=>{

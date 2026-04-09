@@ -12,6 +12,7 @@ import Chatbot_AI from './Pages/Chatbot_AI'
 import Community from './Pages/Community'
 import Dashboard from './Pages/Dashboard'
 import Settings from './Pages/Settings'
+import PostDetail from './Pages/PostDetail'
 import ProtectedRoute from './Pages/ProtectedRoute'
 import { Routes, Route } from 'react-router-dom'
 
@@ -23,6 +24,7 @@ function App() {
         <Routes>
           <Route path="/"               element={<Home />} />
           <Route path="/forum"          element={<Anonymous_Forum />} />
+          <Route path="/post/:id"        element={<PostDetail />} />
           <Route path="/ai-chatbot"     element={<Chatbot />} />
           <Route path="/chatbot"        element={<Chatbot_AI />} />
           <Route path="/login"          element={<Login />} />

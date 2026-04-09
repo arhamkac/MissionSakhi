@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
 import { Heart, ThumbsDown, MessageCircle, Share2, X, MoreHorizontal, Flag } from "lucide-react";
 import { API_BASE } from "../apiConfig";
+import ReportModal from "../Components/ReportModal";
 
 const CATEGORIES = [
   "Womens Safety", "Self-Defense & Training", "Legal Help & Rights",
@@ -17,6 +18,7 @@ const CATEGORIES = [
 
 export default function Anonymous_Forum() {
   const { user, loading } = useAuth();
+  const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
   const [newTitle, setNewTitle] = useState("");
   const [newContent, setNewContent] = useState("");
@@ -31,6 +33,8 @@ export default function Anonymous_Forum() {
   const [showComposer, setShowComposer] = useState(false);
   const [userVotes, setUserVotes] = useState({});
   const [expandedComments, setExpandedComments] = useState({});
+  const [reportConfig, setReportConfig] = useState({ isOpen: false, type: "", id: "" });
+  const [isSubmittingReport, setIsSubmittingReport] = useState(false);
 
   const BASE = API_BASE;
   const auth = { headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` } };
@@ -132,16 +136,41 @@ export default function Anonymous_Forum() {
     } catch (e) { console.error(e); }
   };
 
-  const report = async (type, id) => {
+  const openReport = (type, id) => {
     if (!user) { alert("Please login to report"); return; }
-    const reason = prompt("Why are you reporting this?");
-    if (!reason) return;
+    setReportConfig({ isOpen: true, type, id });
+  };
+
+  const handleReportSubmit = async (selectedType, content) => {
+    setIsSubmittingReport(true);
     try {
-      await axios.post(`${BASE}/report/${type}/${id}`, { content: reason }, auth);
+      await axios.post(`${BASE}/report/${reportConfig.type}/${reportConfig.id}`, 
+        { type: selectedType, content }, auth);
       alert("Report submitted successfully");
+      setReportConfig({ isOpen: false, type: "", id: "" });
     } catch (e) {
       console.error(e);
       alert("Failed to report");
+    } finally {
+      setIsSubmittingReport(false);
+    }
+  };
+
+  const handleShare = async (postId, title) => {
+    const url = `${window.location.origin}/post/${postId}`;
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: title,
+          text: "Check out this post on MissionSakhi",
+          url: url
+        });
+      } catch (err) {
+        console.error("Share failed", err);
+      }
+    } else {
+      navigator.clipboard.writeText(url);
+      alert("Link copied to clipboard!");
     }
   };
 
@@ -337,8 +366,11 @@ export default function Anonymous_Forum() {
                     </div>
                   </div>
                 ) : (
-                  <div className="px-4 sm:px-5 pt-4 pb-3">
-                    <h3 className="text-lg sm:text-xl font-semibold text-[var(--c-ink)] mb-2 leading-snug">
+                  <div
+                    className="px-4 sm:px-5 pt-4 pb-3 cursor-pointer"
+                    onClick={() => navigate(`/post/${post._id}`)}
+                  >
+                    <h3 className="text-lg sm:text-xl font-semibold text-[var(--c-ink)] mb-2 leading-snug hover:text-violet-600 transition-colors">
                       {post.title}
                     </h3>
                     <p className="text-[var(--c-ink)] leading-relaxed text-sm sm:text-base line-clamp-6">
@@ -376,10 +408,10 @@ export default function Anonymous_Forum() {
                         <MessageCircle size={18} />
                         <span className="text-xs font-semibold">{post.comments?.length || 0}</span>
                       </button>
-                      <button className="p-2 rounded-2xl text-[var(--c-muted)] hover:bg-gray-100 transition-colors">
+                      <button onClick={() => handleShare(post._id, post.title)} className="p-2 rounded-2xl text-[var(--c-muted)] hover:bg-gray-100 transition-colors" title="Share Post">
                         <Share2 size={16} />
                       </button>
-                      <button onClick={() => report('post', post._id)} className="p-2 rounded-2xl text-[var(--c-muted)] hover:bg-rose-50 hover:text-rose-500 transition-colors" title="Report Post">
+                      <button onClick={() => openReport('post', post._id)} className="p-2 rounded-2xl text-[var(--c-muted)] hover:bg-rose-50 hover:text-rose-500 transition-colors" title="Report Post">
                         <Flag size={16} />
                       </button>
                     </div>
@@ -416,7 +448,7 @@ export default function Anonymous_Forum() {
                                       </div>
                                     )}
                                     {user && user?._id !== c.postedBy && (
-                                       <button onClick={() => report('comment', c._id)} className="text-xs text-[var(--c-muted)] hover:text-rose-500">Report</button>
+                                       <button onClick={() => openReport('comment', c._id)} className="text-xs text-[var(--c-muted)] hover:text-rose-500">Report</button>
                                     )}
                                   </div>
                                   <p className="text-xs text-[var(--c-ink)] leading-relaxed break-words">{c.content}</p>
@@ -451,6 +483,13 @@ export default function Anonymous_Forum() {
           })}
         </div>
       </div>
+      
+      <ReportModal 
+         isOpen={reportConfig.isOpen} 
+         onClose={() => setReportConfig({ isOpen: false, type: "", id: "" })} 
+         onSubmit={handleReportSubmit} 
+         isSubmitting={isSubmittingReport} 
+      />
     </div>
   );
 }
