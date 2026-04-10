@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "./AuthContext";
-import { Heart, ThumbsDown, MessageCircle, Share2, X, MoreHorizontal, Flag } from "lucide-react";
+import { Heart, ThumbsDown, MessageCircle, Share2, X, MoreHorizontal, Flag, Search } from "lucide-react";
 import { API_BASE } from "../apiConfig";
 import ReportModal from "../Components/ReportModal";
 import GoToTop from "../Components/GoToTop";
@@ -20,7 +20,13 @@ const CATEGORIES = [
 export default function Anonymous_Forum() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [posts, setPosts] = useState([]);
+  const [searchQuery, setSearchQuery] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get("query") || "";
+  });
+  const [isSearching, setIsSearching] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [newContent, setNewContent] = useState("");
   const [newImage, setNewImage] = useState(null);
@@ -40,14 +46,32 @@ export default function Anonymous_Forum() {
   const BASE = API_BASE;
   const auth = { headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` } };
 
-  const fetchPosts = async () => {
+  const fetchPosts = async (query = "") => {
     try {
-      const { data } = await axios.get(`${BASE}/posts/get-posts`);
+      const queryString = query.trim() ? `?query=${encodeURIComponent(query.trim())}` : "";
+      const { data } = await axios.get(`${BASE}/posts/get-posts${queryString}`);
       setPosts(Array.isArray(data.data) ? data.data : data.message?.posts || []);
-    } catch (e) { console.error(e); setPosts([]); }
+    } catch (e) {
+      console.error(e);
+      setPosts([]);
+    }
   };
 
-  useEffect(() => { fetchPosts(); }, []);
+  useEffect(() => {
+    const query = new URLSearchParams(location.search).get("query") || "";
+    if (query !== searchQuery) {
+      setSearchQuery(query);
+    }
+  }, [location.search]);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setIsSearching(true);
+      fetchPosts(searchQuery).finally(() => setIsSearching(false));
+    }, 400);
+
+    return () => clearTimeout(timeout);
+  }, [searchQuery]);
 
   const upload = async () => {
     if (!user || !newTitle.trim() || !newContent.trim() || newCategory.length === 0) {
@@ -232,6 +256,39 @@ export default function Anonymous_Forum() {
               <p className="text-[var(--c-muted)] text-sm">Safe, anonymous, and real</p>
             </div>
             <div className="text-5xl">✨</div>
+          </div>
+
+          <div className="glass p-4 rounded-3xl mb-8" style={{ backdropFilter: "blur(20px)", background: "rgba(255,255,255,0.65)", border: "1px solid rgba(139,92,246,0.14)" }}>
+            <div className="flex flex-col sm:flex-row items-center gap-3">
+              <div className="relative flex-1 w-full">
+                <Search size={20} className="absolute left-5 top-1/2 -translate-y-1/2 text-[var(--c-muted)]" />
+                <input
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  placeholder="Search stories, tags, or support topics..."
+                  className="field pl-14 pr-12"
+                />
+                {searchQuery ? (
+                  <button type="button"
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--c-muted)] hover:text-[var(--c-ink)]"
+                    aria-label="Clear search"
+                  >
+                    <X size={18} />
+                  </button>
+                ) : null}
+              </div>
+              <div className="flex items-center gap-2 text-sm text-[var(--c-muted)]">
+                {isSearching ? (
+                  <span className="inline-flex items-center gap-2">
+                    <span className="spinner" style={{ width: "1rem", height: "1rem", borderTopColor: "#8b5cf6", borderColor: "rgba(139,92,246,0.25)" }} />
+                    Searching...
+                  </span>
+                ) : (
+                  <span>{searchQuery.trim() ? `${posts.length} result${posts.length === 1 ? "" : "s"}` : "Showing all stories"}</span>
+                )}
+              </div>
+            </div>
           </div>
         </div>
 
