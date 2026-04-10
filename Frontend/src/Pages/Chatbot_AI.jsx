@@ -139,6 +139,13 @@ export default function Chatbot_AI() {
     }
   }, [messages]);
 
+  useEffect(() => {
+  const savedDraft = localStorage.getItem("chatDraft");
+  if (savedDraft) {
+    setInput(savedDraft);
+  }
+}, []);
+
   // Auto-grow textarea
   useEffect(() => {
     if (textareaRef.current) {
@@ -151,6 +158,7 @@ export default function Chatbot_AI() {
     const text = (overrideText || input).trim();
     if (!text || typing) return;
     setInput("");
+    localStorage.removeItem("chatDraft");
     const userMsg = { sender: name, text, isBot: false, time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) };
     setMessages(p => [...p, userMsg]);
     setTyping(true);
@@ -322,7 +330,10 @@ export default function Chatbot_AI() {
             <textarea
               ref={textareaRef}
               value={input}
-              onChange={e => setInput(e.target.value)}
+              onChange={e => {
+              setInput(e.target.value);
+             localStorage.setItem("chatDraft", e.target.value);
+            }}
               onKeyDown={e => {
                 if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
               }}
