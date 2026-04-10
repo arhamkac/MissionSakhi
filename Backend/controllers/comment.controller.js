@@ -33,7 +33,7 @@ const postComment=asyncHandler(async(req,res)=>{
     return res
     .status(200)
     .json(
-        new ApiResponse(200,comment,"Comment posted succesfully")
+        new ApiResponse(200,comment,"Comment posted successfully")
     )
 })
 
@@ -102,7 +102,7 @@ const deleteComment=asyncHandler(async(req,res)=>{
 const getPostComments=asyncHandler(async(req,res)=>{
     const {postId}=req.params
     if(!postId){
-        throw new ApiError(400,"Please enter post id, you are expecting a love letter without specifiying who it is for")
+        throw new ApiError(400,"Please enter post id, you are expecting a love letter without specifying who it is for")
     }
 
     const commentagg=[

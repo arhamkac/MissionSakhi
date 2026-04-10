@@ -79,7 +79,7 @@ const uploadPost=asyncHandler(async(req,res)=>{
     return res
     .status(200)
     .json(
-        new ApiResponse(200,post,"Post uploaded succesfully")
+        new ApiResponse(200,post,"Post uploaded successfully")
     )
     }
 })
@@ -183,7 +183,7 @@ const deletePost=asyncHandler(async(req,res)=>{
     const {postId}=req.params
     const posts=await Post.findById(postId)
     if(posts.owner.toString()!==req.user._id.toString()){
-        throw new ApiError(400,"Kis hak se tum iss post ko delte karna chahti ho(You are not allowed to delete this post)")
+        throw new ApiError(400,"Kis hak se tum iss post ko delete karna chahti ho(You are not allowed to delete this post)")
     }
 
     const post=await Post.findByIdAndDelete(postId)
@@ -337,7 +337,7 @@ const getPosts=asyncHandler(async(req,res)=>{
         }
     ]
     if(!pipeline){
-        throw new ApiError(500,"Some error in creating pipline for posts")
+        throw new ApiError(500,"Some error in creating pipeline for posts")
     }
 
     const posts=await Post.aggregatePaginate(Post.aggregate(pipeline),

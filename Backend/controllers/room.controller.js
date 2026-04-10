@@ -7,7 +7,7 @@ import { Message } from "../models/message.model.js";
 const getRoomMessages=asyncHandler(async(req,res)=>{
     const {roomId}=req.params
     if(!roomId){
-        throw new ApiError(400,"Can't access room messages wihtout room Id")
+        throw new ApiError(400,"Can't access room messages without room Id")
     }
 
     const room=await Room.findById(roomId);
@@ -135,7 +135,7 @@ const joinRoom=asyncHandler(async(req,res)=>{
     }
 
     if(room.members.includes(req.user?._id)){
-        throw new ApiError(404,"User is alredy a member of the given room")
+        throw new ApiError(404,"User is already a member of the given room")
     }
     room.members.push(req.user?._id)
     await room.save();
