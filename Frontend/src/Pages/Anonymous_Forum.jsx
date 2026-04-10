@@ -5,6 +5,7 @@ import { useAuth } from "./AuthContext";
 import { Heart, ThumbsDown, MessageCircle, Share2, X, MoreHorizontal, Flag } from "lucide-react";
 import { API_BASE } from "../apiConfig";
 import ReportModal from "../Components/ReportModal";
+import GoToTop from "../Components/GoToTop";
 
 const CATEGORIES = [
   "Womens Safety", "Self-Defense & Training", "Legal Help & Rights",
@@ -511,6 +512,8 @@ export default function Anonymous_Forum() {
         </div>
       </div>
       
+      <GoToTop />
+
       <ReportModal 
          isOpen={reportConfig.isOpen} 
          onClose={() => setReportConfig({ isOpen: false, type: "", id: "" })} 
