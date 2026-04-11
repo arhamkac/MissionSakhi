@@ -94,11 +94,11 @@ export default function Home() {
               Mission Sakhi is an anonymous community platform for women — real conversations in safe chat rooms,
               an AI powered by women's safety data, and a forum where every voice matters.
             </p>
-            <div className="flex flex-wrap gap-3 items-center">
-              <Link to={user ? "/forum" : "/signup"} className="btn-primary text-base px-7 py-3.5">
+            <div className="flex flex-col sm:flex-row flex-wrap gap-4 items-center">
+              <Link to={user ? "/forum" : "/signup"} className="btn-primary w-full sm:w-auto text-base px-8 py-4">
                 {user ? "Go to Forum" : "Join the community"}
               </Link>
-              <Link to="/forum" className="btn-ghost text-base px-7 py-3.5">
+              <Link to="/forum" className="btn-ghost w-full sm:w-auto text-base px-8 py-4">
                 Browse Forum
               </Link>
             </div>
@@ -225,22 +225,22 @@ export default function Home() {
               <p className="text-white/70 mb-8 max-w-md mx-auto">
                 Join the community — post anonymously, chat in real time, or just talk to the AI. No pressure, no judgment.
               </p>
-              <div className="flex flex-wrap gap-3 justify-center">
+              <div className="flex flex-col sm:flex-row flex-wrap gap-4 justify-center items-center">
                 {!user && (
                   <Link to="/signup"
-                    className="inline-flex items-center gap-2 bg-white text-purple-700 font-semibold px-8 py-3.5 rounded-full hover:bg-white/90 transition-all shadow-xl"
+                    className="inline-flex items-center justify-center w-full sm:w-auto gap-2 bg-white text-purple-700 font-semibold px-8 py-4 rounded-full hover:bg-white/90 transition-all shadow-xl"
                     style={{ fontSize: "0.95rem" }}>
                     Create your account
                   </Link>
                 )}
                 <Link to="/chatbot"
-                  className="inline-flex items-center gap-2 bg-white/10 border border-white/30 text-white font-semibold px-8 py-3.5 rounded-full hover:bg-white/20 transition-all"
+                  className="inline-flex items-center justify-center w-full sm:w-auto gap-2 bg-white/10 border border-white/30 text-white font-semibold px-8 py-4 rounded-full hover:bg-white/20 transition-all"
                   style={{ fontSize: "0.95rem" }}>
                   Try the AI first →
                 </Link>
                 {user && (
                   <Link to="/community-chat"
-                    className="inline-flex items-center gap-2 bg-white text-purple-700 font-semibold px-8 py-3.5 rounded-full hover:bg-white/90 transition-all shadow-xl"
+                    className="inline-flex items-center justify-center w-full sm:w-auto gap-2 bg-white text-purple-700 font-semibold px-8 py-4 rounded-full hover:bg-white/90 transition-all shadow-xl"
                     style={{ fontSize: "0.95rem" }}>
                     Go to community →
                   </Link>

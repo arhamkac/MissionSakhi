@@ -10,12 +10,16 @@ const NAV = [
   { to: "/mental-health",  label: "Support"   },
 ];
 
+import { usePanic } from "./PanicContext";
+import { ShieldCheck } from "lucide-react";
+
 export default function Header() {
   const [open, setOpen] = useState(false);
   const [headerSearch, setHeaderSearch] = useState("");
   const { user, logout } = useAuth();
   const { pathname } = useLocation();
   const navigate = useNavigate();
+  const { togglePanic } = usePanic();
 
   const handleHeaderSearch = (event) => {
     event.preventDefault();
@@ -34,6 +38,17 @@ export default function Header() {
         borderBottom: "1px solid rgba(255,255,255,0.1)",
       }}
     >
+      {/* Panic Switch (Subtle Switch Dot) */}
+      <button 
+        onClick={togglePanic}
+        className="absolute top-1/2 -translate-y-1/2 right-4 w-2 h-2 rounded-full bg-white/20 hover:bg-white/40 border border-white/10 transition-all cursor-default z-[60]"
+        title="Safety Switch"
+      >
+        <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100">
+           <ShieldCheck size={10} className="text-white" />
+        </div>
+      </button>
+
       {/* top shimmer line */}
       <div className="absolute top-0 left-0 right-0 h-px"
         style={{ background: "linear-gradient(90deg,transparent,rgba(255,255,255,0.5),transparent)" }} />
@@ -115,73 +130,75 @@ export default function Header() {
 
         {/* Mobile hamburger */}
         <button onClick={() => setOpen(!open)}
-          className="md:hidden flex flex-col gap-1.5 p-2 rounded-lg"
-          style={{ background: "rgba(255,255,255,0.1)" }}
+          className="md:hidden flex flex-col items-center justify-center w-10 h-10 rounded-xl transition-colors hover:bg-white/10"
+          style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)" }}
           aria-label="Menu">
-          <span className={`block w-5 h-0.5 bg-white rounded transition-all duration-300 ${open ? "rotate-45 translate-y-2" : ""}`} />
-          <span className={`block w-5 h-0.5 bg-white rounded transition-all duration-300 ${open ? "opacity-0" : ""}`} />
-          <span className={`block w-5 h-0.5 bg-white rounded transition-all duration-300 ${open ? "-rotate-45 -translate-y-2" : ""}`} />
+          <div className="relative w-5 h-4">
+            <span className={`absolute left-0 block w-5 h-0.5 bg-white rounded transition-all duration-300 ${open ? "top-2 rotate-45" : "top-0"}`} />
+            <span className={`absolute left-0 top-2 block w-5 h-0.5 bg-white rounded transition-all duration-300 ${open ? "opacity-0" : ""}`} />
+            <span className={`absolute left-0 block w-5 h-0.5 bg-white rounded transition-all duration-300 ${open ? "top-2 -rotate-45" : "top-4"}`} />
+          </div>
         </button>
       </div>
 
       {/* Mobile menu */}
       {open && (
-        <div className="md:hidden px-5 pb-5 pt-2 space-y-1"
-          style={{ borderTop: "1px solid rgba(255,255,255,0.1)" }}>
-          {NAV.map(({ to, label }) => (
-            <Link key={to} to={to} onClick={() => setOpen(false)}
-              className="block py-3 text-white/85 hover:text-white font-medium text-sm border-b transition-colors"
-              style={{ borderColor: "rgba(255,255,255,0.08)" }}>
-              {label}
-            </Link>
-          ))}
-          <div className="pt-3 space-y-3">
-          <form onSubmit={handleHeaderSearch} className="flex items-center gap-2">
-            <div className="relative flex-1">
+        <div className="md:hidden absolute top-full left-0 right-0 glass shadow-2xl animate-in slide-in-from-top-4 duration-300 z-50 overflow-hidden"
+          style={{ margin: "0.5rem", borderRadius: "1.5rem", border: "1px solid rgba(255,255,255,0.2)", background: "rgba(109,40,217,0.98)", backdropFilter: "blur(24px)" }}>
+          <div className="px-6 py-8 space-y-6">
+            <nav className="flex flex-col gap-1">
+              {NAV.map(({ to, label }) => (
+                <Link key={to} to={to} onClick={() => setOpen(false)}
+                  className="py-4 text-white hover:text-white/80 font-medium text-lg border-b border-white/10 transition-colors last:border-0">
+                  {label}
+                </Link>
+              ))}
+            </nav>
+            
+            <form onSubmit={handleHeaderSearch} className="relative">
               <input
                 value={headerSearch}
                 onChange={e => setHeaderSearch(e.target.value)}
-                placeholder="Search stories or rooms..."
-                className="field w-full pl-5 pr-16 bg-white/12 text-white placeholder:text-white/60"
-                style={{ borderColor: "rgba(255,255,255,0.2)", background: "rgba(255,255,255,0.08)" }}
+                placeholder="Search..."
+                className="field w-full pl-5 pr-12 bg-white/10 text-white placeholder:text-white/50 border-white/20 focus:bg-white/15"
               />
-              {headerSearch ? (
-                <button type="button" onClick={() => setHeaderSearch("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/70 hover:text-white">
-                  <X size={16} />
-                </button>
-              ) : null}
-              <Search size={18} className="absolute right-11 top-1/2 -translate-y-1/2 text-white/70" />
-            </div>
-            <button type="submit" className="btn-ghost px-4 py-2">Search</button>
-          </form>
+              <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2 text-white/70">
+                <Search size={18} />
+              </button>
+            </form>
 
-          <div className="flex flex-col gap-2">
-            {!user ? (
-              <>
-                <Link to="/login" onClick={() => setOpen(false)}
-                  className="btn-ghost w-full justify-center text-white border-white/20 hover:bg-white/10">
-                  Sign in
-                </Link>
-                <Link to="/signup" onClick={() => setOpen(false)}
-                  className="btn-primary w-full justify-center">
-                  Join free
-                </Link>
-              </>
-            ) : (
-              <>
-                <Link to="/dashboard" onClick={() => setOpen(false)}
-                  className="btn-ghost w-full justify-center text-white border-white/20">
-                  My Profile
-                </Link>
-                <button onClick={() => { logout(); setOpen(false); }}
-                  className="btn-danger w-full justify-center border-white/20 text-white/70">
-                  Sign out
-                </button>
-              </>
-            )}
+            <div className="flex flex-col gap-3 pt-4">
+              {!user ? (
+                <>
+                  <Link to="/login" onClick={() => setOpen(false)}
+                    className="btn-ghost w-full justify-center text-white border-white/20 bg-white/5 py-3">
+                    Sign in
+                  </Link>
+                  <Link to="/signup" onClick={() => setOpen(false)}
+                    className="btn-primary w-full justify-center py-3 shadow-lg">
+                    Join free
+                  </Link>
+                </>
+              ) : (
+                <div className="space-y-3">
+                  <Link to="/dashboard" onClick={() => setOpen(false)}
+                    className="flex items-center justify-between p-4 rounded-2xl bg-white/10 border border-white/10">
+                    <div className="flex items-center gap-3 text-white font-medium">
+                      <div className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold bg-white/20 border border-white/30">
+                        {user.username?.charAt(0).toUpperCase()}
+                      </div>
+                      <span>{user.username}</span>
+                    </div>
+                    <span className="text-white/60 text-sm">Dashboard →</span>
+                  </Link>
+                  <button onClick={() => { logout(); setOpen(false); }}
+                    className="w-full text-center py-3 text-white/50 hover:text-white/80 text-sm transition-colors">
+                    Sign out
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
         </div>
       )}
     </header>
