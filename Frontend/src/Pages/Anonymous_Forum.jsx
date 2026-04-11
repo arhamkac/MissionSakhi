@@ -49,6 +49,20 @@ export default function Anonymous_Forum() {
 
   useEffect(() => { fetchPosts(); }, []);
 
+  useEffect(() => {
+  const saved = localStorage.getItem("forumDraft");
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      setNewTitle(parsed.title || "");
+      setNewContent(parsed.content || "");
+      setShowComposer(true);
+    } catch (e) {
+      localStorage.removeItem("forumDraft");
+    }
+  }
+}, []);
+
   const upload = async () => {
     if (!user || !newTitle.trim() || !newContent.trim() || newCategory.length === 0) {
       alert("Please fill in title, content, and select at least one category");
@@ -64,6 +78,7 @@ export default function Anonymous_Forum() {
         { headers: { ...auth.headers, "Content-Type": "multipart/form-data" } });
       setPosts(p => [data.message, ...p]);
       setNewTitle(""); setNewContent(""); setNewImage(null); setNewCategory([]);
+      localStorage.removeItem("forumDraft"); 
       setShowComposer(false);
     } catch (e) { 
       alert(e.response?.data?.message || "Error uploading post");
@@ -261,10 +276,21 @@ export default function Anonymous_Forum() {
                   </div>
                   
                   <input type="text" placeholder="Give your story a title…" value={newTitle} 
-                    onChange={e => setNewTitle(e.target.value)}
-                    className="field mb-3 font-medium text-base placeholder:text-[var(--c-muted)] border-0 bg-gray-50 rounded-xl focus:bg-white" />
+onChange={e => {
+  setNewTitle(e.target.value);
+  localStorage.setItem("forumDraft", JSON.stringify({
+    title: e.target.value,
+    content: newContent
+  }));
+}}                    className="field mb-3 font-medium text-base placeholder:text-[var(--c-muted)] border-0 bg-gray-50 rounded-xl focus:bg-white" />
                   
-                  <textarea value={newContent} onChange={e => setNewContent(e.target.value)}
+                  <textarea value={newContent}onChange={e => {
+  setNewContent(e.target.value);
+  localStorage.setItem("forumDraft", JSON.stringify({
+    title: newTitle,
+    content: e.target.value
+  }));
+}}
                     placeholder="Share something… your wins, your struggles, your truth 💜" 
                     className="field resize-none mb-4 min-h-28 border-0 bg-gray-50 rounded-xl focus:bg-white" />
                   
