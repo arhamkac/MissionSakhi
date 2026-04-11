@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "./AuthContext";
+import RightsCardStack from "../Components/RightsCardStack";
 
 const FEATURES = [
   {
@@ -159,6 +160,8 @@ export default function Home() {
             ))}
           </div>
         </section>
+
+        <RightsCardStack />
 
         {/* ── How it works ─────────────────────────────────── */}
         <section className="max-w-6xl mx-auto px-5 sm:px-8 pb-20">
