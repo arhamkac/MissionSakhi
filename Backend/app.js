@@ -10,9 +10,10 @@ import helmet from "helmet";
 
 const app=express();
 const server=createServer(app);
+const allowedOrigins = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : [];
 const io=new Server(server, {
     cors: {
-    origin: ["http://localhost:5173", "https://mission-sakhi.vercel.app", process.env.CORS_ORIGIN].filter(Boolean),
+    origin: allowedOrigins,
     methods: ["GET", "POST"],
     credentials: true,
   }
@@ -104,7 +105,7 @@ socket.on('disconnect',()=>{
 })
 
 app.use(cors({
-    origin: ["http://localhost:5173", "https://mission-sakhi.vercel.app", process.env.CORS_ORIGIN].filter(Boolean),
+    origin: allowedOrigins,
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],

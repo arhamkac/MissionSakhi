@@ -8,7 +8,7 @@ import ReportModal from "../Components/ReportModal";
 import { io } from "socket.io-client";
 
 // Initialize Socket outside the component to avoid multiple connections
-const socket = io("http://localhost:8080"); // Ensure this matches your backend port
+const socket = io(import.meta.env.VITE_SOCKET_URL); // Ensure this matches your backend port
 
 const GRADIENTS = [
   "linear-gradient(135deg,#8b5cf6,#ec4899)",
