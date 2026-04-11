@@ -29,8 +29,14 @@ const PageWrapper = ({ children }) => (
   </motion.div>
 )
 
+import { usePanic } from './Pages/PanicContext'
+import Decoy from './Pages/Decoy'
+
 function App() {
   const location = useLocation()
+  const { isPanic } = usePanic()
+
+  if (isPanic) return <Decoy />
 
   return (
     <div className="flex flex-col min-h-screen">

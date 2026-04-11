@@ -10,12 +10,16 @@ const NAV = [
   { to: "/mental-health",  label: "Support"   },
 ];
 
+import { usePanic } from "./PanicContext";
+import { ShieldCheck } from "lucide-react";
+
 export default function Header() {
   const [open, setOpen] = useState(false);
   const [headerSearch, setHeaderSearch] = useState("");
   const { user, logout } = useAuth();
   const { pathname } = useLocation();
   const navigate = useNavigate();
+  const { togglePanic } = usePanic();
 
   const handleHeaderSearch = (event) => {
     event.preventDefault();
@@ -34,6 +38,17 @@ export default function Header() {
         borderBottom: "1px solid rgba(255,255,255,0.1)",
       }}
     >
+      {/* Panic Switch (Subtle Switch Dot) */}
+      <button 
+        onClick={togglePanic}
+        className="absolute top-1/2 -translate-y-1/2 right-4 w-2 h-2 rounded-full bg-white/20 hover:bg-white/40 border border-white/10 transition-all cursor-default z-[60]"
+        title="Safety Switch"
+      >
+        <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100">
+           <ShieldCheck size={10} className="text-white" />
+        </div>
+      </button>
+
       {/* top shimmer line */}
       <div className="absolute top-0 left-0 right-0 h-px"
         style={{ background: "linear-gradient(90deg,transparent,rgba(255,255,255,0.5),transparent)" }} />
