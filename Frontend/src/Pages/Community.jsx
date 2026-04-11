@@ -3,12 +3,12 @@ import axios from "axios";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "./AuthContext";
 import { Search, X } from "lucide-react";
-import { ROOMS_BASE, MESSAGE_BASE, API_BASE } from "../apiConfig";
+import { ROOMS_BASE, MESSAGE_BASE, API_BASE, BACKEND_URL } from "../apiConfig";
 import ReportModal from "../Components/ReportModal";
 import { io } from "socket.io-client";
 
 // Initialize Socket outside the component to avoid multiple connections
-const socket = io(import.meta.env.VITE_SOCKET_URL); // Ensure this matches your backend port
+const socket = io(BACKEND_URL);
 
 const GRADIENTS = [
   "linear-gradient(135deg,#8b5cf6,#ec4899)",

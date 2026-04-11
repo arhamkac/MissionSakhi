@@ -10,10 +10,9 @@ import helmet from "helmet";
 
 const app=express();
 const server=createServer(app);
-const allowedOrigins = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : [];
 const io=new Server(server, {
     cors: {
-    origin: allowedOrigins,
+    origin: true,
     methods: ["GET", "POST"],
     credentials: true,
   }
@@ -105,7 +104,7 @@ socket.on('disconnect',()=>{
 })
 
 app.use(cors({
-    origin: allowedOrigins,
+    origin: true,
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],

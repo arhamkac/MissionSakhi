@@ -1,4 +1,6 @@
-export const API_BASE = import.meta.env.VITE_API_BASE || "https://missionsakhi.onrender.com/api";
+export const BACKEND_URL = window.location.hostname === 'localhost' ? 'http://localhost:8000' : window.location.origin;
+
+export const API_BASE = `${BACKEND_URL}/api`;
 export const AUTH_BASE = `${API_BASE}/users`;
 export const CHATBOT_BASE = `${API_BASE}/chatbot`;
 export const ROOMS_BASE = `${API_BASE}/rooms`;
