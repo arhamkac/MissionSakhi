@@ -73,20 +73,6 @@ export default function Anonymous_Forum() {
     return () => clearTimeout(timeout);
   }, [searchQuery]);
 
-  useEffect(() => {
-  const saved = localStorage.getItem("forumDraft");
-  if (saved) {
-    try {
-      const parsed = JSON.parse(saved);
-      setNewTitle(parsed.title || "");
-      setNewContent(parsed.content || "");
-      setShowComposer(true);
-    } catch (e) {
-      localStorage.removeItem("forumDraft");
-    }
-  }
-}, []);
-
   const upload = async () => {
     if (!user || !newTitle.trim() || !newContent.trim() || newCategory.length === 0) {
       alert("Please fill in title, content, and select at least one category");
@@ -102,11 +88,10 @@ export default function Anonymous_Forum() {
         { headers: { ...auth.headers, "Content-Type": "multipart/form-data" } });
       setPosts(p => [data.message, ...p]);
       setNewTitle(""); setNewContent(""); setNewImage(null); setNewCategory([]);
-      localStorage.removeItem("forumDraft"); 
       setShowComposer(false);
-    } catch (e) { 
+    } catch (e) {
       alert(e.response?.data?.message || "Error uploading post");
-      console.error(e); 
+      console.error(e);
     }
   };
 
@@ -116,13 +101,13 @@ export default function Anonymous_Forum() {
       return;
     }
     try {
-      const { data } = await axios.patch(`${BASE}/posts/update-post/${id}`, 
+      const { data } = await axios.patch(`${BASE}/posts/update-post/${id}`,
         { title: editTitle, content: editContent }, auth);
       setPosts(p => p.map(x => x._id === id ? data.message : x));
       setEditPostId(null); setEditTitle(""); setEditContent("");
-    } catch (e) { 
+    } catch (e) {
       alert(e.response?.data?.message || "Error updating post");
-      console.error(e); 
+      console.error(e);
     }
   };
 
@@ -131,9 +116,9 @@ export default function Anonymous_Forum() {
     try {
       await axios.delete(`${BASE}/posts/delete-post/${id}`, auth);
       setPosts(p => p.filter(x => x._id !== id));
-    } catch (e) { 
+    } catch (e) {
       alert(e.response?.data?.message || "Error deleting post");
-      console.error(e); 
+      console.error(e);
     }
   };
 
@@ -211,7 +196,7 @@ export default function Anonymous_Forum() {
   const handleReportSubmit = async (selectedType, content) => {
     setIsSubmittingReport(true);
     try {
-      await axios.post(`${BASE}/report/${reportConfig.type}/${reportConfig.id}`, 
+      await axios.post(`${BASE}/report/${reportConfig.type}/${reportConfig.id}`,
         { type: selectedType, content }, auth);
       alert("Report submitted successfully");
       setReportConfig({ isOpen: false, type: "", id: "" });
@@ -311,7 +296,7 @@ export default function Anonymous_Forum() {
         {user ? (
           <>
             {!showComposer ? (
-              <button onClick={() => setShowComposer(true)} 
+              <button onClick={() => setShowComposer(true)}
                 className="w-full mb-8 p-4 rounded-2xl transition-all duration-200 hover:shadow-lg"
                 style={{ background: "rgba(255,255,255,0.8)", border: "1px solid rgba(139,92,246,0.2)" }}>
                 <div className="flex items-center gap-3">
@@ -331,26 +316,15 @@ export default function Anonymous_Forum() {
                       <X size={20} className="text-[var(--c-muted)]" />
                     </button>
                   </div>
-                  
-                  <input type="text" placeholder="Give your story a title…" value={newTitle} 
-onChange={e => {
-  setNewTitle(e.target.value);
-  localStorage.setItem("forumDraft", JSON.stringify({
-    title: e.target.value,
-    content: newContent
-  }));
-}}                    className="field mb-3 font-medium text-base placeholder:text-[var(--c-muted)] border-0 bg-gray-50 rounded-xl focus:bg-white" />
-                  
-                  <textarea value={newContent}onChange={e => {
-  setNewContent(e.target.value);
-  localStorage.setItem("forumDraft", JSON.stringify({
-    title: newTitle,
-    content: e.target.value
-  }));
-}}
-                    placeholder="Share something… your wins, your struggles, your truth 💜" 
-                    className="field resize-none mb-4 min-h-28 border-0 bg-gray-50 rounded-xl focus:bg-white" />
-                  
+
+                  <input type="text" placeholder="Story title…" value={newTitle}
+                    onChange={e => setNewTitle(e.target.value)}
+                    className="field mb-3 font-semibold text-base sm:text-lg border-0 bg-gray-50 rounded-xl focus:bg-white px-4 py-3" />
+
+                  <textarea value={newContent} onChange={e => setNewContent(e.target.value)}
+                    placeholder="Share something… 💜"
+                    className="field resize-none mb-4 min-h-32 border-0 bg-gray-50 rounded-xl focus:bg-white px-4 py-3 text-sm sm:text-base" />
+
                   {newImage && (
                     <div className="mb-4 relative">
                       <img src={URL.createObjectURL(newImage)} alt="preview" className="w-full max-h-48 object-cover rounded-xl" />
@@ -359,20 +333,20 @@ onChange={e => {
                       </button>
                     </div>
                   )}
-                  
+
                   <div className="mb-4">
                     <p className="text-xs font-semibold text-[var(--c-muted)] uppercase mb-3">Select categories</p>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-32 overflow-y-auto p-2 bg-gray-50 rounded-xl">
                       {CATEGORIES.map(cat => (
                         <label key={cat} className="flex items-center gap-2 cursor-pointer text-xs hover:text-violet-600 transition-colors p-1 rounded hover:bg-white">
-                          <input type="checkbox" checked={newCategory.includes(cat)} 
+                          <input type="checkbox" checked={newCategory.includes(cat)}
                             onChange={e => {
                               if (e.target.checked) {
                                 setNewCategory([...newCategory, cat]);
                               } else {
                                 setNewCategory(newCategory.filter(c => c !== cat));
                               }
-                            }} className="rounded w-3.5 h-3.5 accent-violet-600"/>
+                            }} className="rounded w-3.5 h-3.5 accent-violet-600" />
                           {cat}
                         </label>
                       ))}
@@ -412,11 +386,11 @@ onChange={e => {
           {posts.map(post => {
             const isOwner = user?._id === post.owner?._id;
             const userVote = userVotes[post._id];
-            
+
             return (
               <div key={post._id} className="rounded-2xl overflow-hidden transition-all duration-200 hover:shadow-lg"
                 style={{ background: "rgba(255,255,255,0.95)", boxShadow: "0 2px 8px rgba(139,92,246,0.08)" }}>
-                
+
                 {/* Post Header */}
                 <div className="p-4 sm:p-5 border-b" style={{ borderColor: "rgba(139,92,246,0.08)" }}>
                   <div className="flex items-center justify-between">
@@ -430,7 +404,7 @@ onChange={e => {
                         <p className="text-xs text-[var(--c-muted)]">Shared anonymously</p>
                       </div>
                     </div>
-                    {isOwner && (
+                    {user && user._id === post.owner && (
                       <div className="relative group">
                         <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
                           <MoreHorizontal size={18} className="text-[var(--c-muted)]" />
@@ -448,17 +422,17 @@ onChange={e => {
 
                 {/* Categories */}
                 {post.category && post.category.length > 0 && (
-                  <div className="px-4 sm:px-5 pt-3 pb-2 flex flex-wrap gap-1.5">
-                    {post.category.slice(0, 2).map(cat => (
-                      <span key={cat} className="text-xs px-2.5 py-1 rounded-full font-medium" 
+                  <div className="px-4 sm:px-5 pt-3 pb-1 flex flex-wrap gap-1.5">
+                    {post.category.slice(0, 3).map(cat => (
+                      <span key={cat} className="text-[10px] sm:text-xs px-2.5 py-1 rounded-full font-medium"
                         style={{ background: "rgba(139,92,246,0.1)", color: "#8b5cf6" }}>
                         {cat}
                       </span>
                     ))}
-                    {post.category.length > 2 && (
-                      <span className="text-xs px-2.5 py-1 rounded-full font-medium" 
+                    {post.category.length > 3 && (
+                      <span className="text-[10px] sm:text-xs px-2.5 py-1 rounded-full font-medium"
                         style={{ background: "rgba(139,92,246,0.1)", color: "#8b5cf6" }}>
-                        +{post.category.length - 2}
+                        +{post.category.length - 3}
                       </span>
                     )}
                   </div>
@@ -500,17 +474,17 @@ onChange={e => {
                 {/* Actions Bar */}
                 <div className="px-4 sm:px-5 py-3 border-t relative z-10" style={{ borderColor: "rgba(139,92,246,0.08)" }}>
                   <div className="flex items-center justify-between gap-2 flex-wrap">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1 sm:gap-2">
                       <button onClick={() => vote(post._id, true)}
-                        className={`flex items-center gap-2 px-3 py-2 rounded-2xl transition-all duration-200 ${userVote === 'up' ? 'bg-red-50 text-red-600' : 'text-[var(--c-muted)] hover:bg-red-50 hover:text-red-600'}`}>
-                        <Heart size={18} fill={userVote === 'up' ? '#ec4899' : 'none'}
+                        className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl transition-all duration-200 ${userVote === 'up' ? 'bg-red-50 text-red-600' : 'text-[var(--c-muted)] hover:bg-red-50 hover:text-red-600'}`}>
+                        <Heart size={16} fill={userVote === 'up' ? '#ec4899' : 'none'}
                           className={userVote === 'up' ? 'text-red-600' : 'text-current'} />
-                        <span className="text-xs font-semibold">{post.upvotes || 0}</span>
+                        <span className="text-xs font-bold">{post.upvotes || 0}</span>
                       </button>
                       <button onClick={() => vote(post._id, false)}
-                        className={`flex items-center gap-2 px-3 py-2 rounded-2xl transition-all duration-200 ${userVote === 'down' ? 'bg-sky-50 text-sky-600' : 'text-[var(--c-muted)] hover:bg-sky-50 hover:text-sky-600'}`}>
-                        <ThumbsDown size={18} className={userVote === 'down' ? 'text-sky-600' : 'text-current'} />
-                        <span className="text-xs font-semibold">{post.downvotes || 0}</span>
+                        className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl transition-all duration-200 ${userVote === 'down' ? 'bg-sky-50 text-sky-600' : 'text-[var(--c-muted)] hover:bg-sky-50 hover:text-sky-600'}`}>
+                        <ThumbsDown size={16} className={userVote === 'down' ? 'text-sky-600' : 'text-current'} />
+                        <span className="text-xs font-bold">{post.downvotes || 0}</span>
                       </button>
                     </div>
                     <div className="flex items-center gap-2">
@@ -559,7 +533,7 @@ onChange={e => {
                                       </div>
                                     )}
                                     {user && user?._id !== c.postedBy && (
-                                       <button onClick={() => openReport('comment', c._id)} className="text-xs text-[var(--c-muted)] hover:text-rose-500">Report</button>
+                                      <button onClick={() => openReport('comment', c._id)} className="text-xs text-[var(--c-muted)] hover:text-rose-500">Report</button>
                                     )}
                                   </div>
                                   <p className="text-xs text-[var(--c-ink)] leading-relaxed break-words">{c.content}</p>
@@ -594,14 +568,14 @@ onChange={e => {
           })}
         </div>
       </div>
-      
+
       <GoToTop />
 
-      <ReportModal 
-         isOpen={reportConfig.isOpen} 
-         onClose={() => setReportConfig({ isOpen: false, type: "", id: "" })} 
-         onSubmit={handleReportSubmit} 
-         isSubmitting={isSubmittingReport} 
+      <ReportModal
+        isOpen={reportConfig.isOpen}
+        onClose={() => setReportConfig({ isOpen: false, type: "", id: "" })}
+        onSubmit={handleReportSubmit}
+        isSubmitting={isSubmittingReport}
       />
     </div>
   );

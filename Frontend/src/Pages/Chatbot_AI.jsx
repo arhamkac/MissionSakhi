@@ -206,29 +206,29 @@ export default function Chatbot_AI() {
       <div className="orb w-80 h-80 top-0 right-0 opacity-20" style={{ background: "radial-gradient(circle,#e879f9,transparent 70%)" }} />
       <div className="orb w-64 h-64 bottom-0 left-0 opacity-15" style={{ background: "radial-gradient(circle,#818cf8,transparent 70%)", animationDelay: "4s" }} />
 
-      <div className="relative z-10 flex flex-col h-full max-w-2xl mx-auto w-full" style={{ minHeight: 0 }}>
+      <div className="relative z-10 flex flex-col h-full max-w-2xl mx-auto w-full" style={{ minHeight: 0, height: "calc(100vh - 4.25rem)" }}>
 
         {/* ── Header ── */}
-        <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: "rgba(139,92,246,0.1)", background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)" }}>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl flex items-center justify-center text-xl shadow-md"
+        <div className="flex items-center justify-between px-4 sm:px-5 py-3 sm:py-4 border-b" style={{ borderColor: "rgba(139,92,246,0.1)", background: "rgba(255,255,255,0.7)", backdropFilter: "blur(12px)" }}>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl flex items-center justify-center text-lg sm:text-xl shadow-md flex-shrink-0"
               style={{ background: "linear-gradient(135deg,#8b5cf6,#ec4899)" }}>
               🤖
             </div>
-            <div>
-              <h1 className="font-semibold text-[var(--c-ink)]" style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "1.15rem" }}>
+            <div className="min-w-0">
+              <h1 className="font-semibold text-[var(--c-ink)] truncate" style={{ fontFamily: "Cormorant Garamond, serif", fontSize: "1.05rem" }}>
                 Sakhi AI
               </h1>
               <div className="flex items-center gap-1.5">
                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="text-xs text-[var(--c-muted)]">Powered by Groq · Always here</span>
+                <span className="text-[10px] sm:text-xs text-[var(--c-muted)] truncate">Groq Powered</span>
               </div>
             </div>
           </div>
           {messages.length > 0 && (
             <button onClick={clearChat}
-              className="flex items-center gap-1.5 text-xs text-[var(--c-muted)] hover:text-rose-500 transition-colors px-3 py-1.5 rounded-xl hover:bg-rose-50">
-              <Trash2 size={13} />
+              className="flex items-center gap-1.5 text-[10px] sm:text-xs text-[var(--c-muted)] hover:text-rose-500 transition-colors px-2.5 py-1.5 rounded-xl hover:bg-rose-50 flex-shrink-0">
+              <Trash2 size={12} />
               Clear
             </button>
           )}
@@ -243,12 +243,10 @@ export default function Chatbot_AI() {
               style={{ background: "linear-gradient(135deg,#8b5cf6,#ec4899)" }}>
               🤖
             </div>
-            <div className="max-w-sm">
-              <div className="rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm"
-                style={{ background: "rgba(255,255,255,0.9)", border: "1px solid rgba(139,92,246,0.1)" }}>
-                <p className="text-sm leading-relaxed text-[var(--c-ink)]">
-                  Hey{user ? ` ${name}` : ""} 🌸 I'm <strong>Sakhi</strong>, your AI companion — trained on women's safety,
-                  health, legal rights, and wellbeing resources. Ask me anything, or just talk. I'm here.
+            <div className="max-w-[85%] sm:max-w-sm">
+              <div className="rounded-2xl rounded-tl-sm px-3.5 py-2.5 sm:px-4 sm:py-3 shadow-sm border border-[rgba(139,92,246,0.1)] bg-white/90">
+                <p className="text-xs sm:text-sm leading-relaxed text-[var(--c-ink)]">
+                  Hey{user ? ` ${name}` : ""} 🌸 I'm <strong>Sakhi</strong>, your AI companion. Ask me anything about safety, rights, or wellbeing.
                 </p>
               </div>
             </div>
@@ -284,20 +282,19 @@ export default function Chatbot_AI() {
                   🤖
                 </div>
               )}
-              <div className={`max-w-sm ${!msg.isBot ? "items-end flex flex-col" : ""}`}>
+              <div className={`max-w-[85%] sm:max-w-sm ${!msg.isBot ? "items-end flex flex-col self-end" : ""}`}>
                 {msg.isBot ? (
-                  <div className="rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm"
-                    style={{ background: "rgba(255,255,255,0.9)", border: "1px solid rgba(139,92,246,0.1)" }}>
+                  <div className="rounded-2xl rounded-tl-sm px-3.5 py-2.5 sm:px-4 sm:py-3 shadow-sm border border-[rgba(139,92,246,0.1)] bg-white/90">
                     <BotMessage text={msg.text} />
                   </div>
                 ) : (
-                  <div className="px-4 py-3 rounded-2xl rounded-tr-sm shadow-md text-white text-sm leading-relaxed"
+                  <div className="px-4 py-2.5 sm:py-3 rounded-2xl rounded-tr-sm shadow-md text-white text-xs sm:text-sm leading-relaxed"
                     style={{ background: "linear-gradient(135deg,#8b5cf6,#ec4899)" }}>
                     {msg.text}
                   </div>
                 )}
                 {msg.time && (
-                  <p className="text-[10px] text-[var(--c-muted)] mt-1 px-1">{msg.time}</p>
+                  <p className="text-[9px] sm:text-[10px] text-[var(--c-muted)] mt-1 px-1">{msg.time}</p>
                 )}
               </div>
             </div>

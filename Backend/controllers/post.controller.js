@@ -181,12 +181,12 @@ const updatePost=asyncHandler(async(req,res)=>{
 
 const deletePost=asyncHandler(async(req,res)=>{
     const {postId}=req.params
-    const posts=await Post.findById(postId)
-    if(posts.owner.toString()!==req.user._id.toString()){
-        throw new ApiError(400,"Kis hak se tum iss post ko delete karna chahti ho(You are not allowed to delete this post)")
+    const post=await Post.findById(postId)
+    if(post.owner.toString()!==req.user._id.toString()){
+        throw new ApiError(403,"Kis hak se tum iss post ko delete karna chahti ho(You are not allowed to delete this post)")
     }
 
-    const post=await Post.findByIdAndDelete(postId)
+    await post.deleteOne()
     if(post.image!=null){
         const pid=extractPublicId(post.image)
         const deletion=await deleteOnCloudinary(pid)

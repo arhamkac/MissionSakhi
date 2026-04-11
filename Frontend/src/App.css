@@ -363,3 +363,21 @@ h1, h2, h3, h4 {
   color: var(--c-muted);
   backdrop-filter: blur(8px);
 }
+
+/* ── Responsive adjustments ────────────────────────────── */
+@media (max-width: 1024px) {
+  .hero-title { font-size: clamp(2.5rem, 8vw, 4rem); }
+}
+
+@media (max-width: 768px) {
+  .page { padding-left: 1rem; padding-right: 1rem; }
+  .hero-title { font-size: 2.8rem; line-height: 1.1; }
+  .glass { padding: 1.25rem; }
+  .btn-primary, .btn-ghost { padding: 0.65rem 1.4rem; font-size: 0.825rem; }
+}
+
+@media (max-width: 480px) {
+  .hero-title { font-size: 2.4rem; }
+  .tag { font-size: 0.65rem; padding: 0.2rem 0.6rem; }
+  body { font-size: 0.95rem; }
+}

@@ -207,19 +207,18 @@ export default function Community() {
       <div className="page flex flex-col" style={{ background: "linear-gradient(160deg,#fdf0f5 0%,#f7f0ff 50%,#fdf0f5 100%)", height: "calc(100vh - 4rem)" }}>
         <div className="relative z-10 flex flex-col h-full max-w-3xl mx-auto w-full px-4 py-5">
           
-          {/* Room header with Online Count */}
-          <div className="glass p-4 mb-4 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <button onClick={() => setSelected(null)} className="btn-ghost text-sm py-1.5 px-3">← Back</button>
-              <div>
-                <h2 className="font-semibold text-[var(--c-ink)]">{room?.name}</h2>
-                <p className="text-xs text-[var(--c-muted)]">{room?.description}</p>
-              </div>
+          {/* Room header */}
+          <div className="glass p-3 sm:p-4 mb-4 flex items-center gap-3 sm:gap-4">
+            <button onClick={() => setSelected(null)} className="btn-ghost text-xs sm:text-sm py-1.5 px-3 flex-shrink-0">← Back</button>
+            <div className="min-w-0">
+              <h2 className="font-semibold text-[var(--c-ink)] text-sm sm:text-base truncate">{room?.name}</h2>
+              <p className="text-[10px] sm:text-xs text-[var(--c-muted)] truncate">{room?.description}</p>
             </div>
-            <div className="flex items-center gap-2">
+          </div>
+         {/* Online Count */}
+          <div className="flex items-center gap-2">
                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
                <span className="text-xs font-medium text-green-600">{onlineCount} online</span>
-            </div>
           </div>
 
           {/* Messages */}
@@ -277,9 +276,56 @@ export default function Community() {
            <p className="text-[var(--c-muted)] text-sm max-w-md mx-auto">Every room is a safe space built with love. Join a conversation or start your own.</p>
          </div>
 
-         {/* Search & Create Room logic stays here */}
-         {/* ... (Your original Rooms rendering logic) */}
-         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+        <div className="glass p-4 rounded-3xl mb-8" style={{ backdropFilter: "blur(20px)", background: "rgba(255,255,255,0.65)", border: "1px solid rgba(139,92,246,0.14)" }}>
+          <div className="flex flex-col sm:flex-row items-center gap-3">
+            <div className="relative flex-1 w-full">
+              <Search size={18} className="absolute right-11 top-1/2 -translate-y-1/2 text-[var(--c-muted)]" />
+              <input
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                placeholder="Search rooms, topics, or keywords..."
+                className="field pl-5 pr-16"
+              />
+              {searchQuery ? (
+                <button type="button"
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--c-muted)] hover:text-[var(--c-ink)]"
+                  aria-label="Clear search"
+                >
+                  <X size={18} />
+                </button>
+              ) : null}
+            </div>
+            <div className="flex items-center gap-2 text-sm text-[var(--c-muted)]">
+              {isSearching ? (
+                <span className="inline-flex items-center gap-2">
+                  <span className="spinner" style={{ width: "1rem", height: "1rem", borderTopColor: "#8b5cf6", borderColor: "rgba(139,92,246,0.25)" }} />
+                  Searching...
+                </span>
+              ) : (
+                <span>{searchQuery.trim() ? `${rooms.length} room${rooms.length === 1 ? "" : "s"} found` : "Showing all rooms"}</span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {user && (
+          <div className="glass p-4 sm:p-5 mb-8 flex flex-col sm:flex-row gap-3">
+            <input value={roomName} onChange={e => setRoomName(e.target.value)}
+              placeholder="Room name…" className="field flex-1 text-sm" />
+            <input value={roomDesc} onChange={e => setRoomDesc(e.target.value)}
+              placeholder="About?" className="field flex-1 text-sm" />
+            <button onClick={createRoom} className="btn-primary whitespace-nowrap px-6 py-2.5">Create room</button>
+          </div>
+        )}
+
+        {rooms.length === 0 ? (
+          <div className="text-center py-20 text-[var(--c-muted)]">
+            <p className="text-5xl mb-4">🌸</p>
+            <p>No rooms yet. Create the first one!</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
             {rooms.map((room, i) => (
               <div key={room._id} className="room-card p-6" onClick={() => setSelected(room._id)}>
                 <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-white font-bold text-lg mb-4 shadow-lg"
@@ -292,6 +338,8 @@ export default function Community() {
               </div>
             ))}
           </div>
+          )
+         }
       </div>
 
       <ReportModal 
