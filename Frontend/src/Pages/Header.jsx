@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "./AuthContext";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Search, X } from "lucide-react";
 
 const NAV = [
   { to: "/forum",          label: "Forum"     },
@@ -11,8 +12,18 @@ const NAV = [
 
 export default function Header() {
   const [open, setOpen] = useState(false);
+  const [headerSearch, setHeaderSearch] = useState("");
   const { user, logout } = useAuth();
   const { pathname } = useLocation();
+  const navigate = useNavigate();
+
+  const handleHeaderSearch = (event) => {
+    event.preventDefault();
+    const query = headerSearch.trim();
+    if (!query) return;
+    const target = pathname === "/community-chat" ? "/community-chat" : "/forum";
+    navigate(`${target}?query=${encodeURIComponent(query)}`);
+  };
 
   return (
     <header
@@ -42,7 +53,7 @@ export default function Header() {
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-7">
+        <nav className="hidden md:flex items-center gap-7 ml-12">
           {NAV.map(({ to, label }) => (
             <Link key={to} to={to}
               className={`nav-link ${pathname === to ? "!text-white after:!w-full" : ""}`}>
@@ -50,6 +61,25 @@ export default function Header() {
             </Link>
           ))}
         </nav>
+
+        <form onSubmit={handleHeaderSearch} className="hidden lg:flex items-center gap-2 flex-1 max-w-xl ml-6 mr-8">
+          <div className="relative flex-1">
+            <input
+              value={headerSearch}
+              onChange={e => setHeaderSearch(e.target.value)}
+              placeholder="Search stories or rooms..."
+              className="field w-full pl-5 pr-16 bg-white/12 text-white placeholder:text-white/60"
+              style={{ borderColor: "rgba(255,255,255,0.2)", background: "rgba(255,255,255,0.08)" }}
+            />
+            {headerSearch ? (
+              <button type="button" onClick={() => setHeaderSearch("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/70 hover:text-white">
+                <X size={16} />
+              </button>
+            ) : null}
+            <Search size={18} className="absolute right-11 top-1/2 -translate-y-1/2 text-white/70" />
+          </div>
+        </form>
 
         {/* Desktop CTA */}
         <div className="hidden md:flex items-center gap-3">
@@ -105,7 +135,28 @@ export default function Header() {
               {label}
             </Link>
           ))}
-          <div className="pt-3 flex flex-col gap-2">
+          <div className="pt-3 space-y-3">
+          <form onSubmit={handleHeaderSearch} className="flex items-center gap-2">
+            <div className="relative flex-1">
+              <input
+                value={headerSearch}
+                onChange={e => setHeaderSearch(e.target.value)}
+                placeholder="Search stories or rooms..."
+                className="field w-full pl-5 pr-16 bg-white/12 text-white placeholder:text-white/60"
+                style={{ borderColor: "rgba(255,255,255,0.2)", background: "rgba(255,255,255,0.08)" }}
+              />
+              {headerSearch ? (
+                <button type="button" onClick={() => setHeaderSearch("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/70 hover:text-white">
+                  <X size={16} />
+                </button>
+              ) : null}
+              <Search size={18} className="absolute right-11 top-1/2 -translate-y-1/2 text-white/70" />
+            </div>
+            <button type="submit" className="btn-ghost px-4 py-2">Search</button>
+          </form>
+
+          <div className="flex flex-col gap-2">
             {!user ? (
               <>
                 <Link to="/login" onClick={() => setOpen(false)}
@@ -130,6 +181,7 @@ export default function Header() {
               </>
             )}
           </div>
+        </div>
         </div>
       )}
     </header>

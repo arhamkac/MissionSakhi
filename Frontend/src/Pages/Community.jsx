@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "./AuthContext";
+import { Search, X } from "lucide-react";
 import { ROOMS_BASE, MESSAGE_BASE, API_BASE } from "../apiConfig";
 import ReportModal from "../Components/ReportModal";
 
@@ -25,7 +26,13 @@ export default function Community() {
   const [reportConfig, setReportConfig] = useState({ isOpen: false, type: "", id: "" });
   const [isSubmittingReport, setIsSubmittingReport] = useState(false);
   const [selected, setSelected] = useState(null);
+  const [searchQuery, setSearchQuery] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get("query") || "";
+  });
+  const [isSearching, setIsSearching] = useState(false);
   const [newMsg, setNewMsg] = useState("");
+  const location = useLocation();
   const [roomName, setRoomName] = useState("");
   const [roomDesc, setRoomDesc] = useState("");
   const [editId, setEditId] = useState(null);
@@ -37,10 +44,27 @@ export default function Community() {
   const auth = { headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` } };
 
   useEffect(() => {
-    axios.get(`${BASE}/get-rooms`)
-      .then(({ data }) => setRooms(data.message.rooms || []))
-      .catch(console.error);
-  }, [user]);
+    const query = new URLSearchParams(location.search).get("query") || "";
+    if (query !== searchQuery) {
+      setSearchQuery(query);
+    }
+  }, [location.search]);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      const queryString = searchQuery.trim() ? `?query=${encodeURIComponent(searchQuery.trim())}` : "";
+      setIsSearching(true);
+      axios.get(`${BASE}/get-rooms${queryString}`)
+        .then(({ data }) => setRooms(data.message.rooms || []))
+        .catch((err) => {
+          console.error(err);
+          setRooms([]);
+        })
+        .finally(() => setIsSearching(false));
+    }, 400);
+
+    return () => clearTimeout(timeout);
+  }, [user, searchQuery]);
 
   useEffect(() => {
     if (!selected) return;
@@ -231,6 +255,39 @@ export default function Community() {
           <p className="text-[var(--c-muted)] text-sm max-w-md mx-auto">
             Every room is a safe space built with love. Join a conversation or start your own.
           </p>
+        </div>
+
+        <div className="glass p-4 rounded-3xl mb-8" style={{ backdropFilter: "blur(20px)", background: "rgba(255,255,255,0.65)", border: "1px solid rgba(139,92,246,0.14)" }}>
+          <div className="flex flex-col sm:flex-row items-center gap-3">
+            <div className="relative flex-1 w-full">
+              <Search size={18} className="absolute right-11 top-1/2 -translate-y-1/2 text-[var(--c-muted)]" />
+              <input
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                placeholder="Search rooms, topics, or keywords..."
+                className="field pl-5 pr-16"
+              />
+              {searchQuery ? (
+                <button type="button"
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--c-muted)] hover:text-[var(--c-ink)]"
+                  aria-label="Clear search"
+                >
+                  <X size={18} />
+                </button>
+              ) : null}
+            </div>
+            <div className="flex items-center gap-2 text-sm text-[var(--c-muted)]">
+              {isSearching ? (
+                <span className="inline-flex items-center gap-2">
+                  <span className="spinner" style={{ width: "1rem", height: "1rem", borderTopColor: "#8b5cf6", borderColor: "rgba(139,92,246,0.25)" }} />
+                  Searching...
+                </span>
+              ) : (
+                <span>{searchQuery.trim() ? `${rooms.length} room${rooms.length === 1 ? "" : "s"} found` : "Showing all rooms"}</span>
+              )}
+            </div>
+          </div>
         </div>
 
         {user && (
