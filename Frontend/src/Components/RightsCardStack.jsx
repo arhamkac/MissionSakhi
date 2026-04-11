@@ -1,59 +1,99 @@
 
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useDrag } from "@use-gesture/react";
 import {
   Shield,
   HeartHandshake,
   Phone,
   Briefcase,
   Smartphone,
+  ArrowUpRight,
 } from "lucide-react";
 
 const rights = [
   {
     id: 1,
     title: "POCSO Act",
+    badge: "Child Protection",
     short: "Protection against child sexual abuse",
     details:
       "The POCSO Act protects children below 18 years from sexual offences and ensures child-friendly reporting, investigation, and trial procedures.",
-    gradient: "from-pink-500/30 via-rose-500/20 to-orange-500/20",
+    keyPoints: [
+      "Protects children below 18 years",
+      "Covers harassment, assault, and abuse",
+      "Provides child-friendly legal process",
+    ],
+    helpline: "Childline: 1098",
+    link: "https://www.wcd.nic.in/acts/protection-children-sexual-offences-pocso-act-2012",
+    gradient: "from-pink-200 via-rose-100 to-orange-100",
     icon: Shield,
   },
   {
     id: 2,
     title: "PWDV Act",
+    badge: "Domestic Safety",
     short: "Protection from domestic violence",
     details:
       "The Protection of Women from Domestic Violence Act helps women facing abuse seek shelter, legal protection, financial support, and restraining orders.",
-    gradient: "from-purple-500/30 via-fuchsia-500/20 to-pink-500/20",
+    keyPoints: [
+      "Protection from physical and emotional abuse",
+      "Access to shelter and legal aid",
+      "Financial support and restraining orders",
+    ],
+    helpline: "Women Helpline: 181",
+    link: "https://wcd.nic.in/acts/protection-women-domestic-violence-act-2005",
+    gradient: "from-purple-200 via-fuchsia-100 to-pink-100",
     icon: HeartHandshake,
   },
   {
     id: 3,
     title: "Emergency Helplines",
-    short: "Quick access to support services",
+    badge: "Quick Support",
+    short: "Immediate support and emergency contacts",
     details:
       "Women can contact helpline 1091, child helpline 1098, or emergency number 112 for immediate support and protection.",
-    gradient: "from-blue-500/30 via-cyan-500/20 to-sky-500/20",
+    keyPoints: [
+      "1091 for women in distress",
+      "1098 for child emergency support",
+      "112 for nationwide emergency assistance",
+    ],
+    helpline: "Emergency: 112",
+    link: "https://www.india.gov.in/topics/women-child-development/women",
+    gradient: "from-blue-200 via-cyan-100 to-sky-100",
     icon: Phone,
   },
   {
     id: 4,
-    title: "Workplace Harassment",
-    short: "Protection at work under POSH",
+    title: "POSH Act",
+    badge: "Workplace Rights",
+    short: "Protection against workplace harassment",
     details:
-      "The POSH Act protects women from workplace harassment and requires companies to provide complaint mechanisms and safe work environments.",
-    gradient: "from-amber-500/30 via-yellow-500/20 to-orange-500/20",
+      "The POSH Act protects women from workplace harassment and requires organizations to provide complaint mechanisms and safe work environments.",
+    keyPoints: [
+      "Protection against workplace harassment",
+      "Mandatory Internal Complaints Committee",
+      "Ensures safer work environments",
+    ],
+    helpline: "National Commission for Women: 7827170170",
+    link: "https://www.indiacode.nic.in/handle/123456789/2104",
+    gradient: "from-amber-200 via-yellow-100 to-orange-100",
     icon: Briefcase,
   },
   {
     id: 5,
     title: "Cyber Safety",
-    short: "Protection against online abuse",
+    badge: "Online Protection",
+    short: "Protection against online abuse and stalking",
     details:
       "Cybercrime portals and police cells can help women report stalking, fake profiles, harassment, blackmail, or leaked private content.",
-    gradient: "from-emerald-500/30 via-teal-500/20 to-cyan-500/20",
+    keyPoints: [
+      "Report fake profiles and cyberstalking",
+      "Protect against blackmail and harassment",
+      "Use cybercrime portal for complaints",
+    ],
+    helpline: "Cyber Crime Portal: cybercrime.gov.in",
+    link: "https://cybercrime.gov.in",
+    gradient: "from-emerald-200 via-teal-100 to-cyan-100",
     icon: Smartphone,
   },
 ];
@@ -72,10 +112,16 @@ export default function RightsCardStack() {
     }
   };
 
+  const handleRemove = (id) => {
+    setTimeout(() => {
+      removeCard(id);
+    }, 150);
+  };
+
   return (
     <section className="w-full py-20 px-4 flex flex-col items-center overflow-hidden">
       <div className="max-w-6xl w-full text-center mb-12">
-        <p className="text-pink-400 uppercase tracking-[0.3em] text-sm mb-3">
+        <p className="text-pink-500 uppercase tracking-[0.3em] text-sm mb-3 font-semibold">
           Know Your Rights
         </p>
         <h2 className="text-4xl md:text-5xl font-bold text-black mb-4">
@@ -87,7 +133,7 @@ export default function RightsCardStack() {
         </p>
       </div>
 
-      <div className="relative h-[520px] w-full max-w-md">
+      <div className="relative h-[620px] w-full max-w-md">
         <AnimatePresence>
           {visibleCards
             .slice()
@@ -96,18 +142,18 @@ export default function RightsCardStack() {
               const Icon = card.icon;
               const stackIndex = visibleCards.length - 1 - index;
 
-              const bind = useDrag(({ down, movement: [mx], velocity }) => {
-                if (!down && Math.abs(mx) > 120 && velocity > 0.15) {
-                  removeCard(card.id);
-                }
-              });
-
               return (
                 <motion.div
                   key={card.id}
-                  {...bind()}
                   drag="x"
                   dragConstraints={{ left: 0, right: 0 }}
+                  dragElastic={0.9}
+                  onDragEnd={(event, info) => {
+                    if (Math.abs(info.offset.x) > 120) {
+                      handleRemove(card.id);
+                    }
+                  }}
+                  whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   initial={{ opacity: 0, y: 40, scale: 0.9 }}
                   animate={{
@@ -123,20 +169,24 @@ export default function RightsCardStack() {
                     transition: { duration: 0.3 },
                   }}
                   transition={{ type: "spring", stiffness: 180, damping: 18 }}
-                  className={`absolute top-0 left-0 w-full rounded-[32px] border border-white/20 bg-white/10 backdrop-blur-2xl shadow-2xl overflow-hidden cursor-grab active:cursor-grabbing bg-gradient-to-br ${card.gradient}`}
+                  className={`absolute top-0 left-0 w-full rounded-[32px] border border-white/40 bg-white/30 backdrop-blur-2xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] overflow-hidden cursor-grab active:cursor-grabbing bg-gradient-to-br ${card.gradient}`}
                   style={{ zIndex: 20 - stackIndex }}
                 >
-                  <div className="p-7 min-h-[420px] flex flex-col justify-between">
+                  <div className="p-8 min-h-[540px] flex flex-col justify-between">
                     <div>
-                      <div className="w-14 h-14 rounded-2xl bg-white/15 border border-white/20 flex items-center justify-center mb-6">
+                      <span className="inline-block px-3 py-1 rounded-full bg-black/10 text-xs font-medium text-black mb-5">
+                        {card.badge}
+                      </span>
+
+                      <div className="w-14 h-14 rounded-2xl bg-black/10 border border-black/10 flex items-center justify-center mb-6">
                         <Icon className="text-black w-7 h-7" />
                       </div>
 
-                      <h3 className="text-2xl font-bold text-white mb-3">
+                      <h3 className="text-2xl font-bold text-black mb-3">
                         {card.title}
                       </h3>
 
-                      <p className="text-white/80 text-base mb-5">
+                      <p className="text-gray-800 text-base mb-5 leading-7">
                         {card.short}
                       </p>
 
@@ -149,32 +199,61 @@ export default function RightsCardStack() {
                             transition={{ duration: 0.3 }}
                             className="overflow-hidden"
                           >
-                            <p className="text-white/90 leading-7 border-t border-white/10 pt-4">
+                            <p className="text-gray-900 leading-7 border-t border-black/10 pt-4 mb-5">
                               {card.details}
                             </p>
+
+                            <div className="space-y-4">
+                              <div>
+                                <p className="text-sm font-semibold text-black mb-2">
+                                  Key Rights
+                                </p>
+
+                                <ul className="space-y-2">
+                                  {card.keyPoints.map((point, idx) => (
+                                    <li
+                                      key={idx}
+                                      className="text-sm text-gray-700 flex items-start gap-2"
+                                    >
+                                      <span className="mt-1.5 w-2 h-2 rounded-full bg-pink-500" />
+                                      {point}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+
+                              <div className="rounded-2xl bg-black/5 border border-black/10 px-4 py-3">
+                                <p className="text-sm font-medium text-black">
+                                  {card.helpline}
+                                </p>
+                              </div>
+                            </div>
                           </motion.div>
                         )}
                       </AnimatePresence>
                     </div>
 
-                    <div className="flex items-center justify-between mt-8">
+                    <div className="flex flex-wrap gap-3 mt-8">
                       <button
                         onClick={() =>
                           setExpandedCard(
                             expandedCard === card.id ? null : card.id
                           )
                         }
-                        className="px-5 py-2.5 rounded-full bg-white/15 hover:bg-white/25 text-white text-sm border border-white/20 transition"
+                        className="px-5 py-2.5 rounded-full bg-black/10 hover:bg-black/20 text-black text-sm border border-black/10 transition"
                       >
                         {expandedCard === card.id ? "Show Less" : "Tap to Expand"}
                       </button>
 
-                      <button
-                        onClick={() => removeCard(card.id)}
-                        className="text-sm text-white/70 hover:text-white transition"
+                      <a
+                        href={card.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-black text-white text-sm font-medium hover:scale-105 transition"
                       >
-                        Swipe Away →
-                      </button>
+                        Learn More
+                        <ArrowUpRight size={16} />
+                      </a>
                     </div>
                   </div>
                 </motion.div>
@@ -197,5 +276,3 @@ export default function RightsCardStack() {
     </section>
   );
 }
-
-
