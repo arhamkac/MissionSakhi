@@ -304,6 +304,7 @@ export default function Chatbot_AI() {
               </div>
               <div className="rounded-2xl rounded-tl-sm px-4 py-3 shadow-sm flex items-center gap-1.5"
                 style={{ background: "rgba(255,255,255,0.9)", border: "1px solid rgba(139,92,246,0.1)" }}>
+                <span className="text-sm text-[var(--c-ink)]">Sakhi is thinking...</span>
                 <span className="w-2 h-2 rounded-full bg-violet-400 animate-bounce" style={{ animationDelay: "0ms" }} />
                 <span className="w-2 h-2 rounded-full bg-pink-400 animate-bounce" style={{ animationDelay: "150ms" }} />
                 <span className="w-2 h-2 rounded-full bg-rose-400 animate-bounce" style={{ animationDelay: "300ms" }} />
