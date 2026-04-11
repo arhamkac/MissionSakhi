@@ -404,7 +404,7 @@ export default function Anonymous_Forum() {
                         <p className="text-xs text-[var(--c-muted)]">Shared anonymously</p>
                       </div>
                     </div>
-                    {isOwner && (
+                    {user && user._id === post.owner && (
                       <div className="relative group">
                         <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
                           <MoreHorizontal size={18} className="text-[var(--c-muted)]" />
