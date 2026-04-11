@@ -1,5 +1,5 @@
-import React from 'react';
-import { CheckCircle2, Circle, Plus, Calendar, Settings, User, Search, MoreVertical, LayoutGrid, Clock } from 'lucide-react';
+import React, { useState } from 'react';
+import { CheckCircle2, Circle, Plus, Calendar, Settings, User, Search, MoreVertical, LayoutGrid, Clock, Menu, X } from 'lucide-react';
 import { useAuth } from './AuthContext';
 import { usePanic } from './PanicContext';
 
@@ -7,6 +7,7 @@ const Decoy = () => {
   const { user } = useAuth();
   const userName = user?.username || "Guest";
   const { togglePanic } = usePanic();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const TASKS = [
     { id: 1, text: "Drink 2L of water throughout the day", completed: true, priority: "High" },
@@ -26,11 +27,28 @@ const Decoy = () => {
         title="Quick Access"
       />
       
+      {/* Sidebar Overlay (Mobile only) */}
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 lg:hidden transition-opacity"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+      
       {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-slate-200 flex flex-col p-4">
-        <div className="flex items-center gap-2 mb-8 px-2">
-          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">P</div>
-          <span className="font-semibold text-lg tracking-tight">PlanIt Pro</span>
+      <aside className={`
+        fixed inset-y-0 left-0 w-64 bg-white border-r border-slate-200 flex flex-col p-4 z-50 
+        transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0
+        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+      `}>
+        <div className="flex items-center justify-between mb-8 px-2">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">P</div>
+            <span className="font-semibold text-lg tracking-tight">PlanIt Pro</span>
+          </div>
+          <button onClick={() => setSidebarOpen(false)} className="lg:hidden p-1 hover:bg-slate-100 rounded-lg">
+            <X size={20} className="text-slate-500" />
+          </button>
         </div>
 
         <nav className="space-y-1 mb-auto">
@@ -65,18 +83,29 @@ const Decoy = () => {
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 bg-white/80 backdrop-blur-sm z-10">
-          <h1 className="text-xl font-semibold">Today's Focus</h1>
-          <div className="flex items-center gap-4">
-            <div className="relative">
+        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 sm:px-8 bg-white/80 backdrop-blur-sm z-10">
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => setSidebarOpen(true)}
+              className="lg:hidden p-2 hover:bg-slate-100 rounded-lg transition-colors"
+            >
+              <Menu size={20} className="text-slate-600" />
+            </button>
+            <h1 className="text-lg sm:text-xl font-semibold truncate">Today's Focus</h1>
+          </div>
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="relative hidden md:block">
               <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input 
                 type="text" 
                 placeholder="Search tasks..." 
-                className="pl-9 pr-4 py-1.5 bg-slate-100 rounded-full text-sm border-0 focus:ring-1 focus:ring-blue-500 w-48 transition-all focus:w-64"
+                className="pl-9 pr-4 py-1.5 bg-slate-100 rounded-full text-sm border-0 focus:ring-1 focus:ring-blue-500 w-32 xl:w-48 transition-all focus:w-48 xl:focus:w-64"
                 readOnly
               />
             </div>
+            <button className="md:hidden p-2 text-slate-500 hover:bg-slate-100 rounded-lg">
+              <Search size={18} />
+            </button>
             <button className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center hover:bg-slate-200 transition-colors">
               <User size={18} />
             </button>
@@ -84,13 +113,13 @@ const Decoy = () => {
         </header>
 
         {/* Task List */}
-        <div className="flex-1 overflow-y-auto p-8 max-w-4xl mx-auto w-full">
-          <div className="flex items-center justify-between mb-8">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-8 max-w-4xl mx-auto w-full">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
             <div>
-              <p className="text-sm text-slate-400 font-medium">Tuesday, April 14, 2026</p>
-              <p className="text-2xl font-bold">Good morning, {userName}.</p>
+              <p className="text-xs sm:text-sm text-slate-400 font-medium">Tuesday, April 14, 2026</p>
+              <p className="text-xl sm:text-2xl font-bold">Good morning, {userName}.</p>
             </div>
-            <button className="bg-blue-600 text-white rounded-lg px-4 py-2 text-sm font-semibold flex items-center gap-2 hover:bg-blue-700 transition-all shadow-sm">
+            <button className="bg-blue-600 text-white rounded-lg px-4 py-2 text-sm font-semibold flex items-center gap-2 hover:bg-blue-700 transition-all shadow-sm w-full sm:w-auto justify-center">
               <Plus size={18} />
               Add Task
             </button>
@@ -105,11 +134,11 @@ const Decoy = () => {
               {TASKS.map(task => (
                 <div key={task.id} className="p-4 flex items-center gap-4 hover:bg-slate-50 transition-colors group">
                   {task.completed ? (
-                    <CheckCircle2 size={20} className="text-green-500 flex-shrink-0" />
+                    <CheckCircle2 size={18} className="text-green-500 flex-shrink-0" />
                   ) : (
-                    <Circle size={20} className="text-slate-300 flex-shrink-0" />
+                    <Circle size={18} className="text-slate-300 flex-shrink-0" />
                   )}
-                  <span className={`text-sm flex-1 ${task.completed ? 'text-slate-400 line-through' : 'font-medium'}`}>
+                  <span className={`text-xs sm:text-sm flex-1 break-words ${task.completed ? 'text-slate-400 line-through' : 'font-medium'}`}>
                     {task.text}
                   </span>
                   <div className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${
