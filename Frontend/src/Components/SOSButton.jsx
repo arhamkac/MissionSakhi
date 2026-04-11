@@ -12,6 +12,7 @@ export default function SOSButton() {
   const holdTimerRef = useRef(null);
   const cancelTimerRef = useRef(null);
   const simTimerRef = useRef(null);
+  const vibrateTimerRef = useRef(null);
   const startTimeRef = useRef(0);
 
   const HOLD_DURATION = 3000;
@@ -22,6 +23,10 @@ export default function SOSButton() {
       cancelAnimationFrame(holdTimerRef.current);
       clearInterval(cancelTimerRef.current);
       clearTimeout(simTimerRef.current);
+      clearInterval(vibrateTimerRef.current);
+      if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+        navigator.vibrate(0);
+      }
     };
   }, []);
 
@@ -67,18 +72,30 @@ export default function SOSButton() {
 
   const triggerSOS = () => {
     cancelAnimationFrame(holdTimerRef.current);
-    if ('vibrate' in navigator) navigator.vibrate([100, 50, 100, 50, 200]); // stronger burst
+    // Initial hold-complete burst
+    if ('vibrate' in navigator) navigator.vibrate([100, 50, 100, 50, 200]); 
     setMode('cancel-window');
     setCancelCountdown(5);
     
-    // Start countdown
+    // 1) Start continuous ringing notification
+    if ('vibrate' in navigator) navigator.vibrate([300, 150, 300, 150]);
+    vibrateTimerRef.current = setInterval(() => {
+      if ('vibrate' in navigator) navigator.vibrate([300, 150, 300, 150]);
+    }, 900);
+    
+    // 2) Start countdown timer
     cancelTimerRef.current = setInterval(() => {
-      // Haptic feedback each second during countdown
-      if ('vibrate' in navigator) navigator.vibrate(50);
-      
       setCancelCountdown((prev) => {
         if (prev <= 1) {
           clearInterval(cancelTimerRef.current);
+          clearInterval(vibrateTimerRef.current);
+          
+          // Final strong burst before simulation
+          if ('vibrate' in navigator) {
+            navigator.vibrate(0); // Clear any ongoing vibration
+            setTimeout(() => navigator.vibrate([400, 200, 400, 200, 800]), 50);
+          }
+          
           startSimulation();
           return 0;
         }
@@ -91,6 +108,11 @@ export default function SOSButton() {
     cancelAnimationFrame(holdTimerRef.current);
     clearInterval(cancelTimerRef.current);
     clearTimeout(simTimerRef.current);
+    clearInterval(vibrateTimerRef.current);
+    
+    // Immediately stop all vibrations
+    if ('vibrate' in navigator) navigator.vibrate(0);
+    
     setMode('idle');
     setHoldProgress(0);
     setCancelCountdown(5);
