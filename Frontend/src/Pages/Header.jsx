@@ -12,6 +12,7 @@ const NAV = [
 
 import { usePanic } from "./PanicContext";
 import { ShieldCheck } from "lucide-react";
+import SOSButton from "../Components/SOSButton";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
@@ -126,12 +127,18 @@ export default function Header() {
               </button>
             </div>
           )}
+          <div className="pl-1 border-l border-white/20 ml-1">
+            <SOSButton />
+          </div>
         </div>
 
-        {/* Mobile hamburger */}
-        <button onClick={() => setOpen(!open)}
-          className="md:hidden flex flex-col items-center justify-center w-10 h-10 rounded-xl transition-colors hover:bg-white/10"
-          style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)" }}
+        {/* Mobile controls */}
+        <div className="md:hidden flex items-center gap-3">
+          <SOSButton />
+          {/* Mobile hamburger */}
+          <button onClick={() => setOpen(!open)}
+            className="flex flex-col items-center justify-center w-10 h-10 rounded-xl transition-colors hover:bg-white/10"
+            style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)" }}
           aria-label="Menu">
           <div className="relative w-5 h-4">
             <span className={`absolute left-0 block w-5 h-0.5 bg-white rounded transition-all duration-300 ${open ? "top-2 rotate-45" : "top-0"}`} />
@@ -139,6 +146,7 @@ export default function Header() {
             <span className={`absolute left-0 block w-5 h-0.5 bg-white rounded transition-all duration-300 ${open ? "top-2 -rotate-45" : "top-4"}`} />
           </div>
         </button>
+        </div>
       </div>
 
       {/* Mobile menu */}
