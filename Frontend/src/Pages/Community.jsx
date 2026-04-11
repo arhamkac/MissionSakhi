@@ -157,11 +157,11 @@ export default function Community() {
 
         <div className="relative z-10 flex flex-col h-full max-w-3xl mx-auto w-full px-4 py-5">
           {/* Room header */}
-          <div className="glass p-4 mb-4 flex items-center gap-4">
-            <button onClick={() => setSelected(null)} className="btn-ghost text-sm py-1.5 px-3">← Back</button>
-            <div>
-              <h2 className="font-semibold text-[var(--c-ink)]">{room?.name}</h2>
-              <p className="text-xs text-[var(--c-muted)]">{room?.description}</p>
+          <div className="glass p-3 sm:p-4 mb-4 flex items-center gap-3 sm:gap-4">
+            <button onClick={() => setSelected(null)} className="btn-ghost text-xs sm:text-sm py-1.5 px-3 flex-shrink-0">← Back</button>
+            <div className="min-w-0">
+              <h2 className="font-semibold text-[var(--c-ink)] text-sm sm:text-base truncate">{room?.name}</h2>
+              <p className="text-[10px] sm:text-xs text-[var(--c-muted)] truncate">{room?.description}</p>
             </div>
           </div>
 
@@ -216,18 +216,18 @@ export default function Community() {
           </div>
 
           {/* Input */}
-          <div className="glass p-3 flex gap-3">
+          <div className="glass p-2 sm:p-3 flex gap-2 sm:gap-3">
             {user ? (
               <>
                 <input value={newMsg} onChange={e => setNewMsg(e.target.value)}
                   onKeyDown={e => e.key === "Enter" && send()}
-                  placeholder={`Message ${room?.name}…`}
-                  className="field flex-1 py-2.5" />
-                <button onClick={send} className="btn-primary px-5 py-2.5 text-sm">Send</button>
+                  placeholder={`Message...`}
+                  className="field flex-1 py-2 sm:py-2.5 text-sm" />
+                <button onClick={send} className="btn-primary px-4 sm:px-5 py-2 sm:py-2.5 text-sm">Send</button>
               </>
             ) : (
-              <div className="flex-1 text-center py-2 text-sm text-[var(--c-muted)]">
-                Please <Link to="/login" className="text-violet-600 font-semibold hover:underline">sign in</Link> to join the conversation
+              <div className="flex-1 text-center py-2 text-xs sm:text-sm text-[var(--c-muted)]">
+                Please <Link to="/login" className="text-violet-600 font-semibold hover:underline">sign in</Link>
               </div>
             )}
           </div>
@@ -291,12 +291,12 @@ export default function Community() {
         </div>
 
         {user && (
-          <div className="glass p-5 mb-8 flex flex-col sm:flex-row gap-3">
+          <div className="glass p-4 sm:p-5 mb-8 flex flex-col sm:flex-row gap-3">
             <input value={roomName} onChange={e => setRoomName(e.target.value)}
-              placeholder="Room name…" className="field flex-1" />
+              placeholder="Room name…" className="field flex-1 text-sm" />
             <input value={roomDesc} onChange={e => setRoomDesc(e.target.value)}
-              placeholder="What's it about?" className="field flex-1" />
-            <button onClick={createRoom} className="btn-primary whitespace-nowrap px-6">Create room</button>
+              placeholder="About?" className="field flex-1 text-sm" />
+            <button onClick={createRoom} className="btn-primary whitespace-nowrap px-6 py-2.5">Create room</button>
           </div>
         )}
 
