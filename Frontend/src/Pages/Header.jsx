@@ -53,7 +53,7 @@ export default function Header() {
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-7">
+        <nav className="hidden md:flex items-center gap-7 ml-12">
           {NAV.map(({ to, label }) => (
             <Link key={to} to={to}
               className={`nav-link ${pathname === to ? "!text-white after:!w-full" : ""}`}>
@@ -62,7 +62,7 @@ export default function Header() {
           ))}
         </nav>
 
-        <form onSubmit={handleHeaderSearch} className="hidden lg:flex items-center gap-2 flex-1 max-w-xl ml-6">
+        <form onSubmit={handleHeaderSearch} className="hidden lg:flex items-center gap-2 flex-1 max-w-xl ml-6 mr-8">
           <div className="relative flex-1">
             <input
               value={headerSearch}

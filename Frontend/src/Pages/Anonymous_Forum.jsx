@@ -261,12 +261,12 @@ export default function Anonymous_Forum() {
           <div className="glass p-4 rounded-3xl mb-8" style={{ backdropFilter: "blur(20px)", background: "rgba(255,255,255,0.65)", border: "1px solid rgba(139,92,246,0.14)" }}>
             <div className="flex flex-col sm:flex-row items-center gap-3">
               <div className="relative flex-1 w-full">
-                <Search size={20} className="absolute left-5 top-1/2 -translate-y-1/2 text-[var(--c-muted)]" />
+                <Search size={18} className="absolute right-11 top-1/2 -translate-y-1/2 text-[var(--c-muted)]" />
                 <input
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                   placeholder="Search stories, tags, or support topics..."
-                  className="field pl-14 pr-12"
+                  className="field pl-5 pr-16"
                 />
                 {searchQuery ? (
                   <button type="button"
