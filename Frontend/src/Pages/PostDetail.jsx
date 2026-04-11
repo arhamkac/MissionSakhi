@@ -17,6 +17,7 @@ export default function PostDetail() {
   const [reportConfig, setReportConfig] = useState({ isOpen: false, type: "", id: "" });
   const [isSubmittingReport, setIsSubmittingReport] = useState(false);
 
+  const isOwner = user?._id === post?.owner;
   const BASE = API_BASE;
   const auth = { headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` } };
 
@@ -188,6 +189,16 @@ export default function PostDetail() {
                   className="p-2 rounded-xl text-[var(--c-muted)] hover:bg-rose-50 hover:text-rose-500 transition-colors" title="Report">
                   <Flag size={16} />
                 </button>
+              )}
+
+              {isOwner && (
+               <button
+                onClick={() => console.log("delete post")}
+                className="p-2 rounded-xl text-[var(--c-muted)] hover:bg-red-50 hover:text-red-500 transition-colors"
+                title="Delete"
+              >
+                <Trash2 size={16} />
+               </button>
               )}
             </div>
           </div>
