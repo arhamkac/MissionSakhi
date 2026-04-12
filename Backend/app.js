@@ -24,26 +24,31 @@ const apiKey=process.env.PERSPECTIVE_API_KEY;
 const roomUsers = {};
 
 export async function checkPost(text){
-    const response=await fetch(
-    `https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=${apiKey}`,
-    {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({
-            comment:{text},
-            languages:['en'],
-            requestedAttributes: {
-            TOXICITY: {},
-            SEXUALLY_EXPLICIT: {},
-            THREAT: {},
-            INSULT: {},
-            PROFANITY: {}
-        }
+    try {
+        const response=await fetch(
+        `https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=${apiKey}`,
+        {
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({
+                comment:{text},
+                languages:['en'],
+                requestedAttributes: {
+                TOXICITY: {},
+                SEXUALLY_EXPLICIT: {},
+                THREAT: {},
+                INSULT: {},
+                PROFANITY: {}
+            }
+            })
         })
-    })
 
         const result=await response.json();
-        return result.attributeScores;
+        return result.attributeScores || {};
+    } catch(err) {
+        console.error("Content moderation API failed:", err);
+        return {};
+    }
 }
 
 io.on("connection",(socket)=>{

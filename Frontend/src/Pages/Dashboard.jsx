@@ -1,5 +1,8 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "./AuthContext";
+import axios from "axios";
+import {API_BASE} from "../apiConfig";
 
 const QUICK_LINKS = [
   { to: "/forum",          icon: "📝", label: "Forum",     desc: "Share anonymously" },
@@ -9,7 +12,44 @@ const QUICK_LINKS = [
 ];
 
 export default function Dashboard() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
+  const [activeTab, setActiveTab] = useState("overview");
+  const [savedPosts, setSavedPosts] = useState([]);
+  const [loadingSaved, setLoadingSaved] = useState(false);
+
+  useEffect(() => {
+    if (user && activeTab === "saved") {
+      fetchSavedPosts();
+    }
+  }, [user, activeTab]);
+
+  const fetchSavedPosts = async () => {
+    try {
+      setLoadingSaved(true);
+      const auth = { headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` } };
+      const { data } = await axios.get(`${API_BASE}/users/bookmarks`, auth);
+      setSavedPosts(Array.isArray(data.data) ? data.data : []);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoadingSaved(false);
+    }
+  };
+
+  if (loading) return (
+    <div className="page flex items-center justify-center"
+      style={{ background: "linear-gradient(160deg,#fdf0f5 0%,#f7f0ff 50%,#fdf0f5 100%)" }}>
+      <div style={{ textAlign: "center" }}>
+        <div style={{
+          width: "2.5rem", height: "2.5rem",
+          border: "3px solid rgba(139,92,246,0.2)",
+          borderTopColor: "#8b5cf6", borderRadius: "50%",
+          animation: "spin 0.7s linear infinite", margin: "0 auto 1rem",
+        }} />
+        <p style={{ color: "#6b5b7b", fontSize: "0.875rem" }}>Loading…</p>
+      </div>
+    </div>
+  );
 
   if (!user) return (
     <div className="page flex items-center justify-center px-4"
@@ -51,36 +91,77 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Info cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-          {[
-            { label: "Username", value: username },
-            { label: "Nickname", value: nickname || "—" },
-            { label: "Email",    value: email },
-          ].map(({ label, value }) => (
-            <div key={label} className="glass p-4 sm:p-5">
-              <p className="text-xs font-medium text-[var(--c-muted)] uppercase tracking-wider mb-1">{label}</p>
-              <p className="font-medium text-[var(--c-ink)] text-sm truncate">{value}</p>
-            </div>
-          ))}
+        {/* Tabs */}
+        <div className="flex justify-center gap-4 mb-6">
+          <button onClick={() => setActiveTab("overview")} className={`px-5 py-2 rounded-full text-sm font-semibold transition-all ${activeTab === 'overview' ? 'bg-violet-600 text-white shadow-md' : 'glass text-[var(--c-muted)] hover:text-[var(--c-ink)]'}`}>
+            Overview
+          </button>
+          <button onClick={() => setActiveTab("saved")} className={`px-5 py-2 rounded-full text-sm font-semibold transition-all ${activeTab === 'saved' ? 'bg-violet-600 text-white shadow-md' : 'glass text-[var(--c-muted)] hover:text-[var(--c-ink)]'}`}>
+            Saved Posts
+          </button>
         </div>
 
-        {/* Quick links */}
-        <div className="grid grid-cols-2 gap-4">
-          {QUICK_LINKS.map(({ to, icon, label, desc }) => (
-            <Link key={to} to={to}
-              className="glass p-5 flex items-center gap-4 feature-card group">
-              <div className="w-11 h-11 rounded-2xl flex items-center justify-center text-xl flex-shrink-0"
-                style={{ background: "linear-gradient(135deg,rgba(139,92,246,0.12),rgba(236,72,153,0.12))" }}>
-                {icon}
+        {activeTab === "overview" && (
+          <>
+            {/* Info cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+              {[
+                { label: "Username", value: username },
+                { label: "Nickname", value: nickname || "—" },
+                { label: "Email",    value: email },
+              ].map(({ label, value }) => (
+                <div key={label} className="glass p-4 sm:p-5">
+                  <p className="text-xs font-medium text-[var(--c-muted)] uppercase tracking-wider mb-1">{label}</p>
+                  <p className="font-medium text-[var(--c-ink)] text-sm truncate">{value}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Quick links */}
+            <div className="grid grid-cols-2 gap-4">
+              {QUICK_LINKS.map(({ to, icon, label, desc }) => (
+                <Link key={to} to={to}
+                  className="glass p-5 flex items-center gap-4 feature-card group">
+                  <div className="w-11 h-11 rounded-2xl flex items-center justify-center text-xl flex-shrink-0"
+                    style={{ background: "linear-gradient(135deg,rgba(139,92,246,0.12),rgba(236,72,153,0.12))" }}>
+                    {icon}
+                  </div>
+                  <div>
+                    <p className="font-semibold text-[var(--c-ink)] text-sm">{label}</p>
+                    <p className="text-xs text-[var(--c-muted)]">{desc}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </>
+        )}
+
+        {activeTab === "saved" && (
+          <div className="space-y-4">
+            {loadingSaved ? (
+              <div className="glass p-8 text-center text-sm text-[var(--c-muted)]">Loading saved posts...</div>
+            ) : savedPosts.length === 0 ? (
+              <div className="glass p-12 text-center">
+                <div className="text-4xl mb-3">🔖</div>
+                <h3 className="font-semibold text-[var(--c-ink)] mb-1">No saved posts</h3>
+                <p className="text-sm text-[var(--c-muted)] mb-4">You haven't saved any forum posts yet.</p>
+                <Link to="/forum" className="btn-ghost text-sm">Browse Forum</Link>
               </div>
-              <div>
-                <p className="font-semibold text-[var(--c-ink)] text-sm">{label}</p>
-                <p className="text-xs text-[var(--c-muted)]">{desc}</p>
-              </div>
-            </Link>
-          ))}
-        </div>
+            ) : (
+              savedPosts.map(post => (
+                <div key={post._id} className="glass p-4 sm:p-5 feature-card group" onClick={() => window.location.href = `/post/${post._id}`}>
+                   <h3 className="text-base sm:text-lg font-semibold text-[var(--c-ink)] mb-1 leading-snug hover:text-violet-600 transition-colors cursor-pointer">
+                      {post.title}
+                    </h3>
+                    <p className="text-[var(--c-muted)] text-sm line-clamp-2">
+                       {post.content}
+                    </p>
+                </div>
+              ))
+            )}
+          </div>
+        )}
+
       </div>
     </div>
   );
