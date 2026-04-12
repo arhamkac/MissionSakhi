@@ -49,7 +49,13 @@ const userSchema=new Schema(
         },
         picture: {
             type: String
-        }
+        },
+        bookmarkedPosts: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: "Post"
+            }
+        ]
     },
     {
         timestamps:true
