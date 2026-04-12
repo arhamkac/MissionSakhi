@@ -326,10 +326,10 @@ export default function Anonymous_Forum() {
                     className="field resize-none mb-4 min-h-32 border-0 bg-gray-50 rounded-xl focus:bg-white px-4 py-3 text-sm sm:text-base" />
 
                   {newImage && (
-                    <div className="mb-4 relative">
-                      <img src={URL.createObjectURL(newImage)} alt="preview" className="w-full max-h-48 object-cover rounded-xl" />
-                      <button onClick={() => setNewImage(null)} className="absolute top-2 right-2 p-1 bg-black/50 hover:bg-black/70 rounded-full">
-                        <X size={18} className="text-white" />
+                    <div className="mb-4 relative inline-block">
+                      <img src={URL.createObjectURL(newImage)} alt="preview" className="w-24 h-24 sm:w-28 sm:h-28 object-cover rounded-xl shadow-sm" style={{ border: "2px solid rgba(139,92,246,0.2)" }} />
+                      <button onClick={() => setNewImage(null)} className="absolute -top-2 -right-2 p-1 transition-transform hover:scale-110 active:scale-95" style={{ background: "#f43f5e", color: "white", borderRadius: "50%", boxShadow: "0 2px 8px rgba(0,0,0,0.2)" }}>
+                        <X size={14} />
                       </button>
                     </div>
                   )}
