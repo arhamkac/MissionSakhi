@@ -117,6 +117,7 @@ import roomRouter from "./routes/room.routes.js"
 import messageRouter from "./routes/message.routes.js"
 import reportRouter from "./routes/report.routes.js"
 import chatbotRouter from "./chatbot/server.js"
+import resourceRouter from "./routes/resource.routes.js"
 import { Message } from "./models/message.model.js";
 
 app.use("/api/users",userRouter)
@@ -127,5 +128,6 @@ app.use("/api/rooms",roomRouter)
 app.use("/api/messages",messageRouter)
 app.use("/api/report",reportRouter)
 app.use("/api/chatbot",chatbotRouter)
+app.use("/api/resources",resourceRouter)
 
 export { app, server };

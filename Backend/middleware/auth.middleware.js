@@ -40,3 +40,15 @@ export const verifyJWT = asyncHandler(async (req, _, next) => {
     throw new ApiError(401, error?.message || "Authorization error");
   }
 });
+
+export const verifyAdmin = asyncHandler(async (req, res, next) => {
+  
+  verifyJWT(req, res, (err) => {
+    if (err) return next(err);
+    if (req.user?.role !== "admin") {
+      return next(new ApiError(403, "Access denied — you are not an administrator"));
+    }
+    next();
+  });
+});
+

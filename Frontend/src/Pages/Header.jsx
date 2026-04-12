@@ -8,6 +8,7 @@ const NAV = [
   { to: "/community-chat", label: "Community" },
   { to: "/chatbot",        label: "AI Friend" },
   { to: "/mental-health",  label: "Support"   },
+  { to: "/directory",      label: "Directory" },
 ];
 
 import { usePanic } from "./PanicContext";
