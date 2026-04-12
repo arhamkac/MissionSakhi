@@ -12,7 +12,7 @@ const app=express();
 const server=createServer(app);
 const io=new Server(server, {
     cors: {
-    origin: true,
+    origin: ["http://localhost:5173", "https://mission-sakhi.vercel.app", process.env.CORS_ORIGIN].filter(Boolean),
     methods: ["GET", "POST"],
     credentials: true,
   }
@@ -104,7 +104,7 @@ socket.on('disconnect',()=>{
 })
 
 app.use(cors({
-    origin: true,
+    origin: ["http://localhost:5173", "https://mission-sakhi.vercel.app", process.env.CORS_ORIGIN].filter(Boolean),
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
