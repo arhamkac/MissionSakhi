@@ -4,6 +4,18 @@ export const addContact = async (req, res) => {
   try {
     const { name, phone, relationship } = req.body;
 
+    const missingFields = [];
+    if (!name) missingFields.push("name");
+    if (!phone) missingFields.push("phone");
+    if (!relationship) missingFields.push("relationship");
+
+    if (missingFields.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: `Missing required fields: ${missingFields.join(", ")}`,
+      });
+    }
+
     const contact = await EmergencyContact.create({
       name,
       phone,
@@ -11,9 +23,23 @@ export const addContact = async (req, res) => {
       user: req.user._id,
     });
 
-    res.status(201).json(contact);
+    if (!contact) {
+      return res.status(500).json({
+        success: false,
+        message: "Failed to create contact",
+      });
+    }
+
+    return res.status(201).json({
+      success: true,
+      data: contact,
+    });
+
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
 
