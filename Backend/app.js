@@ -7,6 +7,7 @@ import { createServer } from "node:http";
 import { Server } from "socket.io";
 import fetch from "node-fetch";
 import helmet from "helmet";
+import emergencyContactRouter from "./routes/emergencyContact.routes.js";
 
 const app=express();
 const server=createServer(app);
@@ -19,6 +20,8 @@ const io=new Server(server, {
 });
 
 const apiKey=process.env.PERSPECTIVE_API_KEY;
+
+const roomUsers = {};
 
 export async function checkPost(text){
     if (!apiKey || apiKey === "your_perspective_key") {
@@ -56,9 +59,13 @@ export async function checkPost(text){
 
 io.on("connection",(socket)=>{
     console.log(`user connected with user ID:${socket.id}`)
-    socket.on('join room',(roomId)=>{
+    socket.on('join room',({ roomId, username })=>{
         socket.join(roomId)
+        socket.username = username;
+        if (!roomUsers[roomId]) roomUsers[roomId] = new Set();
+        roomUsers[roomId].add(username);
         console.log(`User ${socket.id} joined room ${roomId}`)
+        io.to(roomId).emit("room-data", { onlineCount: roomUsers[roomId].size });
     })
 
 socket.on('room message',async(messageData)=>{
@@ -93,7 +100,16 @@ socket.on('room message',async(messageData)=>{
     }
 })
 
+socket.on("typing", ({ roomId, username, isTyping }) => {
+        socket.to(roomId).emit("display-typing", { username, isTyping });
+    });
+
 socket.on('disconnect',()=>{
+    const { roomId, username } = socket;
+        if (roomId && roomUsers[roomId]) {
+            roomUsers[roomId].delete(username);
+            io.to(roomId).emit("room-data", { onlineCount: roomUsers[roomId].size });
+        }
     console.log(`User disconnected with ID: ${socket.id}`);
 })
 
@@ -128,6 +144,7 @@ import roomRouter from "./routes/room.routes.js"
 import messageRouter from "./routes/message.routes.js"
 import reportRouter from "./routes/report.routes.js"
 import chatbotRouter from "./chatbot/server.js"
+import resourceRouter from "./routes/resource.routes.js"
 import { Message } from "./models/message.model.js";
 
 app.use("/api/users",userRouter)
@@ -138,5 +155,7 @@ app.use("/api/rooms",roomRouter)
 app.use("/api/messages",messageRouter)
 app.use("/api/report",reportRouter)
 app.use("/api/chatbot",chatbotRouter)
+app.use("/api/emergency-contacts", emergencyContactRouter)
+app.use("/api/resources",resourceRouter)
 
 export { app, server };

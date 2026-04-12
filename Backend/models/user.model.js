@@ -55,7 +55,12 @@ const userSchema=new Schema(
                 type: Schema.Types.ObjectId,
                 ref: "Post"
             }
-        ]
+        ],
+        role: {
+            type: String,
+            enum: ["user", "admin"],
+            default: "user"
+        }
     },
     {
         timestamps:true

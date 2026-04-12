@@ -14,6 +14,7 @@ import Dashboard from './Pages/Dashboard'
 import Settings from './Pages/Settings'
 import PostDetail from './Pages/PostDetail'
 import ProtectedRoute from './Pages/ProtectedRoute'
+import Directory from './Pages/Directory'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 
@@ -56,6 +57,7 @@ function App() {
             <Route path="/community-chat" element={<PageWrapper><Community /></PageWrapper>} />
             <Route path="/dashboard"      element={<PageWrapper><ProtectedRoute><Dashboard /></ProtectedRoute></PageWrapper>} />
             <Route path="/settings"       element={<PageWrapper><Settings /></PageWrapper>} />
+            <Route path="/directory"      element={<PageWrapper><Directory /></PageWrapper>} />
           </Routes>
         </AnimatePresence>
       </main>
