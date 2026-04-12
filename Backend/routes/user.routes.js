@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { changePassword, getCurrentUser, googleLogin, loginUser, logOutUser, refreshAccessToken, registerUser, resetPassword, sendOTP, verifyOTP, updateProfile } from "../controllers/user.controller.js";
+import { changePassword, getCurrentUser, googleLogin, loginUser, logOutUser, refreshAccessToken, registerUser, resetPassword, sendOTP, verifyOTP, updateProfile, toggleBookmark, getBookmarks } from "../controllers/user.controller.js";
 import { verifyJWT } from "../middleware/auth.middleware.js";
 
 const router=Router()
@@ -14,5 +14,9 @@ router.route("/reset-password").post(resetPassword)
 router.route('/login/google').post(googleLogin)
 router.route('/me').get(verifyJWT,getCurrentUser)
 router.route('/profile').put(verifyJWT,updateProfile)
+
+
+router.route('/bookmark/:postId').post(verifyJWT, toggleBookmark)
+router.route('/bookmarks').get(verifyJWT, getBookmarks)
 
 export default router

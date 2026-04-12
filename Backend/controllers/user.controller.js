@@ -276,7 +276,36 @@ const updateProfile = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, updatedUser, "Profile updated successfully"));
 });
 
+const toggleBookmark = asyncHandler(async (req, res) => {
+  const { postId } = req.params;
+  const user = await User.findById(req.user?._id);
+     if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  const isBookmarked = user.bookmarkedPosts.includes(postId);
+   if (isBookmarked) {
+    user.bookmarkedPosts = user.bookmarkedPosts.filter(id => id.toString() !== postId.toString());
+  } else {
+    user.bookmarkedPosts.push(postId);
+  }
+
+  await user.save({ validateBeforeSave: false });
+
+  return res.status(200).json(new ApiResponse(200, "Bookmark updated successfully", { isBookmarked: !isBookmarked }));
+});
+
+const getBookmarks = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user?._id).populate("bookmarkedPosts");
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  return res.status(200).json(new ApiResponse(200, "Bookmarks fetched successfully", user.bookmarkedPosts ?? []));
+});
+
 export {
   registerUser, loginUser, logOutUser, refreshAccessToken,
-  changePassword, sendOTP, verifyOTP, resetPassword, getCurrentUser, googleLogin, updateProfile
+  changePassword, sendOTP, verifyOTP, resetPassword, getCurrentUser, googleLogin, updateProfile,
+  toggleBookmark, getBookmarks
 };
