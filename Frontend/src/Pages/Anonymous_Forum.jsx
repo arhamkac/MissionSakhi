@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "./AuthContext";
-import { Heart, ThumbsDown, MessageCircle, Share2, X, MoreHorizontal, Flag, Search } from "lucide-react";
+import { Heart, ThumbsDown, MessageCircle, Share2, X, MoreHorizontal, Flag, Search, Bookmark } from "lucide-react";
 import { API_BASE } from "../apiConfig";
 import ReportModal from "../Components/ReportModal";
 import GoToTop from "../Components/GoToTop";
@@ -42,6 +42,7 @@ export default function Anonymous_Forum() {
   const [expandedComments, setExpandedComments] = useState({});
   const [reportConfig, setReportConfig] = useState({ isOpen: false, type: "", id: "" });
   const [isSubmittingReport, setIsSubmittingReport] = useState(false);
+  const [bookmarkedPosts, setBookmarkedPosts] = useState({});
 
   const BASE = API_BASE;
   const auth = { headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` } };
@@ -72,6 +73,44 @@ export default function Anonymous_Forum() {
 
     return () => clearTimeout(timeout);
   }, [searchQuery]);
+
+  useEffect(() => {
+    if (user) {
+      fetchBookmarks();
+    }
+  }, [user]);
+
+  const fetchBookmarks = async () => {
+    try {
+      const {data} = await axios.get(`${BASE}/users/bookmarks`,auth);
+      const bookmarksMap = {};
+      const list = Array.isArray(data.data) ? data.data : [];
+      list.forEach(post => {
+        bookmarksMap[post._id] = true;
+      });
+      setBookmarkedPosts(bookmarksMap);
+    } catch (e) {
+       console.error("Error fetching bookmarks:", e);
+    }
+  };
+
+  const handleBookmark = async (postId) => {
+      if (!user) { alert("Please login to bookmark posts"); return; }
+    
+    
+    const isBookmarked = bookmarkedPosts[postId];
+    setBookmarkedPosts(prev => ({ ...prev, [postId]: !isBookmarked }));
+
+    try {
+      await axios.post(`${BASE}/users/bookmark/${postId}`, {}, auth);
+    } catch (e) {
+     
+         console.error(e);
+      setBookmarkedPosts(prev => ({ ...prev, [postId]: isBookmarked }));
+      alert(e.response?.data?.message || "Failed to bookmark post");
+    }
+  };
+
 
   const upload = async () => {
     if (!user || !newTitle.trim() || !newContent.trim() || newCategory.length === 0) {
@@ -493,6 +532,10 @@ export default function Anonymous_Forum() {
                         <MessageCircle size={18} />
                         <span className="text-xs font-semibold">{post.comments?.length || 0}</span>
                       </button>
+                       <button onClick={() => handleBookmark(post._id)}
+                        className={`p-2 rounded-2xl transition-colors ${bookmarkedPosts[post._id] ? 'text-violet-600 bg-violet-50' : 'text-[var(--c-muted)] hover:bg-violet-50 hover:text-violet-600'}`} title={bookmarkedPosts[post._id] ? "Saved" : "Save Post"}>
+                        <Bookmark size={16} fill={bookmarkedPosts[post._id] ? "currentColor" : "none"} />
+                </button>
                       <button onClick={() => handleShare(post._id, post.title)} className="p-2 rounded-2xl text-[var(--c-muted)] hover:bg-gray-100 transition-colors" title="Share Post">
                         <Share2 size={16} />
                       </button>
