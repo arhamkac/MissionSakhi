@@ -20,6 +20,8 @@ const io=new Server(server, {
 
 const apiKey=process.env.PERSPECTIVE_API_KEY;
 
+const roomUsers = {};
+
 export async function checkPost(text){
     const response=await fetch(
     `https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=${apiKey}`,
@@ -45,9 +47,13 @@ export async function checkPost(text){
 
 io.on("connection",(socket)=>{
     console.log(`user connected with user ID:${socket.id}`)
-    socket.on('join room',(roomId)=>{
+    socket.on('join room',({ roomId, username })=>{
         socket.join(roomId)
+        socket.username = username;
+        if (!roomUsers[roomId]) roomUsers[roomId] = new Set();
+        roomUsers[roomId].add(username);
         console.log(`User ${socket.id} joined room ${roomId}`)
+        io.to(roomId).emit("room-data", { onlineCount: roomUsers[roomId].size });
     })
 
 socket.on('room message',async(messageData)=>{
@@ -82,7 +88,16 @@ socket.on('room message',async(messageData)=>{
     }
 })
 
+socket.on("typing", ({ roomId, username, isTyping }) => {
+        socket.to(roomId).emit("display-typing", { username, isTyping });
+    });
+
 socket.on('disconnect',()=>{
+    const { roomId, username } = socket;
+        if (roomId && roomUsers[roomId]) {
+            roomUsers[roomId].delete(username);
+            io.to(roomId).emit("room-data", { onlineCount: roomUsers[roomId].size });
+        }
     console.log(`User disconnected with ID: ${socket.id}`);
 })
 
