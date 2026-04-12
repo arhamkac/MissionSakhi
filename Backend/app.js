@@ -7,6 +7,7 @@ import { createServer } from "node:http";
 import { Server } from "socket.io";
 import fetch from "node-fetch";
 import helmet from "helmet";
+import emergencyContactRouter from "./routes/emergencyContact.routes.js";
 
 const app=express();
 const server=createServer(app);
@@ -143,6 +144,7 @@ app.use("/api/rooms",roomRouter)
 app.use("/api/messages",messageRouter)
 app.use("/api/report",reportRouter)
 app.use("/api/chatbot",chatbotRouter)
+app.use("/api/emergency-contacts", emergencyContactRouter)
 app.use("/api/resources",resourceRouter)
 
 export { app, server };
