@@ -24,12 +24,6 @@ const apiKey=process.env.PERSPECTIVE_API_KEY;
 const roomUsers = {};
 
 export async function checkPost(text){
-    if (!apiKey || apiKey === "your_perspective_key") {
-        
-        console.warn("PERSPECTIVE_API_KEY is missing. Bypassing content moderation check.");
-        return {};
-    }
-
     try {
         const response=await fetch(
         `https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=${apiKey}`,
